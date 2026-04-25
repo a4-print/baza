@@ -113,7 +113,7 @@
             color: var(--text-gray);
         }
 
-        /* ========== ДЕСКТОПНОЕ МЕНЮ (видно всегда на больших экранах) ========== */
+        /* ========== ДЕСКТОПНОЕ МЕНЮ ========== */
         .user-bar {
             display: flex;
             gap: 12px;
@@ -126,7 +126,7 @@
             background: #0F1722;
         }
 
-        /* ========== БУРГЕР (только на планшетах/телефонах) ========== */
+        /* ========== БУРГЕР ========== */
         .burger-btn {
             display: none;
             background: none;
@@ -170,7 +170,6 @@
             font-size: 14px;
         }
 
-        /* ========== КНОПКИ ========== */
         button {
             background: var(--primary-black);
             border: none;
@@ -199,7 +198,6 @@
         .btn-danger { background: #C2412C; }
         .btn-warning { background: #E68A2E; }
 
-        /* ========== СТАТУС СМЕНЫ ========== */
         .shift-bar {
             background: var(--card-white);
             border-radius: 60px;
@@ -311,7 +309,6 @@
             margin-bottom: 20px;
         }
 
-        /* Сетка услуг */
         .services-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
@@ -359,7 +356,6 @@
             color: white;
         }
 
-        /* Корзина */
         .cart-list {
             display: flex;
             flex-direction: column;
@@ -444,7 +440,6 @@
             color: var(--text-gray);
         }
 
-        /* История */
         .history-list {
             display: flex;
             flex-direction: column;
@@ -459,7 +454,6 @@
             border-left: 4px solid var(--primary-yellow);
         }
 
-        /* Модалки */
         .modal {
             position: fixed;
             top: 0;
@@ -494,7 +488,6 @@
         .stat-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 13px; }
         .stat-value { font-weight: 800; font-size: 16px; color: var(--primary-magenta); }
 
-        /* печатная форма */
         .print-blank { display: none; }
         @media print {
             body * { visibility: hidden; }
@@ -511,7 +504,6 @@
             font-family: monospace;
         }
 
-        /* Адаптив: на экранах до 850px показываем бургер, скрываем десктопное меню */
         @media (max-width: 850px) {
             body { padding: 12px; }
             .user-bar {
@@ -549,7 +541,6 @@
             <div><h1>A4‑ПРИНТ</h1><div class="sub">База данных копировального центра</div></div>
         </div>
         
-        <!-- Десктопное меню (видно на широких экранах) -->
         <div class="user-bar">
             <span id="currentOperatorName" style="font-weight:500;"></span>
             <button id="themeToggleBtn" class="btn-outline">🌙 Тёмная</button>
@@ -560,10 +551,8 @@
             <button id="logoutBtn" class="btn-outline">Выйти</button>
         </div>
         
-        <!-- Кнопка бургер (только на мобильных/планшетах) -->
         <button class="burger-btn" id="burgerBtn">☰</button>
         
-        <!-- Выпадающее меню -->
         <div class="burger-menu" id="burgerMenu">
             <span id="burgerOperatorName" style="font-weight:600; padding-bottom:6px; border-bottom: 1px solid #ccc;"></span>
             <button id="burgerThemeToggle">🌙 Тёмная</button>
@@ -581,7 +570,7 @@
         <span>🔴 Закрыта: <span id="shiftCloseTime">—</span></span>
     </div>
 
-    <!-- СВОРАЧИВАЕМАЯ ИНСТРУКЦИЯ -->
+    <!-- ИНСТРУКЦИЯ -->
     <div class="instruction-box">
         <div class="instruction-header" id="instructionHeader">
             <h3>📘 Как работать с базой данных A4-Принт</h3>
@@ -627,7 +616,8 @@
 
         <div class="cart-panel">
             <div class="panel-title">🧾 ОФОРМЛЕНИЕ ЗАКАЗА</div>
-            <input type="text" id="clientName" placeholder="Имя клиента (необязательно)" style="margin-bottom: 16px;">
+            <input type="text" id="clientName" placeholder="Имя клиента (необязательно)" style="margin-bottom: 12px;">
+            <input type="tel" id="clientPhone" placeholder="Телефон клиента (необязательно)" style="margin-bottom: 16px;">
             <div class="cart-list" id="cartList"></div>
 
             <div class="row-2">
@@ -675,7 +665,6 @@
 
 <div class="print-blank" id="printBlankContainer"></div>
 
-<!-- Модалки админки и статистики (код тот же, но сокращён для читаемости) -->
 <div id="adminModal" class="modal">
     <div class="modal-card">
         <div style="display:flex; justify-content:space-between;">
@@ -835,17 +824,18 @@
         if(cart.length===0) { alert("Корзина пуста"); return; }
         if(!shiftOpen || shiftClose) { alert("Смена не открыта! Нажмите «Открыть смену»"); return; }
         let client = document.getElementById("clientName").value.trim() || "Клиент";
+        let phone = document.getElementById("clientPhone").value.trim();
         let comment = document.getElementById("orderComment").value;
         let payment = document.querySelector('input[name="payment"]:checked').value;
         let subtotal = cart.reduce((s,i)=>s+i.price*i.qty,0);
         let discount=0, discPct=0;
         if(discountPct>0) { discount=subtotal*discountPct/100; discPct=discountPct; }
         else if(discountAmt>0) discount=Math.min(discountAmt,subtotal);
-        let order = { id:Date.now(), client, items:cart.map(i=>({ name:i.name, price:i.price, qty:i.qty })), subtotal, discount, discountPercent:discPct, finalTotal:subtotal-discount, paymentMethod:payment, comment, date:new Date().toLocaleString(), operator:currentUser.name };
+        let order = { id:Date.now(), client, phone, items:cart.map(i=>({ name:i.name, price:i.price, qty:i.qty })), subtotal, discount, discountPercent:discPct, finalTotal:subtotal-discount, paymentMethod:payment, comment, date:new Date().toLocaleString(), operator:currentUser.name };
         allOrders.push(order); saveOrders();
         cart=[]; discountPct=0; discountAmt=0;
         document.getElementById("discountPercent").value=0; document.getElementById("discountAmount").value=0;
-        document.getElementById("clientName").value=""; document.getElementById("orderComment").value="";
+        document.getElementById("clientName").value=""; document.getElementById("clientPhone").value=""; document.getElementById("orderComment").value="";
         renderCart(); renderHistory();
         alert(`Заказ №${order.id} на ${order.finalTotal} ₽`);
     }
@@ -857,7 +847,7 @@
         if(!my.length) { cont.innerHTML="<div style='padding:40px;text-align:center;color:var(--text-gray);'>Нет заказов</div>"; return; }
         let html="";
         [...my].reverse().forEach(o=>{
-            html+=`<div class="history-item"><div style="display:flex;justify-content:space-between;"><span><strong>${escapeHtml(o.client)}</strong> | ${o.date}</span><span style="font-weight:800;">${o.finalTotal} ₽</span></div><div style="font-size:11px;margin:6px 0;">${o.items.map(i=>`${i.name} x${i.qty}`).join(", ")}</div><div style="font-size:11px;">${o.paymentMethod==="cash"?"💵 Наличные":"💳 Карта"} ${o.comment?" | "+o.comment:""}</div><button class="delete-order" data-id="${o.id}" style="margin-top:8px; background:#C2412C; border:none; border-radius:30px; padding:5px 14px; color:white;">Удалить</button></div>`;
+            html+=`<div class="history-item"><div style="display:flex;justify-content:space-between;"><span><strong>${escapeHtml(o.client)}</strong> ${o.phone?`📞 ${escapeHtml(o.phone)}`:""} | ${o.date}</span><span style="font-weight:800;">${o.finalTotal} ₽</span></div><div style="font-size:11px;margin:6px 0;">${o.items.map(i=>`${i.name} x${i.qty}`).join(", ")}</div><div style="font-size:11px;">${o.paymentMethod==="cash"?"💵 Наличные":"💳 Карта"} ${o.comment?" | "+o.comment:""}</div><button class="delete-order" data-id="${o.id}" style="margin-top:8px; background:#C2412C; border:none; border-radius:30px; padding:5px 14px; color:white;">Удалить</button></div>`;
         });
         cont.innerHTML=html;
         document.querySelectorAll(".delete-order").forEach(btn=>btn.onclick=()=>{ let id=parseInt(btn.getAttribute("data-id")); allOrders=allOrders.filter(o=>o.id!==id); saveOrders(); renderHistory(); });
@@ -901,7 +891,7 @@
         let my=getMyOrders();
         let cash=my.filter(o=>o.paymentMethod==="cash").reduce((s,o)=>s+o.finalTotal,0);
         let card=my.filter(o=>o.paymentMethod==="card").reduce((s,o)=>s+o.finalTotal,0);
-        let html=`<div style="font-family:monospace; padding:20px;"><div style="text-align:center;"><h2>A4-ПРИНТ</h2><p>Отчёт за смену</p><p>${currentUser.name} | ${shiftOpen||"—"} → ${shiftClose||"—"}</p></div><hr><div><strong>ИТОГИ:</strong><br>📦 Заказов: ${my.length}<br>💰 Выручка: ${cash+card} ₽<br>💵 Наличные: ${cash} ₽<br>💳 Карта: ${card} ₽</div><hr><div><strong>ДЕТАЛИ:</strong></div>${my.map(o=>`<div style="border:1px solid #aaa; margin:10px 0; padding:8px;"><div>№${o.id} | ${o.date}</div><div>${o.client}</div><div>${o.items.map(i=>`${i.name} x${i.qty}`).join(", ")}</div><div>Итого: ${o.finalTotal} ₽ | ${o.paymentMethod==="cash"?"Нал":"Карта"} ${o.comment?" | "+o.comment:""}</div></div>`).join('')}<hr><div style="text-align:center;">Подпись: _______________</div></div>`;
+        let html=`<div style="font-family:monospace; padding:20px;"><div style="text-align:center;"><h2>A4-ПРИНТ</h2><p>Отчёт за смену</p><p>${currentUser.name} | ${shiftOpen||"—"} → ${shiftClose||"—"}</p></div><hr><div><strong>ИТОГИ:</strong><br>📦 Заказов: ${my.length}<br>💰 Выручка: ${cash+card} ₽<br>💵 Наличные: ${cash} ₽<br>💳 Карта: ${card} ₽</div><hr><div><strong>ДЕТАЛИ:</strong></div>${my.map(o=>`<div style="border:1px solid #aaa; margin:10px 0; padding:8px;"><div>№${o.id} | ${o.date}</div><div>${o.client} ${o.phone?`📞 ${o.phone}`:""}</div><div>${o.items.map(i=>`${i.name} x${i.qty}`).join(", ")}</div><div>Итого: ${o.finalTotal} ₽ | ${o.paymentMethod==="cash"?"Нал":"Карта"} ${o.comment?" | "+o.comment:""}</div></div>`).join('')}<hr><div style="text-align:center;">Подпись: _______________</div></div>`;
         let el=document.createElement('div'); el.innerHTML=html; document.body.appendChild(el);
         html2pdf().set({ margin:0.5, filename:`A4print_report_${currentUser.name}.pdf`, html2canvas:{scale:2} }).from(el).save().then(()=>el.remove());
     }
@@ -909,13 +899,15 @@
     function printOrderBlank() {
         if(cart.length===0) { alert("Корзина пуста"); return; }
         let client=document.getElementById("clientName").value.trim()||"Клиент";
+        let phone=document.getElementById("clientPhone").value.trim();
         let comment=document.getElementById("orderComment").value;
         let payment=document.querySelector('input[name="payment"]:checked').value;
         let subtotal=cart.reduce((s,i)=>s+i.price*i.qty,0);
         let discount=discountPct?subtotal*discountPct/100:(discountAmt?Math.min(discountAmt,subtotal):0);
         let final=subtotal-discount;
         let itemsHtml=cart.map(i=>`<tr><td>${escapeHtml(i.name)}</td><td>${i.qty}</td><td>${i.price} ₽</td><td>${i.price*i.qty} ₽</td>`).join('');
-        let html=`<div class="blank-page"><div style="text-align:center; margin-bottom:20px;"><h2>A4-ПРИНТ</h2><p>Копировальный центр</p></div><div><strong>№ заказа:</strong> ${Date.now()}</div><div><strong>Дата:</strong> ${new Date().toLocaleString()}</div><div><strong>Оператор:</strong> ${currentUser.name}</div><div><strong>Клиент:</strong> ${escapeHtml(client)}</div><div><strong>Оплата:</strong> ${payment==="cash"?"Наличные":"Карта"}</div><table border="1" cellpadding="5" cellspacing="0" style="width:100%; margin:15px 0;"><tr><th>Услуга</th><th>Кол-во</th><th>Цена</th><th>Сумма</th></table>${itemsHtml}</table><div style="text-align:right;">Подытог: ${subtotal} ₽<br>${discount?`Скидка: -${discount} ₽<br>`:""}<strong>ИТОГО: ${final} ₽</strong></div>${comment?`<div>Комментарий: ${escapeHtml(comment)}</div>`:""}<div style="margin-top:30px; text-align:center;">Спасибо за заказ!</div><div class="copy-label">──────── ОСНОВНОЙ ЭКЗЕМПЛЯР ────────</div></div><div class="blank-page"><div style="text-align:center; margin-bottom:20px;"><h2>A4-ПРИНТ</h2><p>Копировальный центр — КОПИЯ</p></div><div><strong>№ заказа:</strong> ${Date.now()}</div><div><strong>Дата:</strong> ${new Date().toLocaleString()}</div><div><strong>Оператор:</strong> ${currentUser.name}</div><div><strong>Клиент:</strong> ${escapeHtml(client)}</div><div><strong>Оплата:</strong> ${payment==="cash"?"Наличные":"Карта"}</div><table border="1" cellpadding="5" cellspacing="0" style="width:100%; margin:15px 0;"><tr><th>Услуга</th><th>Кол-во</th><th>Цена</th><th>Сумма</th></tr>${itemsHtml}</table><div style="text-align:right;">Подытог: ${subtotal} ₽<br>${discount?`Скидка: -${discount} ₽<br>`:""}<strong>ИТОГО: ${final} ₽</strong></div>${comment?`<div>Комментарий: ${escapeHtml(comment)}</div>`:""}<div style="margin-top:30px; text-align:center;">Спасибо за заказ!</div><div class="copy-label">─────────── КОПИЯ КЛИЕНТА ───────────</div></div>`;
+        let phoneLine = phone ? `<div><strong>Телефон:</strong> ${escapeHtml(phone)}</div>` : '';
+        let html=`<div class="blank-page"><div style="text-align:center; margin-bottom:20px;"><h2>A4-ПРИНТ</h2><p>Копировальный центр</p></div><div><strong>№ заказа:</strong> ${Date.now()}</div><div><strong>Дата:</strong> ${new Date().toLocaleString()}</div><div><strong>Оператор:</strong> ${currentUser.name}</div><div><strong>Клиент:</strong> ${escapeHtml(client)}</div>${phoneLine}<div><strong>Оплата:</strong> ${payment==="cash"?"Наличные":"Карта"}</div><table border="1" cellpadding="5" cellspacing="0" style="width:100%; margin:15px 0;"><tr><th>Услуга</th><th>Кол-во</th><th>Цена</th><th>Сумма</th></tr>${itemsHtml}</table><div style="text-align:right;">Подытог: ${subtotal} ₽<br>${discount?`Скидка: -${discount} ₽<br>`:""}<strong>ИТОГО: ${final} ₽</strong></div>${comment?`<div>Комментарий: ${escapeHtml(comment)}</div>`:""}<div style="margin-top:30px; text-align:center;">Спасибо за заказ!</div><div class="copy-label">──────── ОСНОВНОЙ ЭКЗЕМПЛЯР ────────</div></div><div class="blank-page"><div style="text-align:center; margin-bottom:20px;"><h2>A4-ПРИНТ</h2><p>Копировальный центр — КОПИЯ</p></div><div><strong>№ заказа:</strong> ${Date.now()}</div><div><strong>Дата:</strong> ${new Date().toLocaleString()}</div><div><strong>Оператор:</strong> ${currentUser.name}</div><div><strong>Клиент:</strong> ${escapeHtml(client)}</div>${phoneLine}<div><strong>Оплата:</strong> ${payment==="cash"?"Наличные":"Карта"}</div><table border="1" cellpadding="5" cellspacing="0" style="width:100%; margin:15px 0;"><tr><th>Услуга</th><th>Кол-во</th><th>Цена</th><th>Сумма</th></tr>${itemsHtml}</table><div style="text-align:right;">Подытог: ${subtotal} ₽<br>${discount?`Скидка: -${discount} ₽<br>`:""}<strong>ИТОГО: ${final} ₽</strong></div>${comment?`<div>Комментарий: ${escapeHtml(comment)}</div>`:""}<div style="margin-top:30px; text-align:center;">Спасибо за заказ!</div><div class="copy-label">─────────── КОПИЯ КЛИЕНТА ───────────</div></div>`;
         let cont=document.getElementById("printBlankContainer"); cont.innerHTML=html;
         window.print(); setTimeout(()=>cont.innerHTML="",1000);
     }
@@ -923,8 +915,8 @@
     function exportExcel() {
         let my=getMyOrders();
         if(!my.length) return alert("Нет данных");
-        let data=[["ID","Клиент","Услуги","Сумма","Скидка","Итого","Оплата","Дата","Комментарий"]];
-        my.forEach(o=>data.push([o.id, o.client, o.items.map(i=>`${i.name} x${i.qty}`).join("; "), o.subtotal, o.discount, o.finalTotal, o.paymentMethod==="cash"?"Наличные":"Карта", o.date, o.comment||""]));
+        let data=[["ID","Клиент","Телефон","Услуги","Сумма","Скидка","Итого","Оплата","Дата","Комментарий"]];
+        my.forEach(o=>data.push([o.id, o.client, o.phone||"", o.items.map(i=>`${i.name} x${i.qty}`).join("; "), o.subtotal, o.discount, o.finalTotal, o.paymentMethod==="cash"?"Наличные":"Карта", o.date, o.comment||""]));
         let ws=XLSX.utils.aoa_to_sheet(data), wb=XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb,ws,"A4_Принт");
         XLSX.writeFile(wb,`A4print_${currentUser.name}.xlsx`);
@@ -980,7 +972,6 @@
         document.getElementById("burgerLogoutBtn").onclick=()=>{ logout(); if(menu) menu.classList.remove("show"); };
     }
     
-    // Сворачиваемая инструкция
     function initInstructionToggle() {
         const header = document.getElementById('instructionHeader');
         const content = document.getElementById('instructionContent');
