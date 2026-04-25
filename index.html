@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>A4-Принт | CMYK Professional</title>
     <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -30,12 +30,11 @@
         body {
             background: var(--c-gray-light);
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            padding: 28px;
+            padding: 20px;
             color: var(--c-black);
             transition: background 0.2s;
         }
 
-        /* Тёмная версия CMYK (чёрная) */
         body.dark {
             background: var(--c-black);
             color: var(--c-gray-light);
@@ -63,13 +62,8 @@
             color: var(--c-gray-light);
         }
 
-        body.dark .user-bar {
+        body.dark .burger-menu {
             background: #2D2A2C;
-        }
-
-        body.dark .btn-outline {
-            border-color: #5D5A5C;
-            color: var(--c-gray-light);
         }
 
         .app {
@@ -77,49 +71,35 @@
             margin: 0 auto;
         }
 
-        /* Шапка с CMYK лентой */
+        /* ========== ШАПКА С БУРГЕРОМ ========== */
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
             gap: 16px;
-            margin-bottom: 28px;
-            padding: 16px 24px;
+            margin-bottom: 24px;
+            padding: 16px 20px;
             background: var(--c-white);
-            border-radius: 32px;
+            border-radius: 28px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.05);
             border-left: 8px solid var(--c-cyan);
             border-bottom: 3px solid var(--c-magenta);
+            position: relative;
         }
 
         body.dark .header {
             background: #2D2A2C;
         }
 
-        .cmyk-strip {
-            display: flex;
-            gap: 2px;
-            margin-top: 8px;
-        }
-        .cmyk-strip span {
-            width: 50px;
-            height: 4px;
-            border-radius: 2px;
-        }
-        .cyan-bg { background: var(--c-cyan); }
-        .magenta-bg { background: var(--c-magenta); }
-        .yellow-bg { background: var(--c-yellow); }
-        .black-bg { background: var(--c-black); }
-
         .logo-area {
             display: flex;
             align-items: center;
-            gap: 14px;
+            gap: 12px;
         }
 
         .logo {
-            height: 48px;
+            height: 44px;
             width: auto;
             border-radius: 12px;
             background: white;
@@ -127,18 +107,77 @@
         }
 
         h1 {
-            font-size: 24px;
+            font-size: 20px;
             font-weight: 800;
             letter-spacing: -0.5px;
-            color: var(--c-black);
         }
         body.dark h1 { color: var(--c-gray-light); }
 
         .sub {
-            font-size: 12px;
+            font-size: 10px;
             color: var(--c-gray);
         }
 
+        .cmyk-strip {
+            display: flex;
+            gap: 2px;
+            margin-top: 6px;
+        }
+        .cmyk-strip span {
+            width: 30px;
+            height: 3px;
+            border-radius: 2px;
+        }
+        .cyan-bg { background: var(--c-cyan); }
+        .magenta-bg { background: var(--c-magenta); }
+        .yellow-bg { background: var(--c-yellow); }
+        .black-bg { background: var(--c-black); }
+
+        /* ========== БУРГЕР МЕНЮ (только на мобилках) ========== */
+        .burger-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 50%;
+            color: var(--c-black);
+        }
+        body.dark .burger-btn {
+            color: var(--c-gray-light);
+        }
+
+        .burger-menu {
+            position: absolute;
+            top: 70px;
+            right: 16px;
+            background: var(--c-white);
+            border-radius: 24px;
+            padding: 16px;
+            min-width: 200px;
+            display: none;
+            flex-direction: column;
+            gap: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            z-index: 100;
+            border: 1px solid #E0E0E0;
+        }
+        body.dark .burger-menu {
+            background: #2D2A2C;
+            border-color: #4D4A4C;
+        }
+        .burger-menu.show {
+            display: flex;
+        }
+        .burger-menu button {
+            width: 100%;
+            text-align: center;
+            padding: 12px;
+            font-size: 14px;
+        }
+
+        /* Десктопная панель пользователя */
         .user-bar {
             display: flex;
             gap: 12px;
@@ -147,11 +186,14 @@
             padding: 6px 20px;
             border-radius: 60px;
         }
+        body.dark .user-bar {
+            background: #1A1A1C;
+        }
 
         button {
             background: var(--c-black);
             border: none;
-            padding: 8px 22px;
+            padding: 8px 20px;
             border-radius: 40px;
             color: white;
             font-weight: 600;
@@ -159,11 +201,7 @@
             cursor: pointer;
             transition: 0.15s ease;
         }
-
-        button:hover {
-            transform: translateY(-2px);
-            filter: brightness(0.9);
-        }
+        button:hover { transform: translateY(-2px); filter: brightness(0.9); }
 
         .btn-cyan { background: var(--c-cyan); color: var(--c-black); }
         .btn-magenta { background: var(--c-magenta); }
@@ -176,190 +214,150 @@
         .shift-bar {
             background: var(--c-white);
             border-radius: 60px;
-            padding: 12px 24px;
-            margin-bottom: 24px;
+            padding: 10px 20px;
+            margin-bottom: 20px;
             display: flex;
             justify-content: space-between;
             flex-wrap: wrap;
-            gap: 16px;
-            font-size: 13px;
+            gap: 12px;
+            font-size: 12px;
             font-weight: 500;
             border-left: 4px solid var(--c-cyan);
         }
 
         .dashboard {
             display: flex;
-            gap: 28px;
+            gap: 20px;
             flex-wrap: wrap;
-            margin-bottom: 28px;
+            margin-bottom: 20px;
         }
 
         .card {
             flex: 2;
-            min-width: 380px;
+            min-width: 300px;
             background: var(--c-white);
-            border-radius: 32px;
-            padding: 28px;
+            border-radius: 28px;
+            padding: 20px;
             box-shadow: 0 8px 24px rgba(0,0,0,0.05);
             border-top: 3px solid var(--c-cyan);
         }
 
         .cart-panel {
             flex: 1.2;
-            min-width: 360px;
+            min-width: 300px;
             background: var(--c-white);
-            border-radius: 32px;
-            padding: 28px;
+            border-radius: 28px;
+            padding: 20px;
             box-shadow: 0 8px 24px rgba(0,0,0,0.05);
             border-top: 3px solid var(--c-magenta);
         }
 
         .history-section {
             background: var(--c-white);
-            border-radius: 32px;
-            padding: 28px;
+            border-radius: 28px;
+            padding: 20px;
             border-top: 3px solid var(--c-yellow);
         }
 
         .panel-title {
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 800;
             text-transform: uppercase;
             letter-spacing: 2px;
             color: var(--c-gray);
-            margin-bottom: 22px;
+            margin-bottom: 18px;
         }
 
         .services-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-            gap: 14px;
-            max-height: 560px;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 12px;
+            max-height: 500px;
             overflow-y: auto;
-            padding-right: 8px;
+            padding-right: 6px;
         }
 
         .service-card {
             background: var(--c-gray-light);
-            border-radius: 28px;
-            padding: 16px 12px;
+            border-radius: 24px;
+            padding: 14px 10px;
             text-align: center;
             transition: all 0.2s;
             border: 1px solid #E0E0E0;
             cursor: pointer;
         }
+        body.dark .service-card { background: #2D2A2C; border-color: #4D4A4C; }
+        .service-card:hover { transform: translateY(-2px); border-color: var(--c-cyan); }
 
-        body.dark .service-card {
-            background: #2D2A2C;
-            border-color: #4D4A4C;
-        }
-
-        .service-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-            border-color: var(--c-cyan);
-        }
-
-        .service-name {
-            font-weight: 700;
-            font-size: 14px;
-            margin-bottom: 8px;
-        }
-
-        .service-price {
-            font-size: 18px;
-            font-weight: 800;
-            color: var(--c-magenta);
-            margin-bottom: 12px;
-        }
+        .service-name { font-weight: 700; font-size: 13px; margin-bottom: 6px; }
+        .service-price { font-size: 16px; font-weight: 800; color: var(--c-magenta); margin-bottom: 10px; }
 
         .qty-controls {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 14px;
+            gap: 12px;
             margin-top: 8px;
         }
-
         .qty-btn {
             background: #E0E0E0;
-            width: 36px;
-            height: 36px;
+            width: 32px;
+            height: 32px;
             border-radius: 60px;
             padding: 0;
-            font-size: 18px;
+            font-size: 16px;
             font-weight: bold;
         }
         body.dark .qty-btn { background: #4D4A4C; color: white; }
-
-        .qty-value {
-            font-weight: 700;
-            font-size: 18px;
-            min-width: 32px;
-        }
-
-        .add-btn {
-            background: var(--c-cyan);
-            color: var(--c-black);
-            margin-top: 14px;
-            width: 100%;
-            padding: 10px;
-            font-size: 13px;
-            font-weight: 700;
-        }
+        .qty-value { font-weight: 700; font-size: 16px; min-width: 28px; text-align: center; }
+        .add-btn { background: var(--c-cyan); color: var(--c-black); margin-top: 12px; width: 100%; padding: 8px; font-size: 12px; font-weight: 700; }
 
         .cart-list {
             display: flex;
             flex-direction: column;
-            gap: 12px;
-            max-height: 280px;
+            gap: 10px;
+            max-height: 260px;
             overflow-y: auto;
-            margin-bottom: 20px;
-            padding-right: 6px;
+            margin-bottom: 16px;
         }
 
         .cart-item {
             background: var(--c-gray-light);
-            border-radius: 24px;
-            padding: 16px 18px;
+            border-radius: 20px;
+            padding: 12px 14px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
-            gap: 12px;
+            gap: 10px;
             border-left: 4px solid var(--c-magenta);
         }
-
-        body.dark .cart-item {
-            background: #2D2A2C;
-        }
+        body.dark .cart-item { background: #2D2A2C; }
 
         .cart-item-info { flex: 2; }
-        .cart-item-name { font-weight: 700; font-size: 14px; margin-bottom: 4px; }
-        .cart-item-detail { font-size: 12px; color: var(--c-gray); }
-        .cart-item-price { font-weight: 800; font-size: 16px; color: var(--c-magenta); }
+        .cart-item-name { font-weight: 700; font-size: 13px; margin-bottom: 3px; }
+        .cart-item-detail { font-size: 11px; color: var(--c-gray); }
+        .cart-item-price { font-weight: 800; font-size: 15px; color: var(--c-magenta); }
 
         .remove-btn {
             background: #FCE6F2;
             color: var(--c-magenta);
-            padding: 8px 18px;
+            padding: 6px 14px;
             border-radius: 40px;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 600;
         }
-        body.dark .remove-btn { background: #4D2A3C; }
 
         input, select, textarea {
             width: 100%;
-            padding: 14px 18px;
+            padding: 12px 16px;
             background: var(--c-gray-light);
             border: 1px solid #D0D0D0;
-            border-radius: 24px;
+            border-radius: 20px;
             font-size: 14px;
             transition: 0.15s;
             font-family: inherit;
         }
-
         input:focus, select:focus, textarea:focus {
             outline: none;
             border-color: var(--c-cyan);
@@ -369,38 +367,31 @@
         .total-line {
             display: flex;
             justify-content: space-between;
-            padding: 14px 0;
+            padding: 12px 0;
             border-top: 1px solid #E0E0E0;
             font-weight: 600;
-            font-size: 15px;
+            font-size: 14px;
         }
-        body.dark .total-line { border-top-color: #4D4A4C; }
-
-        .grand-total {
-            font-size: 24px;
-            font-weight: 800;
-            color: var(--c-cyan);
-        }
+        .grand-total { font-size: 20px; font-weight: 800; color: var(--c-cyan); }
 
         .row-2 {
             display: flex;
-            gap: 14px;
-            margin: 18px 0;
+            gap: 12px;
+            margin: 14px 0;
             flex-wrap: wrap;
         }
 
         .history-list {
             display: flex;
             flex-direction: column;
-            gap: 14px;
-            max-height: 320px;
+            gap: 12px;
+            max-height: 280px;
             overflow-y: auto;
         }
-
         .history-item {
             background: var(--c-gray-light);
-            border-radius: 28px;
-            padding: 18px;
+            border-radius: 20px;
+            padding: 14px;
             border-left: 4px solid var(--c-yellow);
         }
         body.dark .history-item { background: #2D2A2C; }
@@ -418,51 +409,76 @@
             justify-content: center;
             z-index: 1000;
         }
-
         .modal-card {
             background: var(--c-white);
-            border-radius: 48px;
+            border-radius: 40px;
             max-width: 700px;
             width: 90%;
             max-height: 85vh;
             overflow-y: auto;
-            padding: 32px;
+            padding: 24px;
             border-top: 5px solid var(--c-cyan);
         }
         body.dark .modal-card { background: #2D2A2C; }
 
         .stat-card {
             background: var(--c-gray-light);
-            border-radius: 24px;
-            padding: 18px;
-            margin-bottom: 14px;
+            border-radius: 20px;
+            padding: 14px;
+            margin-bottom: 12px;
             border-left: 4px solid var(--c-cyan);
         }
-        body.dark .stat-card { background: #1A1A1C; }
-
-        .stat-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 10px;
-            font-size: 14px;
-        }
-        .stat-value {
-            font-weight: 800;
-            font-size: 18px;
-            color: var(--c-magenta);
-        }
+        .stat-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 13px; }
+        .stat-value { font-weight: 800; font-size: 16px; color: var(--c-magenta); }
 
         .pdf-report {
-            padding: 24px;
+            padding: 20px;
             font-family: monospace;
             color: #000 !important;
             background: white !important;
         }
         .pdf-report * { color: #000 !important; }
 
-        @media (max-width: 900px) {
-            body { padding: 16px; }
-            .dashboard { flex-direction: column; }
+        /* ========== МОБИЛЬНАЯ АДАПТАЦИЯ ========== */
+        @media (max-width: 768px) {
+            body { padding: 12px; }
+            .header { padding: 12px 16px; }
+            .logo { height: 38px; }
+            h1 { font-size: 18px; }
+            
+            .user-bar {
+                display: none; /* Скрываем десктопное меню */
+            }
+            
+            .burger-btn {
+                display: block;
+            }
+            
+            .burger-menu button {
+                font-size: 14px;
+                padding: 10px;
+            }
+            
+            .dashboard { gap: 16px; }
+            .card, .cart-panel, .history-section { padding: 16px; }
+            .services-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; }
+            .service-card { padding: 10px; }
+            .service-name { font-size: 11px; }
+            .service-price { font-size: 14px; }
+            
+            .shift-bar {
+                font-size: 10px;
+                padding: 8px 16px;
+                gap: 8px;
+            }
+            
+            button { padding: 8px 16px; font-size: 12px; }
+        }
+
+        @media (max-width: 480px) {
+            .services-grid { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); }
+            .cart-item-name { font-size: 12px; }
+            .grand-total { font-size: 18px; }
         }
     </style>
 </head>
@@ -492,13 +508,28 @@
                 <div class="sub">CMYK Professional</div>
             </div>
         </div>
+        
+        <!-- Десктопное меню -->
         <div class="user-bar">
             <span id="currentOperatorName" style="font-weight: 500;"></span>
             <button id="themeToggleBtn" class="btn-outline">🌙 Тёмная</button>
             <button id="adminPanelBtn" style="background: var(--c-cyan); color: var(--c-black);">Админ</button>
-            <button id="shiftToggleBtn" style="background: var(--c-yellow); color: var(--c-black);">🚀 Открыть смену</button>
+            <button id="shiftToggleBtn" style="background: var(--c-yellow); color: var(--c-black);">🚀 Смена</button>
             <button id="pdfReportBtn" style="background: var(--c-magenta);">📄 Отчёт</button>
             <button id="logoutBtn" class="btn-outline">Выйти</button>
+        </div>
+        
+        <!-- Бургер кнопка (только на мобилках) -->
+        <button class="burger-btn" id="burgerBtn">☰</button>
+        
+        <!-- Выпадающее меню -->
+        <div class="burger-menu" id="burgerMenu">
+            <span style="padding: 8px 0; font-weight: 600; border-bottom: 1px solid #E0E0E0;" id="burgerOperatorName"></span>
+            <button id="burgerThemeToggle" class="btn-outline">🌙 Тёмная</button>
+            <button id="burgerAdminBtn" style="background: var(--c-cyan); color: var(--c-black);">Админ</button>
+            <button id="burgerShiftBtn" style="background: var(--c-yellow); color: var(--c-black);">🚀 Смена</button>
+            <button id="burgerPdfBtn" style="background: var(--c-magenta);">📄 Отчёт</button>
+            <button id="burgerLogoutBtn" class="btn-outline">Выйти</button>
         </div>
     </div>
 
@@ -516,14 +547,14 @@
 
         <div class="cart-panel">
             <div class="panel-title">🧾 ОФОРМЛЕНИЕ</div>
-            <input type="text" id="clientName" placeholder="Клиент (необязательно)" style="margin-bottom: 20px;">
+            <input type="text" id="clientName" placeholder="Клиент (необязательно)" style="margin-bottom: 16px;">
             
             <div class="cart-list" id="cartList"></div>
 
             <div class="row-2">
                 <input type="number" id="discountPercent" placeholder="Скидка %" value="0" step="1">
                 <input type="number" id="discountAmount" placeholder="Скидка ₽" value="0" step="10">
-                <button id="applyDiscountBtn" class="btn-outline" style="padding: 8px 16px;">Применить</button>
+                <button id="applyDiscountBtn" class="btn-outline" style="padding: 8px 14px;">Применить</button>
             </div>
 
             <div class="row-2">
@@ -545,11 +576,11 @@
     </div>
 
     <div class="history-section">
-        <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 20px;">
+        <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 16px;">
             <div class="panel-title" style="margin-bottom:0;">📜 ИСТОРИЯ ЗАКАЗОВ</div>
-            <div style="display: flex; gap: 12px;">
+            <div style="display: flex; gap: 10px;">
                 <button id="exportExcelBtn" style="background: var(--c-yellow); color: var(--c-black);">📎 Excel</button>
-                <button id="clearHistoryBtn" class="btn-danger">🗑 Очистить мои</button>
+                <button id="clearHistoryBtn" class="btn-danger">🗑 Очистить</button>
             </div>
         </div>
         <div id="historyList" class="history-list"></div>
@@ -563,9 +594,7 @@
             <h2>⚙️ Администрирование</h2>
             <button id="closeAdminModal" style="background:none; font-size: 28px;">✕</button>
         </div>
-        
         <button id="viewOperatorsStatsBtn" style="background: var(--c-cyan); color: var(--c-black); width:100%; margin: 10px 0 20px;">📊 Полная статистика операторов</button>
-        
         <h3>📋 Управление услугами</h3>
         <div id="adminServicesList"></div>
         <div style="display: flex; gap: 12px; margin-top: 16px;">
@@ -587,12 +616,12 @@
 
 <div id="operatorsStatsModal" class="modal">
     <div class="modal-card" style="max-width: 700px;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
             <h2>📊 Статистика операторов</h2>
             <button id="closeStatsModal" style="background:none; font-size: 28px;">✕</button>
         </div>
         <div id="operatorsStatsContent"></div>
-        <button id="exportStatsExcelBtn" style="background: var(--c-yellow); color: var(--c-black); margin-top: 24px; width:100%;">📎 Экспорт статистики в Excel</button>
+        <button id="exportStatsExcelBtn" style="background: var(--c-yellow); color: var(--c-black); margin-top: 20px; width:100%;">📎 Экспорт статистики в Excel</button>
     </div>
 </div>
 
@@ -640,8 +669,14 @@
         document.getElementById("shiftOpenTime").innerText = shiftOpen || "—";
         document.getElementById("shiftCloseTime").innerText = shiftClose || "—";
         let btn = document.getElementById("shiftToggleBtn");
-        if (shiftOpen && !shiftClose) { btn.innerText = "🔒 Закрыть смену"; btn.style.background = "#c2412c"; btn.style.color = "white"; }
-        else { btn.innerText = "🚀 Открыть смену"; btn.style.background = "#FFD100"; btn.style.color = "#231F20"; }
+        let burgerBtn = document.getElementById("burgerShiftBtn");
+        if (shiftOpen && !shiftClose) { 
+            btn.innerText = "🔒 Закрыть смену"; btn.style.background = "#c2412c"; btn.style.color = "white";
+            if(burgerBtn) { burgerBtn.innerText = "🔒 Закрыть смену"; burgerBtn.style.background = "#c2412c"; burgerBtn.style.color = "white"; }
+        } else { 
+            btn.innerText = "🚀 Открыть смену"; btn.style.background = "#FFD100"; btn.style.color = "#231F20";
+            if(burgerBtn) { burgerBtn.innerText = "🚀 Открыть смену"; burgerBtn.style.background = "#FFD100"; burgerBtn.style.color = "#231F20"; }
+        }
     }
     function toggleShift() {
         if (!shiftOpen || shiftClose) { shiftOpen = new Date().toLocaleString(); shiftClose = null; saveShift(); updateShiftUI(); alert("Смена открыта: " + shiftOpen); }
@@ -653,6 +688,14 @@
         let o = localStorage.getItem(OPERATORS_KEY); if (o) operators = JSON.parse(o);
         let ord = localStorage.getItem(ORDERS_KEY); if (ord) allOrders = JSON.parse(ord);
         renderServices(); renderCart(); renderHistory(); loadShift();
+        updateBurgerOperatorName();
+    }
+
+    function updateBurgerOperatorName() {
+        let burgerSpan = document.getElementById("burgerOperatorName");
+        if (burgerSpan && currentUser) {
+            burgerSpan.innerText = `${currentUser.name} ${currentUser.role === "admin" ? "👑" : ""}`;
+        }
     }
 
     let tempQtys = {};
@@ -755,9 +798,9 @@
                             <span><strong>${escapeHtml(o.client)}</strong> | ${o.date}</span>
                             <span style="font-weight: 800; color: var(--c-magenta);">${o.finalTotal} ₽</span>
                         </div>
-                        <div style="font-size: 12px; margin: 8px 0; color: #8C8C8C;">${itemsShort}</div>
-                        <div style="font-size: 12px;">${o.paymentMethod === "cash" ? "💵 Наличные" : "💳 Карта"} ${o.comment ? " | " + o.comment : ""}</div>
-                        <button class="delete-order" data-id="${o.id}" style="margin-top: 10px; background:#c2412c; border:none; border-radius:30px; padding:6px 16px; color:white; font-size:12px;">Удалить</button>
+                        <div style="font-size: 11px; margin: 8px 0; color: #8C8C8C;">${itemsShort}</div>
+                        <div style="font-size: 11px;">${o.paymentMethod === "cash" ? "💵 Наличные" : "💳 Карта"} ${o.comment ? " | " + o.comment : ""}</div>
+                        <button class="delete-order" data-id="${o.id}" style="margin-top: 8px; background:#c2412c; border:none; border-radius:30px; padding:5px 14px; color:white; font-size:11px;">Удалить</button>
                     </div>`;
         });
         container.innerHTML = html;
@@ -782,7 +825,7 @@
     function showOperatorsStats() {
         let stats = getFullOperatorsStats();
         let container = document.getElementById("operatorsStatsContent");
-        let html = `<div style="margin-bottom: 20px;"><strong>Общая статистика по всем операторам</strong></div>`;
+        let html = `<div style="margin-bottom: 16px;"><strong>Общая статистика по всем операторам</strong></div>`;
         stats.forEach(stat => {
             html += `<div class="stat-card">
                         <div class="stat-row"><span><strong>${escapeHtml(stat.name)}</strong> ${stat.role === "admin" ? "👑" : "👤"}</span><span class="stat-value">${stat.ordersCount} заказов</span></div>
@@ -834,28 +877,90 @@
         let adminServices = document.getElementById("adminServicesList");
         adminServices.innerHTML = "";
         services.forEach(s => {
-            adminServices.innerHTML += `<div style="display:flex; gap:12px; margin-bottom:12px; align-items:center;"><span style="flex:2;">${s.name}</span><input type="number" id="price_${s.id}" value="${s.price}" style="width:100px;"><button class="updateService" data-id="${s.id}" style="background: var(--c-cyan); color: var(--c-black);">💾</button><button class="deleteService" data-id="${s.id}" style="background: var(--c-magenta);">🗑</button></div>`;
+            adminServices.innerHTML += `<div style="display:flex; gap:12px; margin-bottom:12px; align-items:center; flex-wrap:wrap;"><span style="flex:2; font-size:13px;">${s.name}</span><input type="number" id="price_${s.id}" value="${s.price}" style="width:90px;"><button class="updateService" data-id="${s.id}" style="background: var(--c-cyan); color: var(--c-black);">💾</button><button class="deleteService" data-id="${s.id}" style="background: var(--c-magenta);">🗑</button></div>`;
         });
         document.querySelectorAll(".updateService").forEach(btn => btn.onclick = () => { let id = parseInt(btn.getAttribute("data-id")); let s = services.find(x => x.id === id); if (s) { s.price = parseInt(document.getElementById(`price_${id}`).value); saveServices(); renderServices(); renderAdmin(); } });
         document.querySelectorAll(".deleteService").forEach(btn => btn.onclick = () => { let id = parseInt(btn.getAttribute("data-id")); if (services.length <= 1) return alert("Нельзя удалить последнюю услугу"); services = services.filter(x => x.id !== id); saveServices(); renderServices(); renderAdmin(); });
         let opsDiv = document.getElementById("operatorsList");
         opsDiv.innerHTML = "";
-        for (let [login, data] of Object.entries(operators)) { if (login === "admin") continue; opsDiv.innerHTML += `<div style="display:flex; gap:12px; margin-bottom:12px; align-items:center;"><span>${data.name} (${login})</span><input type="password" id="pass_${login}" placeholder="Новый пароль"><button class="changePass" data-login="${login}" style="background: var(--c-yellow); color: var(--c-black);">🔑</button><button class="deleteOp" data-login="${login}" style="background: var(--c-magenta);">🗑</button></div>`; }
+        for (let [login, data] of Object.entries(operators)) { if (login === "admin") continue; opsDiv.innerHTML += `<div style="display:flex; gap:12px; margin-bottom:12px; align-items:center; flex-wrap:wrap;"><span style="min-width:100px;">${data.name} (${login})</span><input type="password" id="pass_${login}" placeholder="Новый пароль" style="flex:1;"><button class="changePass" data-login="${login}" style="background: var(--c-yellow); color: var(--c-black);">🔑</button><button class="deleteOp" data-login="${login}" style="background: var(--c-magenta);">🗑</button></div>`; }
         document.querySelectorAll(".changePass").forEach(btn => btn.onclick = () => { let log = btn.getAttribute("data-login"); let newP = document.getElementById(`pass_${log}`).value; if (newP) { operators[log].password = newP; saveOperators(); alert("Пароль изменён"); } });
         document.querySelectorAll(".deleteOp").forEach(btn => btn.onclick = () => { let log = btn.getAttribute("data-login"); if (confirm("Удалить оператора?")) { delete operators[log]; saveOperators(); renderAdmin(); } });
     }
 
-    function initTheme() { if (localStorage.getItem("a4print_theme") === "dark") { document.body.classList.add("dark"); document.getElementById("themeToggleBtn").innerHTML = "☀️ Светлая"; } else document.getElementById("themeToggleBtn").innerHTML = "🌙 Тёмная"; }
-    function toggleTheme() { if (document.body.classList.contains("dark")) { document.body.classList.remove("dark"); localStorage.setItem("a4print_theme", "light"); document.getElementById("themeToggleBtn").innerHTML = "🌙 Тёмная"; } else { document.body.classList.add("dark"); localStorage.setItem("a4print_theme", "dark"); document.getElementById("themeToggleBtn").innerHTML = "☀️ Светлая"; } }
+    function initTheme() { 
+        if (localStorage.getItem("a4print_theme") === "dark") { 
+            document.body.classList.add("dark"); 
+            document.getElementById("themeToggleBtn").innerHTML = "☀️ Светлая";
+            let burgerTheme = document.getElementById("burgerThemeToggle");
+            if(burgerTheme) burgerTheme.innerHTML = "☀️ Светлая";
+        } else {
+            document.getElementById("themeToggleBtn").innerHTML = "🌙 Тёмная";
+            let burgerTheme = document.getElementById("burgerThemeToggle");
+            if(burgerTheme) burgerTheme.innerHTML = "🌙 Тёмная";
+        }
+    }
+    function toggleTheme() { 
+        if (document.body.classList.contains("dark")) { 
+            document.body.classList.remove("dark"); 
+            localStorage.setItem("a4print_theme", "light"); 
+            document.getElementById("themeToggleBtn").innerHTML = "🌙 Тёмная";
+            let burgerTheme = document.getElementById("burgerThemeToggle");
+            if(burgerTheme) burgerTheme.innerHTML = "🌙 Тёмная";
+        } else { 
+            document.body.classList.add("dark"); 
+            localStorage.setItem("a4print_theme", "dark"); 
+            document.getElementById("themeToggleBtn").innerHTML = "☀️ Светлая";
+            let burgerTheme = document.getElementById("burgerThemeToggle");
+            if(burgerTheme) burgerTheme.innerHTML = "☀️ Светлая";
+        } 
+    }
     
     function login(login, pwd) { let u = operators[login.toLowerCase()]; if (u && u.password === pwd) { currentUser = { ...u, username: login.toLowerCase() }; localStorage.setItem("a4print_current_user", JSON.stringify(currentUser)); document.getElementById("loginOverlay").style.display = "none"; document.getElementById("mainContent").style.display = "block"; document.getElementById("currentOperatorName").innerHTML = `${u.name} ${u.role === "admin" ? "👑" : ""}`; loadData(); return true; } document.getElementById("loginError").innerText = "Неверный логин/пароль"; return false; }
     function logout() { currentUser = null; localStorage.removeItem("a4print_current_user"); location.reload(); }
     function escapeHtml(str) { return str ? String(str).replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m])) : ""; }
 
+    // Бургер меню
+    function initBurger() {
+        const burgerBtn = document.getElementById("burgerBtn");
+        const burgerMenu = document.getElementById("burgerMenu");
+        if (burgerBtn && burgerMenu) {
+            burgerBtn.addEventListener("click", (e) => {
+                e.stopPropagation();
+                burgerMenu.classList.toggle("show");
+            });
+            document.addEventListener("click", (e) => {
+                if (!burgerMenu.contains(e.target) && !burgerBtn.contains(e.target)) {
+                    burgerMenu.classList.remove("show");
+                }
+            });
+        }
+        
+        // Связываем бургер-кнопки с действиями
+        let burgerTheme = document.getElementById("burgerThemeToggle");
+        if(burgerTheme) burgerTheme.onclick = () => { toggleTheme(); burgerMenu.classList.remove("show"); };
+        
+        let burgerAdmin = document.getElementById("burgerAdminBtn");
+        if(burgerAdmin) burgerAdmin.onclick = () => { 
+            if(currentUser && currentUser.role === "admin") { renderAdmin(); document.getElementById("adminModal").style.display = "flex"; }
+            else alert("Доступно только администратору");
+            burgerMenu.classList.remove("show");
+        };
+        
+        let burgerShift = document.getElementById("burgerShiftBtn");
+        if(burgerShift) burgerShift.onclick = () => { toggleShift(); burgerMenu.classList.remove("show"); };
+        
+        let burgerPdf = document.getElementById("burgerPdfBtn");
+        if(burgerPdf) burgerPdf.onclick = () => { generatePDFReport(); burgerMenu.classList.remove("show"); };
+        
+        let burgerLogout = document.getElementById("burgerLogoutBtn");
+        if(burgerLogout) burgerLogout.onclick = () => { logout(); burgerMenu.classList.remove("show"); };
+    }
+
     document.addEventListener("DOMContentLoaded", () => {
         initTheme();
         let saved = localStorage.getItem("a4print_current_user");
-        if (saved) { try { currentUser = JSON.parse(saved); if (operators[currentUser.username]) { document.getElementById("loginOverlay").style.display = "none"; document.getElementById("mainContent").style.display = "block"; document.getElementById("currentOperatorName").innerHTML = `${currentUser.name} ${currentUser.role === "admin" ? "👑" : ""}`; loadData(); } else logout(); } catch(e) { logout(); } }
+        if (saved) { try { currentUser = JSON.parse(saved); if (operators[currentUser.username]) { document.getElementById("loginOverlay").style.display = "none"; document.getElementById("mainContent").style.display = "block"; document.getElementById("currentOperatorName").innerHTML = `${currentUser.name} ${currentUser.role === "admin" ? "👑" : ""}`; loadData(); initBurger(); } else logout(); } catch(e) { logout(); } } else { initBurger(); }
         
         document.getElementById("themeToggleBtn").onclick = toggleTheme;
         document.getElementById("loginBtn").onclick = () => login(document.getElementById("loginUsername").value, document.getElementById("loginPassword").value);
