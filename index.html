@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>A4-Принт | Профессиональная панель</title>
     <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <style>
         * {
             margin: 0;
@@ -19,13 +20,12 @@
             color: #e2e8f0;
         }
 
-        /* Строгий контейнер */
         .app {
             max-width: 1600px;
             margin: 0 auto;
         }
 
-        /* ========== ХЕДЕР (минимализм) ========== */
+        /* Хедер */
         .header {
             display: flex;
             justify-content: space-between;
@@ -117,17 +117,17 @@
             background: #059669;
         }
 
-        /* ========== ОСНОВНАЯ СЕТКА ========== */
+        /* Основная сетка */
         .dashboard {
             display: flex;
             gap: 24px;
             flex-wrap: wrap;
         }
 
-        /* ЛЕВАЯ ПАНЕЛЬ — КНОПКИ УСЛУГ */
+        /* Левая панель — кнопки услуг */
         .services-panel {
             flex: 2;
-            min-width: 380px;
+            min-width: 400px;
             background: #1e293b;
             border-radius: 24px;
             padding: 24px;
@@ -145,16 +145,32 @@
 
         .services-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
             gap: 12px;
+            max-height: 550px;
+            overflow-y: auto;
+            padding-right: 8px;
         }
 
-        /* СТРОГАЯ КНОПКА УСЛУГИ */
+        .services-grid::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .services-grid::-webkit-scrollbar-track {
+            background: #0f172a;
+            border-radius: 4px;
+        }
+
+        .services-grid::-webkit-scrollbar-thumb {
+            background: #475569;
+            border-radius: 4px;
+        }
+
         .service-card {
             background: #0f172a;
             border: 1px solid #334155;
-            border-radius: 16px;
-            padding: 16px 12px;
+            border-radius: 12px;
+            padding: 12px 10px;
             cursor: pointer;
             transition: all 0.1s ease;
             text-align: center;
@@ -168,17 +184,18 @@
 
         .service-name {
             font-weight: 500;
-            font-size: 14px;
-            margin-bottom: 8px;
+            font-size: 13px;
+            margin-bottom: 6px;
+            line-height: 1.3;
         }
 
         .service-price {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 600;
             color: #60a5fa;
         }
 
-        /* ПРАВАЯ ПАНЕЛЬ — КОРЗИНА */
+        /* Правая панель — корзина */
         .cart-panel {
             flex: 1.2;
             min-width: 360px;
@@ -230,7 +247,7 @@
 
         .cart-item-name {
             font-weight: 500;
-            font-size: 14px;
+            font-size: 13px;
         }
 
         .cart-item-price {
@@ -266,7 +283,7 @@
             margin: 16px 0;
         }
 
-        /* ИСТОРИЯ */
+        /* История */
         .history-section {
             margin-top: 32px;
             background: #1e293b;
@@ -279,6 +296,8 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 12px;
         }
 
         .history-list {
@@ -301,7 +320,7 @@
             margin-bottom: 6px;
         }
 
-        /* МОДАЛКА */
+        /* Модалка */
         .modal {
             position: fixed;
             top: 0;
@@ -347,10 +366,17 @@
             justify-content: space-between;
         }
 
+        /* PDF отчёт */
+        .pdf-report {
+            padding: 20px;
+            font-family: monospace;
+            font-size: 12px;
+            line-height: 1.4;
+        }
+
         @media (max-width: 900px) {
             body { padding: 16px; }
             .dashboard { flex-direction: column; }
-            .services-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
         }
     </style>
 </head>
@@ -381,6 +407,7 @@
         <div class="user-bar">
             <span class="user-name" id="currentOperatorName"></span>
             <button id="adminPanelBtn" style="background:#475569;">Админ</button>
+            <button id="pdfReportBtn" class="btn-success">📄 Отчёт за смену (PDF)</button>
             <button id="logoutBtn" class="btn-outline">Выйти</button>
         </div>
     </div>
@@ -448,7 +475,10 @@
     <div class="history-section">
         <div class="history-header">
             <div class="panel-title" style="margin-bottom:0;">История заказов</div>
-            <button id="exportExcelBtn" class="btn-success" style="padding:6px 20px;">Экспорт Excel</button>
+            <div style="display: flex; gap: 12px;">
+                <button id="exportExcelBtn" class="btn-success">Экспорт Excel</button>
+                <button id="clearHistoryBtn" class="btn-danger">Очистить мои заказы</button>
+            </div>
         </div>
         <div id="historyList" class="history-list"></div>
     </div>
@@ -485,13 +515,33 @@
 </div>
 
 <script>
-    // ========== ДАННЫЕ ==========
+    // ========== ПОЛНЫЙ СПИСОК УСЛУГ (по твоему прайсу) ==========
     let services = [
-        { id: 1, name: "Цветная печать A4", price: 25 },
-        { id: 2, name: "Ч/Б печать A4", price: 10 },
-        { id: 3, name: "Ламинация", price: 50 },
-        { id: 4, name: "Сканирование", price: 30 },
-        { id: 5, name: "Брошюровка", price: 100 }
+        { id: 1, name: "Копирование ч/б A4 (1-20 шт)", price: 25 },
+        { id: 2, name: "Копирование цветное A4 (1-20 шт)", price: 35 },
+        { id: 3, name: "Сканирование A4", price: 25 },
+        { id: 4, name: "Ламинирование A6", price: 50 },
+        { id: 5, name: "Ламинирование A5", price: 100 },
+        { id: 6, name: "Ламинирование A4", price: 150 },
+        { id: 7, name: "Ламинирование A3", price: 200 },
+        { id: 8, name: "Брошюровка (до 50 стр)", price: 350 },
+        { id: 9, name: "Набор текста (1 стр)", price: 150 },
+        { id: 10, name: "Печать фото 10x15", price: 55 },
+        { id: 11, name: "Печать фото 13x18", price: 50 },
+        { id: 12, name: "Печать фото 15x21", price: 75 },
+        { id: 13, name: "Печать фото 21x30", price: 200 },
+        { id: 14, name: "Печать фото 30x40", price: 450 },
+        { id: 15, name: "ФНД", price: 350 },
+        { id: 16, name: "Печать на кружке", price: 1000 },
+        { id: 17, name: "Печать на футболке", price: 1500 },
+        { id: 18, name: "Ретушь фото", price: 200 },
+        { id: 19, name: "Кадрирование", price: 30 },
+        { id: 20, name: "Печать А4 на самоклейке ЦВ", price: 75 },
+        { id: 21, name: "Печать А4 на самоклейке ЧБ", price: 50 },
+        { id: 22, name: "ФНД Виза", price: 400 },
+        { id: 23, name: "Копирование ч/б A4 (20-50 шт)", price: 20 },
+        { id: 24, name: "Фото в рамке А4", price: 400 },
+        { id: 25, name: "Фото в рамке 10х15", price: 200 }
     ];
     
     let operators = {
@@ -648,6 +698,75 @@
         });
     }
     
+    function clearMyOrders() {
+        if(!confirm("Очистить все ваши заказы? Это действие нельзя отменить.")) return;
+        if(currentUser.role === "admin") allOrders = [];
+        else allOrders = allOrders.filter(o => o.operator !== currentUser.name);
+        saveOrders();
+        renderHistory();
+    }
+    
+    // ========== PDF ОТЧЁТ ЗА СМЕНУ ==========
+    function generatePDFReport() {
+        let myOrders = getMyOrders();
+        let today = new Date().toLocaleDateString();
+        let totalRevenue = myOrders.reduce((sum, o) => sum + o.finalTotal, 0);
+        let totalOrders = myOrders.length;
+        let avgCheck = totalOrders > 0 ? Math.round(totalRevenue / totalOrders) : 0;
+        
+        let reportHtml = `
+            <div class="pdf-report" style="font-family: monospace; padding: 20px;">
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <h2>A4-ПРИНТ</h2>
+                    <p>Копировальный центр</p>
+                    <p>Отчёт за смену: ${today}</p>
+                    <p>Оператор: ${currentUser.name}</p>
+                </div>
+                <hr>
+                <div style="margin: 20px 0;">
+                    <p><strong>ИТОГИ СМЕНЫ:</strong></p>
+                    <p>Всего заказов: ${totalOrders}</p>
+                    <p>Общая выручка: ${totalRevenue.toLocaleString()} ₽</p>
+                    <p>Средний чек: ${avgCheck.toLocaleString()} ₽</p>
+                </div>
+                <hr>
+                <div>
+                    <p><strong>ДЕТАЛИ ЗАКАЗОВ:</strong></p>
+                    ${myOrders.map(o => `
+                        <div style="margin: 15px 0; padding: 10px; border: 1px solid #ccc;">
+                            <p><strong>Заказ №${o.id}</strong> | ${o.date}</p>
+                            <p>Клиент: ${o.client}</p>
+                            <p>Услуги: ${o.items.map(i => `${i.name} x${i.qty}`).join(", ")}</p>
+                            <p>Сумма: ${o.subtotal} ₽ | Скидка: ${o.discount} ₽ | Итого: ${o.finalTotal} ₽</p>
+                            <p>Оплата: ${o.paymentMethod === "cash" ? "Наличные" : "Карта"}${o.comment ? " | Комментарий: " + o.comment : ""}</p>
+                        </div>
+                    `).join('')}
+                </div>
+                <hr>
+                <div style="text-align: center; margin-top: 30px;">
+                    <p>Подпись оператора: _______________</p>
+                    <p>${new Date().toLocaleString()}</p>
+                </div>
+            </div>
+        `;
+        
+        let element = document.createElement('div');
+        element.innerHTML = reportHtml;
+        document.body.appendChild(element);
+        
+        let opt = {
+            margin: [0.5, 0.5, 0.5, 0.5],
+            filename: `A4print_отчёт_${currentUser.name}_${new Date().toISOString().slice(0,19).replace(/:/g, '-')}.pdf`,
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2, letterRendering: true },
+            jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+        };
+        
+        html2pdf().set(opt).from(element).save().then(() => {
+            document.body.removeChild(element);
+        });
+    }
+    
     function exportExcel() {
         let my = getMyOrders();
         if(!my.length) return alert("Нет данных для экспорта");
@@ -748,6 +867,8 @@
         document.getElementById("completeOrderBtn").onclick = completeOrder;
         document.getElementById("clearCartBtn").onclick = () => { cart=[]; discountPct=0; discountAmt=0; renderCart(); };
         document.getElementById("exportExcelBtn").onclick = exportExcel;
+        document.getElementById("clearHistoryBtn").onclick = clearMyOrders;
+        document.getElementById("pdfReportBtn").onclick = generatePDFReport;
         
         let adminModal = document.getElementById("adminModal");
         document.getElementById("adminPanelBtn").onclick = () => { renderAdmin(); adminModal.style.display = "flex"; };
