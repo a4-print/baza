@@ -13,11 +13,67 @@
             box-sizing: border-box;
         }
 
+        /* ========== СВЕТЛАЯ ТЕМА (по умолчанию) ========== */
         body {
-            background: #0f172a;
+            background: #f1f5f9;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', system-ui, sans-serif;
             padding: 24px;
+            color: #0f172a;
+            transition: background 0.2s, color 0.2s;
+        }
+
+        /* Тёмная тема */
+        body.dark {
+            background: #0f172a;
             color: #e2e8f0;
+        }
+
+        body.dark .services-panel,
+        body.dark .cart-panel,
+        body.dark .history-section {
+            background: #1e293b;
+            border-color: #334155;
+        }
+
+        body.dark .service-card,
+        body.dark .cart-item,
+        body.dark .history-item {
+            background: #0f172a;
+            border-color: #334155;
+        }
+
+        body.dark .service-card:hover {
+            background: #334155;
+        }
+
+        body.dark input, 
+        body.dark select, 
+        body.dark textarea {
+            background: #0f172a;
+            border-color: #334155;
+            color: #f1f5f9;
+        }
+
+        body.dark .btn-outline {
+            border-color: #475569;
+            color: #e2e8f0;
+        }
+
+        body.dark .btn-outline:hover {
+            background: #334155;
+        }
+
+        body.dark .user-bar {
+            background: #1e293b;
+        }
+
+        body.dark .stat-card {
+            background: #1e293b;
+        }
+
+        body.dark .modal-card {
+            background: #1e293b;
+            border-color: #334155;
         }
 
         .app {
@@ -32,7 +88,11 @@
             align-items: center;
             margin-bottom: 32px;
             padding-bottom: 16px;
-            border-bottom: 1px solid #334155;
+            border-bottom: 1px solid #cbd5e1;
+        }
+
+        body.dark .header {
+            border-bottom-color: #334155;
         }
 
         .logo-area {
@@ -49,13 +109,16 @@
 
         h1 {
             font-size: 20px;
-            font-weight: 500;
+            font-weight: 600;
             letter-spacing: -0.3px;
-            color: #f1f5f9;
         }
 
         .sub {
             font-size: 13px;
+            color: #64748b;
+        }
+
+        body.dark .sub {
             color: #94a3b8;
         }
 
@@ -63,7 +126,7 @@
             display: flex;
             gap: 12px;
             align-items: center;
-            background: #1e293b;
+            background: #e2e8f0;
             padding: 8px 20px;
             border-radius: 40px;
         }
@@ -92,13 +155,22 @@
 
         .btn-outline {
             background: transparent;
-            border: 1px solid #475569;
+            border: 1px solid #cbd5e1;
+            color: #1e293b;
+        }
+
+        body.dark .btn-outline {
+            border-color: #475569;
             color: #e2e8f0;
         }
 
         .btn-outline:hover {
+            background: #e2e8f0;
+            border-color: #94a3b8;
+        }
+
+        body.dark .btn-outline:hover {
             background: #334155;
-            border-color: #64748b;
         }
 
         .btn-danger {
@@ -117,6 +189,11 @@
             background: #059669;
         }
 
+        .btn-theme {
+            background: #475569;
+            padding: 8px 16px;
+        }
+
         /* Основная сетка */
         .dashboard {
             display: flex;
@@ -124,22 +201,40 @@
             flex-wrap: wrap;
         }
 
-        /* Левая панель — кнопки услуг */
         .services-panel {
             flex: 2;
             min-width: 400px;
-            background: #1e293b;
+            background: white;
             border-radius: 24px;
             padding: 24px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            border: 1px solid #e2e8f0;
+        }
+
+        .cart-panel {
+            flex: 1.2;
+            min-width: 360px;
+            background: white;
+            border-radius: 24px;
+            padding: 24px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            border: 1px solid #e2e8f0;
+        }
+
+        .history-section {
+            margin-top: 32px;
+            background: white;
+            border-radius: 24px;
+            padding: 24px;
+            border: 1px solid #e2e8f0;
         }
 
         .panel-title {
             font-size: 14px;
-            font-weight: 500;
+            font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 1px;
-            color: #94a3b8;
+            color: #64748b;
             margin-bottom: 20px;
         }
 
@@ -157,18 +252,18 @@
         }
 
         .services-grid::-webkit-scrollbar-track {
-            background: #0f172a;
+            background: #e2e8f0;
             border-radius: 4px;
         }
 
         .services-grid::-webkit-scrollbar-thumb {
-            background: #475569;
+            background: #cbd5e1;
             border-radius: 4px;
         }
 
         .service-card {
-            background: #0f172a;
-            border: 1px solid #334155;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
             border-radius: 12px;
             padding: 12px 10px;
             cursor: pointer;
@@ -177,7 +272,7 @@
         }
 
         .service-card:hover {
-            background: #334155;
+            background: #e2e8f0;
             border-color: #3b82f6;
             transform: translateY(-2px);
         }
@@ -191,18 +286,8 @@
 
         .service-price {
             font-size: 16px;
-            font-weight: 600;
-            color: #60a5fa;
-        }
-
-        /* Правая панель — корзина */
-        .cart-panel {
-            flex: 1.2;
-            min-width: 360px;
-            background: #1e293b;
-            border-radius: 24px;
-            padding: 24px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            font-weight: 700;
+            color: #3b82f6;
         }
 
         .field {
@@ -212,7 +297,8 @@
         .field label {
             display: block;
             font-size: 12px;
-            color: #94a3b8;
+            font-weight: 600;
+            color: #64748b;
             margin-bottom: 6px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -221,28 +307,29 @@
         input, select, textarea {
             width: 100%;
             padding: 12px 16px;
-            background: #0f172a;
-            border: 1px solid #334155;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
             border-radius: 12px;
             font-size: 14px;
-            color: #f1f5f9;
+            color: #0f172a;
             font-family: inherit;
         }
 
         input:focus, select:focus, textarea:focus {
             outline: none;
             border-color: #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59,130,246,0.1);
         }
 
         .cart-item {
-            background: #0f172a;
+            background: #f8fafc;
             border-radius: 12px;
             padding: 12px;
             margin-bottom: 8px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border: 1px solid #334155;
+            border: 1px solid #e2e8f0;
         }
 
         .cart-item-name {
@@ -257,7 +344,7 @@
 
         .remove-item {
             background: none;
-            border: 1px solid #475569;
+            border: 1px solid #e2e8f0;
             padding: 4px 12px;
             font-size: 12px;
         }
@@ -266,7 +353,7 @@
             display: flex;
             justify-content: space-between;
             padding: 12px 0;
-            border-top: 1px solid #334155;
+            border-top: 1px solid #e2e8f0;
             margin-top: 12px;
             font-weight: 500;
         }
@@ -274,7 +361,7 @@
         .grand-total {
             font-size: 24px;
             font-weight: 700;
-            color: #34d399;
+            color: #10b981;
         }
 
         .row-2 {
@@ -283,34 +370,17 @@
             margin: 16px 0;
         }
 
-        /* История */
-        .history-section {
-            margin-top: 32px;
-            background: #1e293b;
-            border-radius: 24px;
-            padding: 24px;
-        }
-
-        .history-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-            gap: 12px;
-        }
-
         .history-list {
             max-height: 320px;
             overflow-y: auto;
         }
 
         .history-item {
-            background: #0f172a;
+            background: #f8fafc;
             border-radius: 12px;
             padding: 16px;
             margin-bottom: 12px;
-            border: 1px solid #334155;
+            border: 1px solid #e2e8f0;
         }
 
         .history-row {
@@ -327,7 +397,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0,0,0,0.8);
+            background: rgba(0,0,0,0.6);
             display: none;
             align-items: center;
             justify-content: center;
@@ -335,14 +405,14 @@
         }
 
         .modal-card {
-            background: #1e293b;
+            background: white;
             border-radius: 24px;
             max-width: 700px;
             width: 90%;
             max-height: 85vh;
             overflow-y: auto;
             padding: 28px;
-            border: 1px solid #334155;
+            border: 1px solid #e2e8f0;
         }
 
         .modal-header {
@@ -353,12 +423,12 @@
         }
 
         hr {
-            border-color: #334155;
+            border-color: #e2e8f0;
             margin: 20px 0;
         }
 
         .operator-stat {
-            background: #0f172a;
+            background: #f8fafc;
             border-radius: 12px;
             padding: 12px;
             margin-bottom: 8px;
@@ -366,12 +436,18 @@
             justify-content: space-between;
         }
 
-        /* PDF отчёт */
+        /* PDF отчёт — чёрный текст */
         .pdf-report {
             padding: 20px;
             font-family: monospace;
             font-size: 12px;
             line-height: 1.4;
+            color: #000000 !important;
+            background: white !important;
+        }
+
+        .pdf-report * {
+            color: #000000 !important;
         }
 
         @media (max-width: 900px) {
@@ -389,7 +465,7 @@
         <input type="text" id="loginUsername" placeholder="Логин" style="margin-bottom: 12px;">
         <input type="password" id="loginPassword" placeholder="Пароль">
         <button id="loginBtn" style="width:100%; margin-top: 24px;">Войти</button>
-        <div id="loginError" style="color:#ef4444; margin-top: 16px; text-align:center;"></div>
+        <div id="loginError" style="color:#dc2626; margin-top: 16px; text-align:center;"></div>
     </div>
 </div>
 
@@ -406,6 +482,7 @@
         </div>
         <div class="user-bar">
             <span class="user-name" id="currentOperatorName"></span>
+            <button id="themeToggleBtn" class="btn-theme">🌙 Тёмная</button>
             <button id="adminPanelBtn" style="background:#475569;">Админ</button>
             <button id="pdfReportBtn" class="btn-success">📄 Отчёт за смену (PDF)</button>
             <button id="logoutBtn" class="btn-outline">Выйти</button>
@@ -473,7 +550,7 @@
 
     <!-- ИСТОРИЯ -->
     <div class="history-section">
-        <div class="history-header">
+        <div class="history-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 12px;">
             <div class="panel-title" style="margin-bottom:0;">История заказов</div>
             <div style="display: flex; gap: 12px;">
                 <button id="exportExcelBtn" class="btn-success">Экспорт Excel</button>
@@ -490,7 +567,7 @@
     <div class="modal-card">
         <div class="modal-header">
             <h2>Администрирование</h2>
-            <button id="closeAdminModal" style="background:none; font-size:24px;">✕</button>
+            <button id="closeAdminModal" style="background:none; font-size:24px; color:#64748b;">✕</button>
         </div>
         <h3 style="margin-bottom:16px;">Статистика операторов</h3>
         <div id="operatorsStats" style="margin-bottom:24px;"></div>
@@ -515,7 +592,7 @@
 </div>
 
 <script>
-    // ========== ПОЛНЫЙ СПИСОК УСЛУГ (по твоему прайсу) ==========
+    // ========== ПОЛНЫЙ СПИСОК УСЛУГ ==========
     let services = [
         { id: 1, name: "Копирование ч/б A4 (1-20 шт)", price: 25 },
         { id: 2, name: "Копирование цветное A4 (1-20 шт)", price: 35 },
@@ -558,6 +635,29 @@
     const SERVICES_KEY = "a4print_services_pro";
     const OPERATORS_KEY = "a4print_operators";
     const ORDERS_KEY = "a4print_orders";
+    
+    // ========== ТЕМА ==========
+    function initTheme() {
+        const savedTheme = localStorage.getItem("a4print_theme");
+        if (savedTheme === "dark") {
+            document.body.classList.add("dark");
+            document.getElementById("themeToggleBtn").innerHTML = "☀️ Светлая";
+        } else {
+            document.getElementById("themeToggleBtn").innerHTML = "🌙 Тёмная";
+        }
+    }
+    
+    function toggleTheme() {
+        if (document.body.classList.contains("dark")) {
+            document.body.classList.remove("dark");
+            localStorage.setItem("a4print_theme", "light");
+            document.getElementById("themeToggleBtn").innerHTML = "🌙 Тёмная";
+        } else {
+            document.body.classList.add("dark");
+            localStorage.setItem("a4print_theme", "dark");
+            document.getElementById("themeToggleBtn").innerHTML = "☀️ Светлая";
+        }
+    }
     
     function saveServices() { localStorage.setItem(SERVICES_KEY, JSON.stringify(services)); }
     function saveOperators() { localStorage.setItem(OPERATORS_KEY, JSON.stringify(operators)); }
@@ -685,7 +785,7 @@
                             <span><strong>${escapeHtml(o.client)}</strong> | ${o.date}</span>
                             <span style="font-weight:600;">${o.finalTotal} ₽</span>
                         </div>
-                        <div class="history-row" style="font-size:12px; color:#94a3b8;">${itemsShort}</div>
+                        <div class="history-row" style="font-size:12px; color:#64748b;">${itemsShort}</div>
                         <div class="history-row" style="font-size:12px;">${o.paymentMethod === "cash" ? "Наличные" : "Карта"} ${o.comment ? " | " + o.comment : ""}</div>
                         <div style="margin-top:8px;">
                             <button class="delete-order" data-id="${o.id}" style="background:#dc2626; padding:4px 12px; font-size:12px;">Удалить</button>
@@ -706,7 +806,7 @@
         renderHistory();
     }
     
-    // ========== PDF ОТЧЁТ ЗА СМЕНУ ==========
+    // ========== PDF ОТЧЁТ (чёрный текст) ==========
     function generatePDFReport() {
         let myOrders = getMyOrders();
         let today = new Date().toLocaleDateString();
@@ -715,37 +815,37 @@
         let avgCheck = totalOrders > 0 ? Math.round(totalRevenue / totalOrders) : 0;
         
         let reportHtml = `
-            <div class="pdf-report" style="font-family: monospace; padding: 20px;">
+            <div class="pdf-report" style="font-family: monospace; padding: 20px; color: #000000 !important; background: white !important;">
                 <div style="text-align: center; margin-bottom: 20px;">
-                    <h2>A4-ПРИНТ</h2>
-                    <p>Копировальный центр</p>
-                    <p>Отчёт за смену: ${today}</p>
-                    <p>Оператор: ${currentUser.name}</p>
+                    <h2 style="color: #000000 !important;">A4-ПРИНТ</h2>
+                    <p style="color: #000000 !important;">Копировальный центр</p>
+                    <p style="color: #000000 !important;">Отчёт за смену: ${today}</p>
+                    <p style="color: #000000 !important;">Оператор: ${currentUser.name}</p>
                 </div>
-                <hr>
+                <hr style="border-color: #000000;">
                 <div style="margin: 20px 0;">
-                    <p><strong>ИТОГИ СМЕНЫ:</strong></p>
-                    <p>Всего заказов: ${totalOrders}</p>
-                    <p>Общая выручка: ${totalRevenue.toLocaleString()} ₽</p>
-                    <p>Средний чек: ${avgCheck.toLocaleString()} ₽</p>
+                    <p style="color: #000000 !important;"><strong>ИТОГИ СМЕНЫ:</strong></p>
+                    <p style="color: #000000 !important;">Всего заказов: ${totalOrders}</p>
+                    <p style="color: #000000 !important;">Общая выручка: ${totalRevenue.toLocaleString()} ₽</p>
+                    <p style="color: #000000 !important;">Средний чек: ${avgCheck.toLocaleString()} ₽</p>
                 </div>
-                <hr>
+                <hr style="border-color: #000000;">
                 <div>
-                    <p><strong>ДЕТАЛИ ЗАКАЗОВ:</strong></p>
+                    <p style="color: #000000 !important;"><strong>ДЕТАЛИ ЗАКАЗОВ:</strong></p>
                     ${myOrders.map(o => `
-                        <div style="margin: 15px 0; padding: 10px; border: 1px solid #ccc;">
-                            <p><strong>Заказ №${o.id}</strong> | ${o.date}</p>
-                            <p>Клиент: ${o.client}</p>
-                            <p>Услуги: ${o.items.map(i => `${i.name} x${i.qty}`).join(", ")}</p>
-                            <p>Сумма: ${o.subtotal} ₽ | Скидка: ${o.discount} ₽ | Итого: ${o.finalTotal} ₽</p>
-                            <p>Оплата: ${o.paymentMethod === "cash" ? "Наличные" : "Карта"}${o.comment ? " | Комментарий: " + o.comment : ""}</p>
+                        <div style="margin: 15px 0; padding: 10px; border: 1px solid #cccccc;">
+                            <p style="color: #000000 !important;"><strong>Заказ №${o.id}</strong> | ${o.date}</p>
+                            <p style="color: #000000 !important;">Клиент: ${o.client}</p>
+                            <p style="color: #000000 !important;">Услуги: ${o.items.map(i => `${i.name} x${i.qty}`).join(", ")}</p>
+                            <p style="color: #000000 !important;">Сумма: ${o.subtotal} ₽ | Скидка: ${o.discount} ₽ | Итого: ${o.finalTotal} ₽</p>
+                            <p style="color: #000000 !important;">Оплата: ${o.paymentMethod === "cash" ? "Наличные" : "Карта"}${o.comment ? " | Комментарий: " + o.comment : ""}</p>
                         </div>
                     `).join('')}
                 </div>
-                <hr>
+                <hr style="border-color: #000000;">
                 <div style="text-align: center; margin-top: 30px;">
-                    <p>Подпись оператора: _______________</p>
-                    <p>${new Date().toLocaleString()}</p>
+                    <p style="color: #000000 !important;">Подпись оператора: _______________</p>
+                    <p style="color: #000000 !important;">${new Date().toLocaleString()}</p>
                 </div>
             </div>
         `;
@@ -758,7 +858,7 @@
             margin: [0.5, 0.5, 0.5, 0.5],
             filename: `A4print_отчёт_${currentUser.name}_${new Date().toISOString().slice(0,19).replace(/:/g, '-')}.pdf`,
             image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2, letterRendering: true },
+            html2canvas: { scale: 2, letterRendering: true, backgroundColor: '#ffffff' },
             jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
         };
         
@@ -849,6 +949,9 @@
     function escapeHtml(str) { return str ? String(str).replace(/[&<>]/g, m => ({ '&':'&amp;','<':'&lt;','>':'&gt;' }[m])) : ""; }
     
     document.addEventListener("DOMContentLoaded", () => {
+        initTheme();
+        document.getElementById("themeToggleBtn").onclick = toggleTheme;
+        
         let saved = localStorage.getItem("a4print_current_user");
         if(saved) {
             try {
