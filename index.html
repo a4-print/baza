@@ -190,7 +190,7 @@
             border-left: 4px solid var(--primary-blue);
         }
 
-        /* ИНСТРУКЦИЯ СВОРАЧИВАЕМАЯ */
+        /* ИНСТРУКЦИЯ С ВКЛАДКАМИ */
         .instruction-box {
             background: var(--card-white);
             border-radius: 24px;
@@ -198,28 +198,66 @@
             border: 1px solid var(--border-light);
             overflow: hidden;
         }
-        .instruction-header {
-            padding: 16px 24px;
-            cursor: pointer;
-            font-weight: 700;
-            background: var(--bg-light);
+        .instruction-tabs {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
+            border-bottom: 1px solid var(--border-light);
+            background: var(--bg-light);
         }
-        body.dark .instruction-header { background: #0F1722; }
-        .instruction-header h3 { font-size: 15px; color: var(--primary-blue); }
-        .toggle-icon { font-size: 20px; }
+        body.dark .instruction-tabs {
+            background: #0F1722;
+        }
+        .tab-btn {
+            flex: 1;
+            background: none;
+            border: none;
+            padding: 14px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            color: var(--text-gray);
+            transition: 0.2s;
+            border-bottom: 3px solid transparent;
+        }
+        .tab-btn.active {
+            color: var(--primary-blue);
+            border-bottom-color: var(--primary-blue);
+        }
+        body.dark .tab-btn.active {
+            color: #60a5fa;
+        }
         .instruction-content {
-            padding: 0 24px;
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease-out;
+            padding: 20px 24px;
+            display: none;
         }
-        .instruction-content.open { max-height: 500px; padding: 18px 24px 24px; }
-        .instruction-grid { display: flex; flex-wrap: wrap; gap: 24px; justify-content: space-between; }
-        .instruction-col { flex: 1; min-width: 200px; }
-        .instruction-col p { margin: 8px 0; line-height: 1.4; font-size: 13px; }
+        .instruction-content.active {
+            display: block;
+        }
+        .instruction-step {
+            margin-bottom: 16px;
+            padding-left: 24px;
+            position: relative;
+        }
+        .instruction-step:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: var(--primary-blue);
+            font-weight: bold;
+        }
+        .instruction-step strong {
+            color: var(--primary-blue);
+        }
+        .instruction-note {
+            background: var(--bg-light);
+            padding: 12px;
+            border-radius: 16px;
+            margin: 12px 0;
+            font-size: 13px;
+            border-left: 3px solid var(--primary-yellow);
+        }
+        body.dark .instruction-note {
+            background: #0F1722;
+        }
 
         /* ОСНОВНАЯ СЕТКА */
         .dashboard {
@@ -263,7 +301,7 @@
             margin-bottom: 20px;
         }
 
-        /* СЕТКА УСЛУГ — мобильная версия 2 в ряд */
+        /* СЕТКА УСЛУГ — мобильная версия 4 в ряд */
         .services-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
@@ -468,27 +506,34 @@
             font-family: monospace;
         }
 
-        /* МОБИЛЬНАЯ АДАПТАЦИЯ — 2 УСЛУГИ В РЯД */
+        /* МОБИЛЬНАЯ АДАПТАЦИЯ — 4 УСЛУГИ В РЯД */
         @media (max-width: 850px) {
             body { padding: 12px; }
             .user-bar { display: none !important; }
             .burger-btn { display: block; }
             .services-grid {
-                grid-template-columns: repeat(2, 1fr) !important;
-                gap: 10px;
+                grid-template-columns: repeat(4, 1fr) !important;
+                gap: 8px;
             }
-            .service-card { padding: 10px; }
-            .service-name { font-size: 12px; }
-            .service-price { font-size: 15px; }
+            .service-card { padding: 8px 4px; }
+            .service-name { font-size: 10px; margin-bottom: 4px; }
+            .service-price { font-size: 13px; }
+            .qty-control input { width: 55px; padding: 4px 0; font-size: 12px; }
+            .add-btn { padding: 5px; font-size: 10px; }
+        }
+
+        @media (max-width: 550px) {
+            .services-grid {
+                gap: 6px;
+            }
+            .service-card { padding: 6px 2px; }
+            .service-name { font-size: 9px; }
+            .service-price { font-size: 11px; }
+            .qty-control input { width: 45px; font-size: 10px; }
         }
 
         @media (min-width: 851px) {
             .burger-menu { display: none !important; }
-        }
-
-        @media (max-width: 480px) {
-            .services-grid { gap: 8px; }
-            .service-card { padding: 8px; }
         }
     </style>
 </head>
@@ -541,37 +586,76 @@
         <span>🔴 Закрыта: <span id="shiftCloseTime">—</span></span>
     </div>
 
-    <!-- ИНСТРУКЦИЯ -->
+    <!-- ИНСТРУКЦИЯ С ВКЛАДКАМИ (оператор и администратор) -->
     <div class="instruction-box">
-        <div class="instruction-header" id="instructionHeader">
-            <h3>📘 Как работать с базой данных A4-Принт</h3>
-            <span class="toggle-icon" id="toggleIcon">▼</span>
+        <div class="instruction-tabs">
+            <button class="tab-btn active" data-tab="operator">👤 Для оператора</button>
+            <button class="tab-btn" data-tab="admin">👑 Для администратора</button>
         </div>
-        <div class="instruction-content" id="instructionContent">
-            <div class="instruction-grid">
-                <div class="instruction-col">
-                    <p><strong>🔹 Добавление заказа</strong><br>
-                    1. Выберите услугу → введите количество → «Добавить»<br>
-                    2. Либо используйте «➕ Быстрая услуга» (любое название и цена)<br>
-                    3. При необходимости: скидка %, скидка ₽, комментарий<br>
-                    4. Выберите оплату → «Оформить»</p>
-                </div>
-                <div class="instruction-col">
-                    <p><strong>🔹 Отчёты и печать</strong><br>
-                    • «Отчёт» — PDF за смену<br>
-                    • «Бланк заказа» — А4 (2 экземпляра)<br>
-                    • «Excel» — выгрузка в Excel</p>
-                    <p><strong>🔹 Смена</strong><br>
-                    Перед работой → «Открыть смену»<br>
-                    После завершения → «Закрыть смену»</p>
-                </div>
-                <div class="instruction-col">
-                    <p><strong>🔹 Администрирование</strong><br>
-                    • Управление услугами (цена, название)<br>
-                    • Управление операторами<br>
-                    • Статистика по операторам</p>
-                    <p><strong>💾 Все данные сохраняются в браузере.</strong></p>
-                </div>
+        
+        <!-- Инструкция для оператора -->
+        <div class="instruction-content active" id="tab-operator">
+            <div class="instruction-step"><strong>1. Вход в систему</strong><br>Введите свой логин и пароль (выдаёт администратор). Нажмите «Войти».</div>
+            <div class="instruction-step"><strong>2. Открытие смены</strong><br>Нажмите кнопку <strong>«🚀 Открыть смену»</strong> (жёлтая кнопка вверху). Система запомнит время начала работы.</div>
+            <div class="instruction-step"><strong>3. Приём заказа</strong><br>
+                • Выберите услугу из списка → введите количество → «Добавить».<br>
+                • Если нужной услуги нет — используйте <strong>«➕ Быстрая услуга»</strong> (укажите название и цену).<br>
+                • Для нескольких услуг повторите шаги — они соберутся в корзине.
+            </div>
+            <div class="instruction-step"><strong>4. Оформление заказа</strong><br>
+                • При желании укажите имя и телефон клиента.<br>
+                • Примените скидку (в % или сумме).<br>
+                • Выберите способ оплаты: 💵 Наличные или 💳 Карта.<br>
+                • Добавьте комментарий (особые пожелания).<br>
+                • Нажмите <strong>«✅ Оформить»</strong>.
+            </div>
+            <div class="instruction-step"><strong>5. Печать бланка</strong><br>
+                После оформления или в любой момент можно нажать <strong>«🖨️ Бланк заказа»</strong> — система сформирует фирменный бланк на А4 с двумя экземплярами (основной и копия клиента).
+            </div>
+            <div class="instruction-step"><strong>6. История заказов</strong><br>
+                Все оформленные заказы сохраняются внизу экрана. Можно удалить ошибочный заказ кнопкой «Удалить».
+            </div>
+            <div class="instruction-step"><strong>7. Закрытие смены (в конце дня)</strong><br>
+                Нажмите <strong>«🔒 Закрыть смену»</strong>. Затем нажмите <strong>«📄 Отчёт»</strong> — система создаст PDF-файл со всеми заказами за смену, разделением на наличные/карта и общими итогами. Сохраните отчёт для бухгалтерии.
+            </div>
+            <div class="instruction-note">
+                💡 <strong>Совет:</strong> В мобильной версии все кнопки собраны под меню-бургер ☰ в правом верхнем углу.
+            </div>
+        </div>
+        
+        <!-- Инструкция для администратора -->
+        <div class="instruction-content" id="tab-admin">
+            <div class="instruction-step"><strong>1. Вход с правами администратора</strong><br>Используйте логин <strong>admin</strong> и пароль <strong>admin123</strong>.</div>
+            <div class="instruction-step"><strong>2. Управление услугами</strong><br>
+                Нажмите «Админ» → раздел «Управление услугами». Здесь можно:<br>
+                • Изменить цену любой услуги (кнопка 💾)<br>
+                • Удалить услугу (кнопка 🗑)<br>
+                • Добавить новую услугу (поля внизу)
+            </div>
+            <div class="instruction-step"><strong>3. Управление операторами</strong><br>
+                В том же окне администрирования — раздел «Операторы». Здесь можно:<br>
+                • Сменить пароль оператора (ввести новый и нажать 🔑)<br>
+                • Удалить оператора (кнопка 🗑)<br>
+                • Добавить нового оператора (указать логин, имя, пароль)
+            </div>
+            <div class="instruction-step"><strong>4. Статистика операторов</strong><br>
+                Нажмите <strong>«📊 Статистика операторов»</strong> — увидите по каждому сотруднику:<br>
+                • Количество заказов<br>
+                • Общую выручку<br>
+                • Разделение на наличные/карта<br>
+                • Средний чек<br>
+                Можно экспортировать статистику в Excel.
+            </div>
+            <div class="instruction-step"><strong>5. Просмотр всех заказов</strong><br>
+                Администратор видит заказы всех операторов. Может удалять любые заказы при необходимости.
+            </div>
+            <div class="instruction-step"><strong>6. Экспорт данных</strong><br>
+                • «📎 Excel» — выгрузка всех заказов (фильтруется по текущему пользователю, но админ выгрузит всё)<br>
+                • «📄 Отчёт» — PDF за смену текущего оператора (для своего отчёта)<br>
+                • «🖨️ Бланк заказа» — печать текущего заказа из корзины
+            </div>
+            <div class="instruction-note">
+                🔐 <strong>Важно:</strong> Пароль администратора можно изменить в разделе «Операторы» (строка admin). Не потеряйте его!
             </div>
         </div>
     </div>
@@ -581,7 +665,6 @@
             <div class="panel-title">📋 УСЛУГИ</div>
             <div id="servicesGrid" class="services-grid"></div>
             
-            <!-- БЛОК БЫСТРОЙ УСЛУГИ (для любого оператора) -->
             <div class="fast-service-card">
                 <div class="fast-service-row">
                     <input type="text" id="fastServiceName" placeholder="Название услуги (любое)" style="flex:2;">
@@ -642,7 +725,6 @@
 
 <div class="print-blank" id="printBlankContainer"></div>
 
-<!-- МОДАЛКИ АДМИНКИ И СТАТИСТИКИ (код тот же, сокращён) -->
 <div id="adminModal" class="modal">
     <div class="modal-card">
         <div style="display:flex; justify-content:space-between;">
@@ -665,6 +747,10 @@
             <input type="text" id="newOpName" placeholder="Имя">
             <input type="text" id="newOpPass" placeholder="Пароль">
             <button id="addOperatorBtn" class="btn-primary">Добавить</button>
+        </div>
+        <hr>
+        <div class="instruction-note" style="margin-top: 12px;">
+            🔐 <strong>Текущие учётные данные:</strong> admin / admin123 | anna / anna321 | sergey / sergey321
         </div>
     </div>
 </div>
@@ -771,7 +857,6 @@
         renderCart();
     }
 
-    // Быстрая услуга (любой оператор)
     function addFastService() {
         let name = document.getElementById("fastServiceName").value.trim();
         let price = parseFloat(document.getElementById("fastServicePrice").value);
@@ -928,6 +1013,20 @@
         document.querySelectorAll(".deleteOp").forEach(btn=>btn.onclick=()=>{ let log=btn.getAttribute("data-login"); if(confirm("Удалить оператора?")){ delete operators[log]; saveOperators(); renderAdmin(); } });
     }
 
+    // Инструкция с вкладками
+    function initInstructionTabs() {
+        const tabs = document.querySelectorAll('.tab-btn');
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const tabId = tab.getAttribute('data-tab');
+                tabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                document.querySelectorAll('.instruction-content').forEach(content => content.classList.remove('active'));
+                document.getElementById(`tab-${tabId}`).classList.add('active');
+            });
+        });
+    }
+
     let theme=localStorage.getItem("a4print_theme");
     if(theme==="dark") document.body.classList.add("dark");
     function toggleTheme(){
@@ -964,28 +1063,16 @@
         document.getElementById("burgerPrintBtn").onclick=()=>{ printOrderBlank(); if(menu) menu.classList.remove("show"); };
         document.getElementById("burgerLogoutBtn").onclick=()=>{ logout(); if(menu) menu.classList.remove("show"); };
     }
-    
-    function initInstructionToggle() {
-        const header = document.getElementById('instructionHeader');
-        const content = document.getElementById('instructionContent');
-        const icon = document.getElementById('toggleIcon');
-        if (header && content) {
-            header.addEventListener('click', () => {
-                content.classList.toggle('open');
-                icon.textContent = content.classList.contains('open') ? '▲' : '▼';
-            });
-        }
-    }
 
     document.addEventListener("DOMContentLoaded",()=>{
         let saved=localStorage.getItem("a4print_current_user");
         if(saved){
             try{
                 currentUser=JSON.parse(saved);
-                if(operators[currentUser.username]){ document.getElementById("loginOverlay").style.display="none"; document.getElementById("mainContent").style.display="block"; loadData(); initBurger(); initInstructionToggle(); }
+                if(operators[currentUser.username]){ document.getElementById("loginOverlay").style.display="none"; document.getElementById("mainContent").style.display="block"; loadData(); initBurger(); initInstructionTabs(); }
                 else logout();
             }catch(e){ logout(); }
-        } else { initBurger(); initInstructionToggle(); }
+        } else { initBurger(); initInstructionTabs(); }
         document.getElementById("themeToggleBtn").onclick=toggleTheme;
         document.getElementById("loginBtn").onclick=()=>login(document.getElementById("loginUsername").value, document.getElementById("loginPassword").value);
         document.getElementById("logoutBtn").onclick=logout;
