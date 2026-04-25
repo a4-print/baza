@@ -14,7 +14,7 @@
         }
 
         body {
-            background: #f8f9fa;
+            background: #f0f2f5;
             padding: 1.5rem;
             color: #1a1a1a;
         }
@@ -33,7 +33,7 @@
             gap: 1rem;
             margin-bottom: 1.5rem;
             padding-bottom: 1rem;
-            border-bottom: 1px solid #e0e0e0;
+            border-bottom: 1px solid #ddd;
         }
 
         .logo-area {
@@ -50,27 +50,52 @@
 
         h1 {
             font-size: 1.6rem;
-            font-weight: 500;
+            font-weight: 600;
         }
 
+        /* Улучшенные кнопки пользователя */
         .user-info {
-            background: white;
-            padding: 0.4rem 1rem;
-            border-radius: 40px;
+            background: #1a1a1a;
+            padding: 0.5rem 1.2rem;
+            border-radius: 50px;
             display: flex;
             align-items: center;
             gap: 1rem;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
         }
 
-        .logout-btn, .admin-panel-btn {
-            background: none;
-            border: 1px solid #ddd;
-            padding: 0.3rem 1rem;
+        .user-name {
+            color: white;
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        .user-btn {
+            background: #3b82f6;
+            border: none;
+            padding: 0.4rem 1rem;
+            border-radius: 40px;
+            color: white;
+            cursor: pointer;
             font-size: 0.8rem;
+            font-weight: 500;
+            transition: 0.2s;
         }
 
-        /* Карточки */
+        .user-btn:hover {
+            background: #2563eb;
+            transform: scale(1.02);
+        }
+
+        .logout-btn-header {
+            background: #ef4444;
+        }
+
+        .logout-btn-header:hover {
+            background: #dc2626;
+        }
+
+        /* Карточки статистики */
         .stats-grid {
             display: flex;
             gap: 1rem;
@@ -82,15 +107,29 @@
             background: white;
             border-radius: 20px;
             padding: 0.8rem 1.5rem;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-            border: 1px solid #eee;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border: 1px solid #e8e8e8;
             flex: 1;
-            min-width: 130px;
+            min-width: 140px;
+            transition: 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.08);
         }
 
         .stat-number {
-            font-size: 1.6rem;
-            font-weight: 600;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #1a1a1a;
+        }
+
+        .stat-label {
+            font-size: 0.7rem;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         /* Две колонки */
@@ -110,8 +149,8 @@
             border-radius: 24px;
             padding: 1.2rem;
             margin-bottom: 1.5rem;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            border: 1px solid #eee;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+            border: 1px solid #e8e8e8;
         }
 
         .form-card h3 {
@@ -143,7 +182,7 @@
             width: 100%;
             padding: 0.6rem 1rem;
             border-radius: 14px;
-            border: 1px solid #e0e0e0;
+            border: 1px solid #ddd;
             font-size: 0.9rem;
             background: white;
         }
@@ -161,6 +200,7 @@
             color: white;
             cursor: pointer;
             transition: 0.2s;
+            font-weight: 500;
         }
 
         button:hover {
@@ -235,8 +275,9 @@
         .table-wrapper {
             background: white;
             border-radius: 20px;
-            border: 1px solid #eee;
+            border: 1px solid #e8e8e8;
             overflow-x: auto;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         }
 
         table {
@@ -284,10 +325,57 @@
             background: white;
             border-radius: 28px;
             width: 90%;
-            max-width: 800px;
+            max-width: 900px;
             max-height: 85vh;
             overflow-y: auto;
             padding: 1.5rem;
+        }
+
+        /* Статистика операторов в админке */
+        .stats-operators {
+            background: #f8f9fa;
+            border-radius: 20px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .operator-stat-card {
+            background: white;
+            border-radius: 16px;
+            padding: 1rem;
+            margin-bottom: 0.8rem;
+            border: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .operator-stat-card .name {
+            font-weight: 700;
+            font-size: 1.1rem;
+            min-width: 120px;
+        }
+
+        .operator-stat-card .stats {
+            display: flex;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .operator-stat-card .stat-item {
+            text-align: center;
+        }
+
+        .operator-stat-card .stat-value {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #3b82f6;
+        }
+
+        .operator-stat-card .stat-label {
+            font-size: 0.7rem;
+            color: #888;
         }
 
         /* Чек */
@@ -298,19 +386,17 @@
             padding: 1rem;
         }
 
-        .receipt hr {
-            margin: 0.5rem 0;
-        }
-
         .sync-status {
             position: fixed;
             bottom: 20px;
             right: 20px;
-            background: white;
-            padding: 6px 14px;
+            background: #1a1a1a;
+            color: white;
+            padding: 8px 16px;
             border-radius: 40px;
-            font-size: 0.7rem;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            font-size: 0.75rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            z-index: 999;
         }
 
         .login-overlay {
@@ -319,7 +405,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: white;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             z-index: 2000;
             display: flex;
             align-items: center;
@@ -330,14 +416,19 @@
             background: white;
             padding: 2rem;
             border-radius: 32px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            width: 320px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            width: 340px;
             text-align: center;
+        }
+
+        .login-card input {
+            margin-bottom: 0.8rem;
         }
 
         @media (max-width: 768px) {
             body { padding: 1rem; }
             .two-columns { flex-direction: column; }
+            .operator-stat-card { flex-direction: column; }
         }
     </style>
 </head>
@@ -347,12 +438,12 @@
 <div id="loginOverlay" class="login-overlay">
     <div class="login-card">
         <img src="https://github.com/a4print2026-jpg/baza/blob/dbcda72ab60f0a9f8d8984e17375f6649cf677f0/images/logo_soc2.png?raw=true" 
-             style="height: 50px; margin-bottom: 1rem;" onerror="this.style.display='none'">
+             style="height: 60px; margin-bottom: 1rem;" onerror="this.style.display='none'">
         <h3 style="margin-bottom: 1rem;">A4-Принт</h3>
-        <input type="text" id="loginUsername" placeholder="Логин" style="margin-bottom: 0.5rem;">
+        <input type="text" id="loginUsername" placeholder="Логин">
         <input type="password" id="loginPassword" placeholder="Пароль">
-        <button id="loginBtn" style="margin-top: 1rem; width: 100%;">Войти</button>
-        <div id="loginError" style="color: #dc2626; font-size: 0.8rem; margin-top: 0.5rem;"></div>
+        <button id="loginBtn" style="margin-top: 0.5rem; width: 100%; background: #3b82f6;">Войти</button>
+        <div id="loginError" style="color: #dc2626; font-size: 0.8rem; margin-top: 0.8rem;"></div>
     </div>
 </div>
 
@@ -365,13 +456,13 @@
                  class="logo" onerror="this.style.display='none'">
             <div>
                 <h1>A4-Принт</h1>
-                <div style="font-size: 0.75rem; color: #888;">Копировальный центр</div>
+                <div style="font-size: 0.75rem; color: #666;">Копировальный центр</div>
             </div>
         </div>
         <div class="user-info">
-            <span id="currentOperatorName"></span>
-            <button id="adminPanelBtn" class="admin-panel-btn" style="display: none;">⚙️ Админ-панель</button>
-            <button id="logoutBtn" class="logout-btn">🚪 Выйти</button>
+            <span class="user-name" id="currentOperatorName"></span>
+            <button id="adminPanelBtn" class="user-btn" style="display: none; background: #8b5cf6;">⚙️ Админ-панель</button>
+            <button id="logoutBtn" class="user-btn logout-btn-header">🚪 Выйти</button>
         </div>
     </div>
 
@@ -440,7 +531,7 @@
         <div class="column">
             <div class="form-card">
                 <h3>🛍️ Корзина (<span id="cartCount">0</span> позиций)</h3>
-                <div style="max-height: 300px; overflow-y: auto;">
+                <div style="max-height: 350px; overflow-y: auto;">
                     <table class="cart-table" id="cartTable">
                         <thead><tr><th>Услуга</th><th>Кол-во</th><th>Цена</th><th>Сумма</th><th></th></tr></thead>
                         <tbody id="cartBody"></tbody>
@@ -452,7 +543,7 @@
     </div>
 
     <div class="action-bar">
-        <span style="font-weight: 500;">📋 История заказов</span>
+        <span style="font-weight: 600;">📋 История заказов</span>
         <div style="display: flex; gap: 0.5rem;">
             <button id="exportExcelBtn" class="btn-success">📎 Excel</button>
             <button id="clearAllBtn" class="btn-danger">🗑 Очистить мои</button>
@@ -471,10 +562,18 @@
 <!-- Модальное окно админ-панели -->
 <div id="adminModal" class="modal">
     <div class="modal-content">
-        <div class="modal-header" style="display: flex; justify-content: space-between;">
+        <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
             <h2>⚙️ Админ-панель</h2>
-            <button id="closeModalBtn" style="background: none; color: #999; font-size: 1.5rem;">✕</button>
+            <button id="closeModalBtn" style="background: none; color: #999; font-size: 1.8rem; padding: 0;">✕</button>
         </div>
+        
+        <!-- Статистика по операторам -->
+        <div class="stats-operators">
+            <h3 style="margin-bottom: 1rem;">📊 Статистика операторов</h3>
+            <div id="operatorsStatsList"></div>
+        </div>
+        
+        <hr style="margin: 1rem 0;">
         
         <h3>📋 Услуги и цены</h3>
         <div id="servicesList"></div>
@@ -504,7 +603,7 @@
 <!-- Модальное окно чека -->
 <div id="receiptModal" class="modal">
     <div class="modal-content" style="max-width: 400px;">
-        <div class="modal-header" style="display: flex; justify-content: space-between;">
+        <div class="modal-header" style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
             <h3>🧾 Чек</h3>
             <button id="closeReceiptBtn" style="background: none; color: #999; font-size: 1.5rem;">✕</button>
         </div>
@@ -533,11 +632,9 @@
     
     let allOrders = [];
     let currentUser = null;
-    let cart = [];           // Корзина: [{ service, quantity, unitPrice, total }]
+    let cart = [];
     let currentDiscountPercent = 0;
     let currentDiscountAmount = 0;
-    let currentPaymentMethod = "cash";
-    let currentComment = "";
     let lastReceipt = null;
     
     const SERVICES_KEY = "a4print_services";
@@ -571,6 +668,75 @@
     
     function saveOrders() {
         localStorage.setItem(ORDERS_KEY, JSON.stringify(allOrders));
+    }
+    
+    // ==================== СТАТИСТИКА ОПЕРАТОРОВ (для админки) ====================
+    function getOperatorsStats() {
+        const stats = {};
+        
+        // Инициализируем статистику для всех операторов
+        for (const [login, data] of Object.entries(operators)) {
+            stats[login] = {
+                name: data.name,
+                login: login,
+                ordersCount: 0,
+                totalRevenue: 0,
+                averageCheck: 0,
+                lastOrderDate: null
+            };
+        }
+        
+        // Собираем данные из заказов
+        allOrders.forEach(order => {
+            const operatorLogin = Object.keys(operators).find(login => operators[login].name === order.operator);
+            if (operatorLogin && stats[operatorLogin]) {
+                stats[operatorLogin].ordersCount++;
+                stats[operatorLogin].totalRevenue += order.finalTotal;
+                if (!stats[operatorLogin].lastOrderDate || order.date > stats[operatorLogin].lastOrderDate) {
+                    stats[operatorLogin].lastOrderDate = order.date;
+                }
+            }
+        });
+        
+        // Рассчитываем средний чек
+        for (const login in stats) {
+            if (stats[login].ordersCount > 0) {
+                stats[login].averageCheck = Math.round(stats[login].totalRevenue / stats[login].ordersCount);
+            }
+        }
+        
+        return stats;
+    }
+    
+    function renderOperatorsStats() {
+        const stats = getOperatorsStats();
+        const container = document.getElementById("operatorsStatsList");
+        if (!container) return;
+        
+        let html = "";
+        for (const [login, stat] of Object.entries(stats)) {
+            html += `
+                <div class="operator-stat-card">
+                    <div class="name">${escapeHtml(stat.name)} ${login === "admin" ? "👑" : "👤"}</div>
+                    <div class="stats">
+                        <div class="stat-item">
+                            <div class="stat-value">${stat.ordersCount}</div>
+                            <div class="stat-label">заказов</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">${stat.totalRevenue.toLocaleString()} ₽</div>
+                            <div class="stat-label">выручка</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">${stat.averageCheck.toLocaleString()} ₽</div>
+                            <div class="stat-label">средний чек</div>
+                        </div>
+                        ${stat.lastOrderDate ? `<div class="stat-item"><div class="stat-value" style="font-size:0.8rem;">${stat.lastOrderDate}</div><div class="stat-label">последний заказ</div></div>` : ''}
+                    </div>
+                </div>
+            `;
+        }
+        container.innerHTML = html || "<p>Нет данных</p>";
     }
     
     // ==================== ОБНОВЛЕНИЕ UI ====================
@@ -635,6 +801,7 @@
                 const idx = parseInt(btn.getAttribute("data-idx"));
                 cart.splice(idx, 1);
                 updateCartDisplay();
+                showStatus("🗑 Позиция удалена");
             });
         });
     }
@@ -653,16 +820,19 @@
         
         if (currentUser.role === "admin") {
             const totalRevenue = allOrders.reduce((s, o) => s + o.finalTotal, 0);
+            const totalAvg = allOrders.length > 0 ? Math.round(totalRevenue / allOrders.length) : 0;
             statsGrid.innerHTML = `
-                <div class="stat-card"><div class="stat-label">МОИ ЗАКАЗЫ</div><div class="stat-number">${myCount}</div><div class="stat-label">${myRevenue} ₽</div></div>
-                <div class="stat-card"><div class="stat-label">ВСЕГО ЗАКАЗОВ</div><div class="stat-number">${allOrders.length}</div><div class="stat-label">${totalRevenue} ₽</div></div>
+                <div class="stat-card"><div class="stat-label">МОИ ЗАКАЗЫ</div><div class="stat-number">${myCount}</div><div class="stat-label">${myRevenue.toLocaleString()} ₽</div></div>
+                <div class="stat-card"><div class="stat-label">ВСЕГО ЗАКАЗОВ</div><div class="stat-number">${allOrders.length}</div><div class="stat-label">${totalRevenue.toLocaleString()} ₽</div></div>
+                <div class="stat-card"><div class="stat-label">СРЕДНИЙ ЧЕК</div><div class="stat-number">${totalAvg.toLocaleString()} ₽</div></div>
                 <div class="stat-card"><div class="stat-label">ОПЕРАТОРОВ</div><div class="stat-number">${Object.keys(operators).length}</div></div>
             `;
         } else {
+            const avgCheck = myCount > 0 ? Math.round(myRevenue / myCount) : 0;
             statsGrid.innerHTML = `
                 <div class="stat-card"><div class="stat-label">МОИ ЗАКАЗЫ</div><div class="stat-number">${myCount}</div></div>
-                <div class="stat-card"><div class="stat-label">ВЫРУЧКА</div><div class="stat-number">${myRevenue} ₽</div></div>
-                <div class="stat-card"><div class="stat-label">СРЕДНИЙ ЧЕК</div><div class="stat-number">${myCount > 0 ? Math.round(myRevenue/myCount) : 0} ₽</div></div>
+                <div class="stat-card"><div class="stat-label">ВЫРУЧКА</div><div class="stat-number">${myRevenue.toLocaleString()} ₽</div></div>
+                <div class="stat-card"><div class="stat-label">СРЕДНИЙ ЧЕК</div><div class="stat-number">${avgCheck.toLocaleString()} ₽</div></div>
             `;
         }
     }
@@ -679,7 +849,7 @@
         myOrders.forEach(order => {
             const servicesList = order.items.map(i => `${i.service} x${i.quantity}`).join(", ");
             html += `<tr>
-                <td>${order.id}</td>
+                <td style="opacity:0.6;">${order.id}</td>
                 <td><strong>${escapeHtml(order.client)}</strong></td>
                 <td style="max-width:200px; overflow-x:auto;">${escapeHtml(servicesList)}</td>
                 <td>${order.subtotal} ₽</td>
@@ -689,8 +859,10 @@
                 <td style="font-size:0.75rem;">${order.date}</td>
                 <td><span style="background:#f0f0f0; padding:0.2rem 0.6rem; border-radius:20px;">${escapeHtml(order.operator)}</span></td>
                 <td style="max-width:150px; overflow-x:auto; font-size:0.75rem;">${escapeHtml(order.comment || "-")}</td>
-                <td><button class="delete-order" data-id="${order.id}" style="background:#fee2e2; padding:0.2rem 0.8rem; border-radius:30px;">Удалить</button>
-                <button class="print-order" data-id="${order.id}" style="background:#e8e8e8; margin-left:0.3rem;">🧾</button></td>
+                <td>
+                    <button class="delete-order" data-id="${order.id}" style="background:#fee2e2; padding:0.2rem 0.8rem; border-radius:30px;">Удалить</button>
+                    <button class="print-order" data-id="${order.id}" style="background:#e8e8e8; margin-left:0.3rem; padding:0.2rem 0.6rem;">🧾</button>
+                </td>
             </tr>`;
         });
         tbody.innerHTML = html;
@@ -725,8 +897,6 @@
         cart.push({ service, quantity, unitPrice });
         updateCartDisplay();
         showStatus("✅ Товар добавлен в корзину");
-        
-        // Сброс полей
         document.getElementById("quantity").value = "1";
         if (services.length > 0) {
             document.getElementById("unitPrice").value = services[0].price;
@@ -775,14 +945,11 @@
         allOrders.push(newOrder);
         saveOrders();
         
-        // Показываем чек
         showReceipt(newOrder);
         
-        // Очищаем корзину и форму
         cart = [];
         currentDiscountPercent = 0;
         currentDiscountAmount = 0;
-        currentPaymentMethod = "cash";
         document.getElementById("discountPercent").value = 0;
         document.getElementById("discountAmount").value = 0;
         document.getElementById("orderComment").value = "";
@@ -848,6 +1015,21 @@
         showStatus("🗑 Заказы удалены");
     }
     
+    function exportToExcel() {
+        const myOrders = getMyOrders();
+        if (myOrders.length === 0) { alert("Нет данных"); return; }
+        const excelData = [["ID", "Клиент", "Услуги", "Подытог", "Скидка", "Итого", "Оплата", "Дата", "Оператор", "Комментарий"]];
+        myOrders.forEach(o => {
+            const servicesList = o.items.map(i => `${i.service} x${i.quantity}`).join("; ");
+            excelData.push([o.id, o.client, servicesList, o.subtotal, o.discount, o.finalTotal, o.paymentMethod === "cash" ? "Наличные" : "Карта", o.date, o.operator, o.comment || ""]);
+        });
+        const ws = XLSX.utils.aoa_to_sheet(excelData);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, currentUser.name);
+        XLSX.writeFile(wb, `A4print_${currentUser.name}_${new Date().toISOString().slice(0,19).replace(/:/g, '-')}.xlsx`);
+        showStatus("📎 Excel скачан");
+    }
+    
     // ==================== ЧЕК ====================
     function showReceipt(order) {
         const receiptDiv = document.getElementById("receiptContent");
@@ -896,23 +1078,10 @@
         else alert("Нет последнего заказа для печати");
     }
     
-    function exportToExcel() {
-        const myOrders = getMyOrders();
-        if (myOrders.length === 0) { alert("Нет данных"); return; }
-        const excelData = [["ID", "Клиент", "Услуги", "Подытог", "Скидка", "Итого", "Оплата", "Дата", "Оператор", "Комментарий"]];
-        myOrders.forEach(o => {
-            const servicesList = o.items.map(i => `${i.service} x${i.quantity}`).join("; ");
-            excelData.push([o.id, o.client, servicesList, o.subtotal, o.discount, o.finalTotal, o.paymentMethod === "cash" ? "Наличные" : "Карта", o.date, o.operator, o.comment || ""]);
-        });
-        const ws = XLSX.utils.aoa_to_sheet(excelData);
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, currentUser.name);
-        XLSX.writeFile(wb, `A4print_${currentUser.name}_${new Date().toISOString().slice(0,19).replace(/:/g, '-')}.xlsx`);
-        showStatus("📎 Excel скачан");
-    }
-    
     // ==================== АДМИН-ПАНЕЛЬ ====================
     function renderAdminPanel() {
+        renderOperatorsStats();
+        
         const servicesDiv = document.getElementById("servicesList");
         servicesDiv.innerHTML = "";
         services.forEach(service => {
@@ -920,9 +1089,9 @@
             div.style.cssText = "display:flex; justify-content:space-between; align-items:center; padding:0.5rem; border-bottom:1px solid #eee;";
             div.innerHTML = `
                 <span style="flex:2;">${escapeHtml(service.name)}</span>
-                <input type="number" id="price_${service.id}" value="${service.price}" style="width:80px; margin:0 0.5rem;">
+                <input type="number" id="price_${service.id}" value="${service.price}" style="width:80px; margin:0 0.5rem; padding:0.3rem;">
                 <button class="edit-service" data-id="${service.id}" style="padding:0.2rem 0.8rem;">💾</button>
-                <button class="delete-service" data-id="${service.id}" style="background:#fee2e2;">🗑</button>
+                <button class="delete-service" data-id="${service.id}" style="background:#fee2e2; padding:0.2rem 0.8rem;">🗑</button>
             `;
             servicesDiv.appendChild(div);
         });
@@ -935,6 +1104,7 @@
                 if (service && newPrice > 0) {
                     service.price = newPrice;
                     saveServices();
+                    renderAdminPanel();
                     showStatus("✅ Цена обновлена");
                 }
             };
@@ -959,9 +1129,9 @@
             div.style.cssText = "display:flex; justify-content:space-between; align-items:center; padding:0.5rem; border-bottom:1px solid #eee;";
             div.innerHTML = `
                 <span><strong>${escapeHtml(data.name)}</strong> (${login})</span>
-                <input type="password" id="pass_${login}" placeholder="Новый пароль" style="width:100px; margin:0 0.5rem;">
+                <input type="password" id="pass_${login}" placeholder="Новый пароль" style="width:100px; margin:0 0.5rem; padding:0.3rem;">
                 <button class="change-pass" data-login="${login}" style="padding:0.2rem 0.8rem;">🔑</button>
-                <button class="delete-operator" data-login="${login}" style="background:#fee2e2;">🗑</button>
+                <button class="delete-operator" data-login="${login}" style="background:#fee2e2; padding:0.2rem 0.8rem;">🗑</button>
             `;
             operatorsDiv.appendChild(div);
         }
@@ -975,6 +1145,8 @@
                     saveOperators();
                     showStatus("✅ Пароль изменен");
                     document.getElementById(`pass_${login}`).value = "";
+                } else {
+                    alert("Введите новый пароль");
                 }
             };
         });
@@ -1015,7 +1187,7 @@
         document.getElementById("loginOverlay").style.display = "flex";
         document.getElementById("mainContent").style.display = "none";
         cart = [];
-        updateCartDisplay();
+        showStatus("👋 Выход выполнен");
     }
     
     function showStatus(msg) {
@@ -1045,6 +1217,7 @@
         }
         
         document.getElementById("loginBtn").onclick = () => login(document.getElementById("loginUsername").value, document.getElementById("loginPassword").value);
+        document.getElementById("loginPassword").onkeypress = (e) => { if (e.key === "Enter") login(document.getElementById("loginUsername").value, document.getElementById("loginPassword").value); };
         document.getElementById("logoutBtn").onclick = logout;
         document.getElementById("addToCartBtn").onclick = addToCart;
         document.getElementById("completeOrderBtn").onclick = completeOrder;
@@ -1069,7 +1242,7 @@
             if (name && price > 0) {
                 services.push({ id: Date.now(), name, price });
                 saveServices();
-                renderAdminPanel();
+                if (document.getElementById("adminModal").style.display === "flex") renderAdminPanel();
                 document.getElementById("newServiceName").value = "";
                 document.getElementById("newServicePrice").value = "";
                 showStatus("✅ Услуга добавлена");
@@ -1085,7 +1258,7 @@
                 if (operators[login]) { alert("Логин уже существует"); return; }
                 operators[login] = { password: pass, name, role: "operator" };
                 saveOperators();
-                renderAdminPanel();
+                if (document.getElementById("adminModal").style.display === "flex") renderAdminPanel();
                 document.getElementById("newOperatorLogin").value = "";
                 document.getElementById("newOperatorName").value = "";
                 document.getElementById("newOperatorPass").value = "";
@@ -1100,7 +1273,7 @@
         document.getElementById("printReceiptBtn").onclick = printLastReceipt;
         window.onclick = (e) => { if (e.target === receiptModal) receiptModal.style.display = "none"; };
         
-        // Авто-обновление цены при выборе услуги
+        // Авто-обновление цены
         document.getElementById("serviceType").onchange = () => {
             const selected = services.find(s => s.name === document.getElementById("serviceType").value);
             if (selected) document.getElementById("unitPrice").value = selected.price;
