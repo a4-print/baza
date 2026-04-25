@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>A4-Принт | CMYK Professional</title>
+    <title>A4-Принт | База данных копировального центра</title>
     <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
@@ -13,57 +13,51 @@
             box-sizing: border-box;
         }
 
-        /* CMYK Color Palette */
         :root {
-            --c-cyan: #00A3E0;
-            --c-magenta: #E2007A;
-            --c-yellow: #FFD100;
-            --c-black: #231F20;
-            --c-cyan-light: #E6F4FA;
-            --c-magenta-light: #FCE6F2;
-            --c-yellow-light: #FFF8E0;
-            --c-gray-light: #F5F5F5;
-            --c-gray: #8C8C8C;
-            --c-white: #FFFFFF;
+            --primary-blue: #0066B3;
+            --primary-magenta: #C6007E;
+            --primary-yellow: #FFB511;
+            --primary-black: #1A1A1A;
+            --bg-light: #F4F6F9;
+            --card-white: #FFFFFF;
+            --text-dark: #2C3E50;
+            --text-gray: #6B7A8A;
+            --border-light: #E2E8F0;
         }
 
         body {
-            background: var(--c-gray-light);
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg-light);
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
             padding: 20px;
-            color: var(--c-black);
-            transition: background 0.2s;
+            color: var(--text-dark);
         }
 
         body.dark {
-            background: var(--c-black);
-            color: var(--c-gray-light);
+            background: #121826;
+            color: #E2E8F0;
         }
 
         body.dark .card,
         body.dark .cart-panel,
         body.dark .history-section,
-        body.dark .shift-bar {
-            background: #2D2A2C;
-            border-color: #3D3A3C;
+        body.dark .shift-bar,
+        body.dark .instruction-box {
+            background: #1E2A3A;
+            border-color: #2D3A4A;
         }
 
         body.dark .service-card,
         body.dark .cart-item,
         body.dark .history-item,
         body.dark .stat-card {
-            background: #1A1A1C;
-            border-color: #3D3A3C;
+            background: #0F1722;
+            border-color: #2D3A4A;
         }
 
         body.dark input, body.dark select, body.dark textarea {
-            background: #2D2A2C;
-            border-color: #4D4A4C;
-            color: var(--c-gray-light);
-        }
-
-        body.dark .burger-menu {
-            background: #2D2A2C;
+            background: #0F1722;
+            border-color: #2D3A4A;
+            color: #E2E8F0;
         }
 
         .app {
@@ -71,7 +65,7 @@
             margin: 0 auto;
         }
 
-        /* ========== ШАПКА С БУРГЕРОМ ========== */
+        /* ========== ШАПКА ========== */
         .header {
             display: flex;
             justify-content: space-between;
@@ -79,27 +73,25 @@
             flex-wrap: wrap;
             gap: 16px;
             margin-bottom: 24px;
-            padding: 16px 20px;
-            background: var(--c-white);
+            padding: 16px 24px;
+            background: var(--card-white);
             border-radius: 28px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-            border-left: 8px solid var(--c-cyan);
-            border-bottom: 3px solid var(--c-magenta);
-            position: relative;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+            border-left: 6px solid var(--primary-blue);
         }
 
         body.dark .header {
-            background: #2D2A2C;
+            background: #1E2A3A;
         }
 
         .logo-area {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 14px;
         }
 
         .logo {
-            height: 44px;
+            height: 48px;
             width: auto;
             border-radius: 12px;
             background: white;
@@ -107,294 +99,292 @@
         }
 
         h1 {
-            font-size: 20px;
-            font-weight: 800;
-            letter-spacing: -0.5px;
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+            color: var(--primary-black);
         }
-        body.dark h1 { color: var(--c-gray-light); }
+        body.dark h1 { color: white; }
 
         .sub {
-            font-size: 10px;
-            color: var(--c-gray);
-        }
-
-        .cmyk-strip {
-            display: flex;
-            gap: 2px;
-            margin-top: 6px;
-        }
-        .cmyk-strip span {
-            width: 30px;
-            height: 3px;
-            border-radius: 2px;
-        }
-        .cyan-bg { background: var(--c-cyan); }
-        .magenta-bg { background: var(--c-magenta); }
-        .yellow-bg { background: var(--c-yellow); }
-        .black-bg { background: var(--c-black); }
-
-        /* ========== БУРГЕР МЕНЮ ========== */
-        .burger-btn {
-            display: none;
-            background: none;
-            border: none;
-            font-size: 28px;
-            cursor: pointer;
-            padding: 10px;
-            border-radius: 50%;
-            color: var(--c-black);
-        }
-        body.dark .burger-btn {
-            color: var(--c-gray-light);
-        }
-
-        .burger-menu {
-            position: absolute;
-            top: 70px;
-            right: 16px;
-            background: var(--c-white);
-            border-radius: 24px;
-            padding: 16px;
-            min-width: 200px;
-            display: none;
-            flex-direction: column;
-            gap: 12px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-            z-index: 100;
-            border: 1px solid #E0E0E0;
-        }
-        body.dark .burger-menu {
-            background: #2D2A2C;
-            border-color: #4D4A4C;
-        }
-        .burger-menu.show {
-            display: flex;
-        }
-        .burger-menu button {
-            width: 100%;
-            text-align: center;
-            padding: 12px;
-            font-size: 14px;
+            font-size: 11px;
+            color: var(--text-gray);
         }
 
         .user-bar {
             display: flex;
             gap: 12px;
             align-items: center;
-            background: var(--c-gray-light);
+            background: var(--bg-light);
             padding: 6px 20px;
             border-radius: 60px;
         }
         body.dark .user-bar {
-            background: #1A1A1C;
+            background: #0F1722;
         }
 
         button {
-            background: var(--c-black);
+            background: var(--primary-black);
             border: none;
-            padding: 8px 20px;
+            padding: 8px 22px;
             border-radius: 40px;
             color: white;
             font-weight: 600;
             font-size: 13px;
             cursor: pointer;
-            transition: 0.15s ease;
+            transition: 0.15s;
         }
-        button:hover { transform: translateY(-2px); filter: brightness(0.9); }
+        button:hover { transform: translateY(-1px); filter: brightness(0.92); }
 
-        .btn-cyan { background: var(--c-cyan); color: var(--c-black); }
-        .btn-magenta { background: var(--c-magenta); }
-        .btn-yellow { background: var(--c-yellow); color: var(--c-black); }
-        .btn-outline { background: transparent; border: 2px solid var(--c-black); color: var(--c-black); }
-        body.dark .btn-outline { border-color: var(--c-gray-light); color: var(--c-gray-light); }
-        .btn-success { background: #1f8a5c; }
-        .btn-danger { background: #c2412c; }
+        .btn-outline {
+            background: transparent;
+            border: 1.5px solid var(--border-light);
+            color: var(--text-dark);
+        }
+        body.dark .btn-outline {
+            border-color: #4A5A6E;
+            color: #E2E8F0;
+        }
+
+        .btn-primary { background: var(--primary-blue); }
+        .btn-success { background: #1F8A5C; }
+        .btn-danger { background: #C2412C; }
+        .btn-warning { background: #E68A2E; }
 
         .shift-bar {
-            background: var(--c-white);
+            background: var(--card-white);
             border-radius: 60px;
-            padding: 10px 20px;
-            margin-bottom: 20px;
+            padding: 10px 24px;
+            margin-bottom: 24px;
             display: flex;
             justify-content: space-between;
             flex-wrap: wrap;
             gap: 12px;
-            font-size: 12px;
+            font-size: 13px;
             font-weight: 500;
-            border-left: 4px solid var(--c-cyan);
+            border-left: 4px solid var(--primary-blue);
         }
 
+        /* ========== ИНСТРУКЦИЯ ========== */
+        .instruction-box {
+            background: var(--card-white);
+            border-radius: 24px;
+            padding: 18px 24px;
+            margin-bottom: 24px;
+            border: 1px solid var(--border-light);
+            font-size: 13px;
+        }
+        .instruction-box h3 {
+            font-size: 15px;
+            margin-bottom: 12px;
+            color: var(--primary-blue);
+        }
+        .instruction-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 24px;
+            justify-content: space-between;
+        }
+        .instruction-col {
+            flex: 1;
+            min-width: 200px;
+        }
+        .instruction-col p {
+            margin: 6px 0;
+            line-height: 1.4;
+        }
+
+        /* ========== ОСНОВНАЯ СЕТКА ========== */
         .dashboard {
             display: flex;
-            gap: 20px;
+            gap: 24px;
             flex-wrap: wrap;
-            margin-bottom: 20px;
+            margin-bottom: 24px;
         }
 
         .card {
             flex: 2;
             min-width: 300px;
-            background: var(--c-white);
+            background: var(--card-white);
             border-radius: 28px;
-            padding: 20px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.05);
-            border-top: 3px solid var(--c-cyan);
+            padding: 24px;
+            border: 1px solid var(--border-light);
         }
 
         .cart-panel {
             flex: 1.2;
-            min-width: 300px;
-            background: var(--c-white);
+            min-width: 320px;
+            background: var(--card-white);
             border-radius: 28px;
-            padding: 20px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.05);
-            border-top: 3px solid var(--c-magenta);
+            padding: 24px;
+            border: 1px solid var(--border-light);
         }
 
         .history-section {
-            background: var(--c-white);
+            background: var(--card-white);
             border-radius: 28px;
-            padding: 20px;
-            border-top: 3px solid var(--c-yellow);
+            padding: 24px;
+            border: 1px solid var(--border-light);
         }
 
         .panel-title {
-            font-size: 11px;
-            font-weight: 800;
+            font-size: 12px;
+            font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 2px;
-            color: var(--c-gray);
-            margin-bottom: 18px;
+            letter-spacing: 1.5px;
+            color: var(--text-gray);
+            margin-bottom: 20px;
         }
 
+        /* Сетка услуг */
         .services-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 12px;
-            max-height: 500px;
+            grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+            gap: 14px;
+            max-height: 520px;
             overflow-y: auto;
             padding-right: 6px;
         }
 
         .service-card {
-            background: var(--c-gray-light);
+            background: var(--bg-light);
             border-radius: 24px;
-            padding: 14px 10px;
+            padding: 14px;
             text-align: center;
-            transition: all 0.2s;
-            border: 1px solid #E0E0E0;
+            border: 1px solid var(--border-light);
             cursor: pointer;
+            transition: 0.1s;
         }
-        body.dark .service-card { background: #2D2A2C; border-color: #4D4A4C; }
-        .service-card:hover { transform: translateY(-2px); border-color: var(--c-cyan); }
+        .service-card:hover { transform: translateY(-2px); border-color: var(--primary-blue); }
 
         .service-name { font-weight: 700; font-size: 13px; margin-bottom: 6px; }
-        .service-price { font-size: 16px; font-weight: 800; color: var(--c-magenta); margin-bottom: 10px; }
+        .service-price { font-size: 17px; font-weight: 800; color: var(--primary-magenta); margin: 6px 0; }
 
-        .qty-controls {
+        .qty-control {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 12px;
-            margin-top: 8px;
+            gap: 8px;
+            margin: 10px 0 6px;
         }
-        .qty-btn {
-            background: #E0E0E0;
-            width: 32px;
-            height: 32px;
-            border-radius: 60px;
-            padding: 0;
-            font-size: 16px;
-            font-weight: bold;
+        .qty-control input {
+            width: 70px;
+            text-align: center;
+            padding: 8px 0;
+            font-size: 15px;
+            font-weight: 600;
+            border-radius: 30px;
         }
-        body.dark .qty-btn { background: #4D4A4C; color: white; }
-        .qty-value { font-weight: 700; font-size: 16px; min-width: 28px; text-align: center; }
-        .add-btn { background: var(--c-cyan); color: var(--c-black); margin-top: 12px; width: 100%; padding: 8px; font-size: 12px; font-weight: 700; }
+        .add-btn {
+            background: var(--primary-blue);
+            width: 100%;
+            padding: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            color: white;
+        }
 
+        /* Корзина */
         .cart-list {
             display: flex;
             flex-direction: column;
             gap: 10px;
-            max-height: 260px;
+            max-height: 280px;
             overflow-y: auto;
-            margin-bottom: 16px;
+            margin-bottom: 18px;
         }
 
         .cart-item {
-            background: var(--c-gray-light);
+            background: var(--bg-light);
             border-radius: 20px;
             padding: 12px 14px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
-            gap: 10px;
-            border-left: 4px solid var(--c-magenta);
+            gap: 8px;
+            border-left: 4px solid var(--primary-magenta);
         }
-        body.dark .cart-item { background: #2D2A2C; }
 
         .cart-item-info { flex: 2; }
-        .cart-item-name { font-weight: 700; font-size: 13px; margin-bottom: 3px; }
-        .cart-item-detail { font-size: 11px; color: var(--c-gray); }
-        .cart-item-price { font-weight: 800; font-size: 15px; color: var(--c-magenta); }
+        .cart-item-name { font-weight: 700; font-size: 13px; margin-bottom: 4px; }
+        .cart-item-detail { font-size: 11px; color: var(--text-gray); }
+        .cart-item-price { font-weight: 800; font-size: 15px; color: var(--primary-magenta); }
 
         .remove-btn {
-            background: #FCE6F2;
-            color: var(--c-magenta);
-            padding: 6px 14px;
+            background: #FFE4E0;
+            color: #C2412C;
+            padding: 6px 16px;
             border-radius: 40px;
             font-size: 11px;
             font-weight: 600;
         }
+        body.dark .remove-btn { background: #3A2A2A; color: #FF9A86; }
 
         input, select, textarea {
             width: 100%;
             padding: 12px 16px;
-            background: var(--c-gray-light);
-            border: 1px solid #D0D0D0;
-            border-radius: 20px;
+            background: var(--bg-light);
+            border: 1px solid var(--border-light);
+            border-radius: 24px;
             font-size: 14px;
-            transition: 0.15s;
             font-family: inherit;
         }
         input:focus, select:focus, textarea:focus {
             outline: none;
-            border-color: var(--c-cyan);
-            box-shadow: 0 0 0 3px rgba(0,163,224,0.1);
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 3px rgba(0,102,179,0.1);
         }
 
         .total-line {
             display: flex;
             justify-content: space-between;
             padding: 12px 0;
-            border-top: 1px solid #E0E0E0;
+            border-top: 1px solid var(--border-light);
             font-weight: 600;
             font-size: 14px;
         }
-        .grand-total { font-size: 20px; font-weight: 800; color: var(--c-cyan); }
+        .grand-total {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--primary-blue);
+        }
 
         .row-2 {
             display: flex;
             gap: 12px;
-            margin: 14px 0;
+            margin: 16px 0;
             flex-wrap: wrap;
+            align-items: flex-end;
+        }
+        .discount-group {
+            flex: 1;
+            min-width: 100px;
+        }
+        .discount-group label {
+            font-size: 11px;
+            font-weight: 600;
+            display: block;
+            margin-bottom: 4px;
+            color: var(--text-gray);
         }
 
+        /* История */
         .history-list {
             display: flex;
             flex-direction: column;
             gap: 12px;
-            max-height: 280px;
+            max-height: 300px;
             overflow-y: auto;
         }
         .history-item {
-            background: var(--c-gray-light);
+            background: var(--bg-light);
             border-radius: 20px;
             padding: 14px;
-            border-left: 4px solid var(--c-yellow);
+            border-left: 4px solid var(--primary-yellow);
         }
-        body.dark .history-item { background: #2D2A2C; }
 
+        /* Модалки */
         .modal {
             position: fixed;
             top: 0;
@@ -409,197 +399,77 @@
             z-index: 1000;
         }
         .modal-card {
-            background: var(--c-white);
+            background: var(--card-white);
             border-radius: 40px;
             max-width: 700px;
             width: 90%;
             max-height: 85vh;
             overflow-y: auto;
-            padding: 24px;
-            border-top: 5px solid var(--c-cyan);
+            padding: 28px;
         }
-        body.dark .modal-card { background: #2D2A2C; }
+        body.dark .modal-card { background: #1E2A3A; }
 
         .stat-card {
-            background: var(--c-gray-light);
+            background: var(--bg-light);
             border-radius: 20px;
             padding: 14px;
             margin-bottom: 12px;
-            border-left: 4px solid var(--c-cyan);
+            border-left: 4px solid var(--primary-blue);
         }
         .stat-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 13px; }
-        .stat-value { font-weight: 800; font-size: 16px; color: var(--c-magenta); }
+        .stat-value { font-weight: 800; font-size: 16px; color: var(--primary-magenta); }
 
-        /* ========== СТИЛИ ДЛЯ ПЕЧАТИ БЛАНКА (А4, 2 экземпляра) ========== */
-        .print-blank {
-            display: none;
-        }
+        /* печатная форма */
+        .print-blank { display: none; }
         @media print {
-            body * {
-                visibility: hidden;
-            }
-            .print-blank, .print-blank * {
-                visibility: visible;
-            }
-            .print-blank {
-                display: block;
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                padding: 0;
-                margin: 0;
-            }
-            .blank-page {
-                page-break-after: always;
-                page-break-inside: avoid;
-            }
-            .blank-page:last-child {
-                page-break-after: auto;
-            }
+            body * { visibility: hidden; }
+            .print-blank, .print-blank * { visibility: visible; }
+            .print-blank { display: block; position: absolute; top: 0; left: 0; width: 100%; }
+            .blank-page { page-break-after: always; }
         }
-
         .blank-page {
             width: 210mm;
             min-height: 297mm;
             padding: 15mm;
-            margin: 0 auto;
             background: white;
-            font-family: 'Courier New', 'Inter', monospace;
-            font-size: 11pt;
             color: black;
-            box-sizing: border-box;
-            border: 1px dashed #ccc;
+            font-family: monospace;
         }
 
-        .blank-header {
-            text-align: center;
-            margin-bottom: 20px;
-            border-bottom: 2px solid var(--c-cyan);
-            padding-bottom: 15px;
-        }
-        .blank-header h2 {
-            color: var(--c-black);
-            font-size: 24px;
-            letter-spacing: 2px;
-        }
-        .blank-header p {
-            color: var(--c-gray);
-            font-size: 12px;
-        }
-        .cmyk-colors {
-            display: flex;
-            justify-content: center;
-            gap: 4px;
-            margin: 10px 0;
-        }
-        .cmyk-colors div {
-            width: 40px;
-            height: 4px;
-        }
-        .blank-order-info {
-            margin: 15px 0;
-            display: flex;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            border: 1px solid #ddd;
-            padding: 10px;
-            background: #f9f9f9;
-        }
-        .blank-items {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 15px 0;
-        }
-        .blank-items th, .blank-items td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-            font-size: 11px;
-        }
-        .blank-items th {
-            background: #f0f0f0;
-            font-weight: bold;
-        }
-        .blank-total {
-            text-align: right;
-            margin: 15px 0;
-            padding: 10px;
-            border-top: 2px solid var(--c-black);
-            font-weight: bold;
-        }
-        .blank-footer {
-            margin-top: 30px;
-            display: flex;
-            justify-content: space-between;
-            font-size: 10px;
-            color: #666;
-            border-top: 1px dashed #ccc;
-            padding-top: 15px;
-        }
-        .copy-label {
-            text-align: center;
-            font-size: 10px;
-            color: #999;
-            margin-top: 10px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-
-        @media (max-width: 768px) {
+        @media (max-width: 780px) {
             body { padding: 12px; }
-            .header { padding: 12px 16px; }
-            .logo { height: 38px; }
-            h1 { font-size: 18px; }
-            
-            .user-bar {
+            .user-bar { display: none; }
+            .burger-btn { display: block; background: none; font-size: 28px; color: var(--text-dark); }
+            body.dark .burger-btn { color: white; }
+            .burger-menu {
+                position: absolute;
+                top: 70px;
+                right: 16px;
+                background: var(--card-white);
+                border-radius: 24px;
+                padding: 16px;
+                min-width: 200px;
                 display: none;
+                flex-direction: column;
+                gap: 12px;
+                z-index: 200;
+                box-shadow: 0 10px 30px rgba(0,0,0,0.15);
             }
-            
-            .burger-btn {
-                display: block;
-            }
-            
-            .burger-menu button {
-                font-size: 14px;
-                padding: 10px;
-            }
-            
-            .dashboard { gap: 16px; }
-            .card, .cart-panel, .history-section { padding: 16px; }
-            .services-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; }
-            .service-card { padding: 10px; }
-            .service-name { font-size: 11px; }
-            .service-price { font-size: 14px; }
-            
-            .shift-bar {
-                font-size: 10px;
-                padding: 8px 16px;
-                gap: 8px;
-            }
-            
-            button { padding: 8px 16px; font-size: 12px; }
+            .burger-menu.show { display: flex; }
+            .burger-menu button { width: 100%; }
         }
-
-        @media (max-width: 480px) {
-            .services-grid { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); }
-            .cart-item-name { font-size: 12px; }
-            .grand-total { font-size: 18px; }
-        }
+        .burger-btn { display: none; }
     </style>
 </head>
 <body>
 
 <div id="loginOverlay" class="modal" style="display: flex;">
     <div class="modal-card" style="max-width: 380px;">
-        <div class="cmyk-strip" style="justify-content: center; margin-bottom: 16px;">
-            <span class="cyan-bg"></span><span class="magenta-bg"></span><span class="yellow-bg"></span><span class="black-bg"></span>
-        </div>
-        <h2 style="text-align:center; margin-bottom: 20px;">A4-Принт</h2>
-        <input type="text" id="loginUsername" placeholder="Логин" style="margin-bottom: 14px;">
+        <h2 style="text-align:center;">A4-Принт</h2>
+        <input type="text" id="loginUsername" placeholder="Логин" style="margin: 14px 0;">
         <input type="password" id="loginPassword" placeholder="Пароль">
-        <button id="loginBtn" style="width:100%; margin-top: 24px; background: var(--c-black);">Войти</button>
-        <div id="loginError" style="color:#c2412c; margin-top: 16px; text-align:center;"></div>
+        <button id="loginBtn" style="width:100%; margin-top: 20px;">Войти</button>
+        <div id="loginError" style="color:#C2412C; margin-top: 12px; text-align:center;"></div>
     </div>
 </div>
 
@@ -608,33 +478,26 @@
     <div class="header">
         <div class="logo-area">
             <img src="https://github.com/a4print2026-jpg/baza/blob/dbcda72ab60f0a9f8d8984e17375f6649cf677f0/images/logo_soc2.png?raw=true" class="logo" onerror="this.style.display='none'">
-            <div>
-                <h1>A4‑ПРИНТ</h1>
-                <div class="cmyk-strip"><span class="cyan-bg"></span><span class="magenta-bg"></span><span class="yellow-bg"></span><span class="black-bg"></span></div>
-                <div class="sub">CMYK Professional</div>
-            </div>
+            <div><h1>A4‑ПРИНТ</h1><div class="sub">База данных копировального центра</div></div>
         </div>
-        
         <div class="user-bar">
-            <span id="currentOperatorName" style="font-weight: 500;"></span>
+            <span id="currentOperatorName" style="font-weight:500;"></span>
             <button id="themeToggleBtn" class="btn-outline">🌙 Тёмная</button>
-            <button id="adminPanelBtn" style="background: var(--c-cyan); color: var(--c-black);">Админ</button>
-            <button id="shiftToggleBtn" style="background: var(--c-yellow); color: var(--c-black);">🚀 Смена</button>
-            <button id="pdfReportBtn" style="background: var(--c-magenta);">📄 Отчёт</button>
-            <button id="printBlankBtn" class="btn-success">🖨️ Бланк заказа</button>
+            <button id="adminPanelBtn" class="btn-primary">Админ</button>
+            <button id="shiftToggleBtn" class="btn-warning">🚀 Открыть смену</button>
+            <button id="pdfReportBtn" class="btn-success">📄 Отчёт</button>
+            <button id="printBlankBtn" class="btn-primary">🖨️ Бланк заказа</button>
             <button id="logoutBtn" class="btn-outline">Выйти</button>
         </div>
-        
         <button class="burger-btn" id="burgerBtn">☰</button>
-        
         <div class="burger-menu" id="burgerMenu">
-            <span style="padding: 8px 0; font-weight: 600; border-bottom: 1px solid #E0E0E0;" id="burgerOperatorName"></span>
-            <button id="burgerThemeToggle" class="btn-outline">🌙 Тёмная</button>
-            <button id="burgerAdminBtn" style="background: var(--c-cyan); color: var(--c-black);">Админ</button>
-            <button id="burgerShiftBtn" style="background: var(--c-yellow); color: var(--c-black);">🚀 Смена</button>
-            <button id="burgerPdfBtn" style="background: var(--c-magenta);">📄 Отчёт</button>
-            <button id="burgerPrintBlankBtn" class="btn-success">🖨️ Бланк</button>
-            <button id="burgerLogoutBtn" class="btn-outline">Выйти</button>
+            <span id="burgerOperatorName" style="font-weight:600; padding-bottom:6px;"></span>
+            <button id="burgerThemeToggle">🌙 Тёмная</button>
+            <button id="burgerAdminBtn">Админ</button>
+            <button id="burgerShiftBtn">🚀 Смена</button>
+            <button id="burgerPdfBtn">📄 Отчёт</button>
+            <button id="burgerPrintBtn">🖨️ Бланк</button>
+            <button id="burgerLogoutBtn">Выйти</button>
         </div>
     </div>
 
@@ -644,27 +507,65 @@
         <span>🔴 Закрыта: <span id="shiftCloseTime">—</span></span>
     </div>
 
+    <!-- ИНСТРУКЦИЯ ДЛЯ ВСЕХ ПОЛЬЗОВАТЕЛЕЙ -->
+    <div class="instruction-box">
+        <h3>📘 Как работать с базой данных A4-Принт</h3>
+        <div class="instruction-grid">
+            <div class="instruction-col">
+                <p><strong>🔹 Добавление заказа</strong><br>
+                1. Выберите услугу → введите количество вручную → «Добавить»<br>
+                2. При необходимости: скидка %, скидка ₽, комментарий<br>
+                3. Выберите оплату (наличные / карта) → «Оформить»</p>
+                <p><strong>🔹 Корзина</strong><br>
+                • Можно удалить позицию кнопкой «Удалить»<br>
+                • Применить скидку кнопкой «Применить»</p>
+            </div>
+            <div class="instruction-col">
+                <p><strong>🔹 Отчёты и печать</strong><br>
+                • «Отчёт» — PDF со всеми заказами за смену<br>
+                • «Бланк заказа» — фирменный бланк на А4 (2 экземпляра)<br>
+                • «Excel» — выгрузка в Excel</p>
+                <p><strong>🔹 Смена</strong><br>
+                Перед началом работы → «Открыть смену»<br>
+                После завершения → «Закрыть смену» (данные сохранятся)</p>
+            </div>
+            <div class="instruction-col">
+                <p><strong>🔹 Администрирование</strong><br>
+                • Управление услугами (цена, название)<br>
+                • Управление операторами (логин/пароль)<br>
+                • Просмотр статистики по операторам</p>
+                <p><strong>💾 Все данные сохраняются в браузере.</strong><br>
+                Регулярно экспортируйте отчёты и бланки для бухгалтерии.</p>
+            </div>
+        </div>
+    </div>
+
     <div class="dashboard">
         <div class="card">
-            <div class="panel-title">📋 УСЛУГИ (CMYK)</div>
+            <div class="panel-title">📋 УСЛУГИ</div>
             <div id="servicesGrid" class="services-grid"></div>
         </div>
 
         <div class="cart-panel">
-            <div class="panel-title">🧾 ОФОРМЛЕНИЕ</div>
-            <input type="text" id="clientName" placeholder="Клиент (необязательно)" style="margin-bottom: 16px;">
-            
+            <div class="panel-title">🧾 ОФОРМЛЕНИЕ ЗАКАЗА</div>
+            <input type="text" id="clientName" placeholder="Имя клиента (необязательно)" style="margin-bottom: 16px;">
             <div class="cart-list" id="cartList"></div>
 
             <div class="row-2">
-                <input type="number" id="discountPercent" placeholder="Скидка %" value="0" step="1">
-                <input type="number" id="discountAmount" placeholder="Скидка ₽" value="0" step="10">
-                <button id="applyDiscountBtn" class="btn-outline" style="padding: 8px 14px;">Применить</button>
+                <div class="discount-group">
+                    <label>Скидка, %</label>
+                    <input type="number" id="discountPercent" value="0" step="1" placeholder="%">
+                </div>
+                <div class="discount-group">
+                    <label>Скидка, ₽</label>
+                    <input type="number" id="discountAmount" value="0" step="10" placeholder="₽">
+                </div>
+                <button id="applyDiscountBtn" class="btn-outline" style="margin-top: 22px;">Применить</button>
             </div>
 
             <div class="row-2">
-                <label style="display:flex; gap:8px; align-items:center;"><input type="radio" name="payment" value="cash" checked> 💵 Наличные</label>
-                <label style="display:flex; gap:8px; align-items:center;"><input type="radio" name="payment" value="card"> 💳 Карта</label>
+                <label><input type="radio" name="payment" value="cash" checked> 💵 Наличные</label>
+                <label><input type="radio" name="payment" value="card"> 💳 Карта</label>
             </div>
 
             <textarea id="orderComment" rows="2" placeholder="Комментарий к заказу..."></textarea>
@@ -674,7 +575,7 @@
             <div class="total-line grand-total"><span>ИТОГО</span><span id="cartTotal">0 ₽</span></div>
 
             <div class="row-2">
-                <button id="completeOrderBtn" style="background: var(--c-cyan); color: var(--c-black); flex:2;">✅ Оформить</button>
+                <button id="completeOrderBtn" class="btn-primary" style="flex:2;">✅ Оформить</button>
                 <button id="clearCartBtn" class="btn-outline" style="flex:1;">Очистить</button>
             </div>
         </div>
@@ -684,8 +585,8 @@
         <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 16px;">
             <div class="panel-title" style="margin-bottom:0;">📜 ИСТОРИЯ ЗАКАЗОВ</div>
             <div style="display: flex; gap: 10px;">
-                <button id="exportExcelBtn" style="background: var(--c-yellow); color: var(--c-black);">📎 Excel</button>
-                <button id="clearHistoryBtn" class="btn-danger">🗑 Очистить</button>
+                <button id="exportExcelBtn" class="btn-success">📎 Excel</button>
+                <button id="clearHistoryBtn" class="btn-danger">🗑 Очистить мои</button>
             </div>
         </div>
         <div id="historyList" class="history-list"></div>
@@ -693,74 +594,73 @@
 </div>
 </div>
 
-<!-- Скрытый блок для печати бланка заказа -->
 <div class="print-blank" id="printBlankContainer"></div>
 
 <div id="adminModal" class="modal">
     <div class="modal-card">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-            <h2>⚙️ Администрирование</h2>
-            <button id="closeAdminModal" style="background:none; font-size: 28px;">✕</button>
+        <div style="display:flex; justify-content:space-between;">
+            <h2>Администрирование</h2>
+            <button id="closeAdminModal" style="background:none; font-size:28px;">✕</button>
         </div>
-        <button id="viewOperatorsStatsBtn" style="background: var(--c-cyan); color: var(--c-black); width:100%; margin: 10px 0 20px;">📊 Полная статистика операторов</button>
-        <h3>📋 Управление услугами</h3>
+        <button id="viewOperatorsStatsBtn" class="btn-primary" style="width:100%; margin: 16px 0;">📊 Статистика операторов</button>
+        <h3>Управление услугами</h3>
         <div id="adminServicesList"></div>
-        <div style="display: flex; gap: 12px; margin-top: 16px;">
-            <input type="text" id="newServiceName" placeholder="Название услуги">
+        <div style="display:flex; gap:12px; margin:16px 0;">
+            <input type="text" id="newServiceName" placeholder="Название">
             <input type="number" id="newServicePrice" placeholder="Цена">
-            <button id="addServiceBtn" style="background: var(--c-cyan); color: var(--c-black);">Добавить</button>
+            <button id="addServiceBtn" class="btn-primary">Добавить</button>
         </div>
-        <hr style="margin: 20px 0;">
-        <h3>👥 Управление операторами</h3>
+        <hr>
+        <h3>Операторы</h3>
         <div id="operatorsList"></div>
-        <div style="display: flex; gap: 12px; margin-top: 16px;">
+        <div style="display:flex; gap:12px; margin:16px 0;">
             <input type="text" id="newOpLogin" placeholder="Логин">
             <input type="text" id="newOpName" placeholder="Имя">
             <input type="text" id="newOpPass" placeholder="Пароль">
-            <button id="addOperatorBtn" style="background: var(--c-magenta);">Добавить</button>
+            <button id="addOperatorBtn" class="btn-primary">Добавить</button>
         </div>
     </div>
 </div>
 
 <div id="operatorsStatsModal" class="modal">
-    <div class="modal-card" style="max-width: 700px;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <h2>📊 Статистика операторов</h2>
-            <button id="closeStatsModal" style="background:none; font-size: 28px;">✕</button>
+    <div class="modal-card">
+        <div style="display:flex; justify-content:space-between;">
+            <h2>Статистика операторов</h2>
+            <button id="closeStatsModal" style="background:none; font-size:28px;">✕</button>
         </div>
         <div id="operatorsStatsContent"></div>
-        <button id="exportStatsExcelBtn" style="background: var(--c-yellow); color: var(--c-black); margin-top: 20px; width:100%;">📎 Экспорт статистики в Excel</button>
+        <button id="exportStatsExcelBtn" class="btn-success" style="margin-top:20px; width:100%;">📎 Экспорт в Excel</button>
     </div>
 </div>
 
 <script>
-    // ========== УСЛУГИ (полный прайс) ==========
+    // ---------- БАЗА ДАННЫХ ----------
     let services = [
-        { id: 1, name: "Копирование ч/б A4 (1-20)", price: 25 }, { id: 2, name: "Копирование цветное A4 (1-20)", price: 35 },
-        { id: 3, name: "Сканирование A4", price: 25 }, { id: 4, name: "Ламинирование A6", price: 50 },
-        { id: 5, name: "Ламинирование A5", price: 100 }, { id: 6, name: "Ламинирование A4", price: 150 },
-        { id: 7, name: "Ламинирование A3", price: 200 }, { id: 8, name: "Брошюровка (до 50 стр)", price: 350 },
-        { id: 9, name: "Набор текста (1 стр)", price: 150 }, { id: 10, name: "Печать фото 10x15", price: 55 },
-        { id: 11, name: "Печать фото 13x18", price: 50 }, { id: 12, name: "Печать фото 15x21", price: 75 },
-        { id: 13, name: "Печать фото 21x30", price: 200 }, { id: 14, name: "Печать фото 30x40", price: 450 },
-        { id: 15, name: "ФНД", price: 350 }, { id: 16, name: "Печать на кружке", price: 1000 },
-        { id: 17, name: "Печать на футболке", price: 1500 }, { id: 18, name: "Ретушь фото", price: 200 },
-        { id: 19, name: "Кадрирование", price: 30 }, { id: 20, name: "Печать на самоклейке ЦВ", price: 75 },
-        { id: 21, name: "Печать на самоклейке ЧБ", price: 50 }, { id: 22, name: "ФНД Виза", price: 400 },
-        { id: 23, name: "Копирование ч/б A4 (20-50)", price: 20 }, { id: 24, name: "Фото в рамке А4", price: 400 },
-        { id: 25, name: "Фото в рамке 10х15", price: 200 }
+        { id:1, name:"Копирование ч/б A4 (1-20)", price:25 }, { id:2, name:"Копирование цветное A4 (1-20)", price:35 },
+        { id:3, name:"Сканирование A4", price:25 }, { id:4, name:"Ламинирование A6", price:50 },
+        { id:5, name:"Ламинирование A5", price:100 }, { id:6, name:"Ламинирование A4", price:150 },
+        { id:7, name:"Ламинирование A3", price:200 }, { id:8, name:"Брошюровка (до 50 стр)", price:350 },
+        { id:9, name:"Набор текста (1 стр)", price:150 }, { id:10, name:"Печать фото 10x15", price:55 },
+        { id:11, name:"Печать фото 13x18", price:50 }, { id:12, name:"Печать фото 15x21", price:75 },
+        { id:13, name:"Печать фото 21x30", price:200 }, { id:14, name:"Печать фото 30x40", price:450 },
+        { id:15, name:"ФНД", price:350 }, { id:16, name:"Печать на кружке", price:1000 },
+        { id:17, name:"Печать на футболке", price:1500 }, { id:18, name:"Ретушь фото", price:200 },
+        { id:19, name:"Кадрирование", price:30 }, { id:20, name:"Печать на самоклейке ЦВ", price:75 },
+        { id:21, name:"Печать на самоклейке ЧБ", price:50 }, { id:22, name:"ФНД Виза", price:400 },
+        { id:23, name:"Копирование ч/б A4 (20-50)", price:20 }, { id:24, name:"Фото в рамке А4", price:400 },
+        { id:25, name:"Фото в рамке 10х15", price:200 }
     ];
 
     let operators = {
-        "admin": { password: "admin123", name: "Администратор", role: "admin" },
-        "anna": { password: "anna321", name: "Анна", role: "operator" },
-        "sergey": { password: "sergey321", name: "Сергей", role: "operator" }
+        "admin":{ password:"admin123", name:"Администратор", role:"admin" },
+        "anna":{ password:"anna321", name:"Анна", role:"operator" },
+        "sergey":{ password:"sergey321", name:"Сергей", role:"operator" }
     };
 
     let allOrders = [], currentUser = null, cart = [], discountPct = 0, discountAmt = 0;
     let shiftOpen = null, shiftClose = null;
 
-    const SERVICES_KEY = "a4print_services_cmyk", OPERATORS_KEY = "a4print_operators", ORDERS_KEY = "a4print_orders", SHIFT_KEY = "a4print_shift";
+    const SERVICES_KEY = "a4print_services", OPERATORS_KEY = "a4print_operators", ORDERS_KEY = "a4print_orders", SHIFT_KEY = "a4print_shift";
 
     function saveServices() { localStorage.setItem(SERVICES_KEY, JSON.stringify(services)); }
     function saveOperators() { localStorage.setItem(OPERATORS_KEY, JSON.stringify(operators)); }
@@ -768,45 +668,30 @@
     function saveShift() { localStorage.setItem(SHIFT_KEY, JSON.stringify({ open: shiftOpen, close: shiftClose, operator: currentUser?.name })); }
 
     function loadShift() {
-        let saved = localStorage.getItem(SHIFT_KEY);
-        if (saved) { let s = JSON.parse(saved); if (s.operator === currentUser?.name) { shiftOpen = s.open; shiftClose = s.close; } }
+        let s = localStorage.getItem(SHIFT_KEY);
+        if(s) { let d=JSON.parse(s); if(d.operator===currentUser?.name) { shiftOpen=d.open; shiftClose=d.close; } }
         updateShiftUI();
     }
     function updateShiftUI() {
-        document.getElementById("shiftStatus").innerText = (shiftOpen && !shiftClose) ? "🟢 Открыта" : (shiftOpen && shiftClose ? "🔴 Закрыта" : "⚫ Не открыта");
-        document.getElementById("shiftOpenTime").innerText = shiftOpen || "—";
-        document.getElementById("shiftCloseTime").innerText = shiftClose || "—";
-        let btn = document.getElementById("shiftToggleBtn");
-        let burgerBtn = document.getElementById("burgerShiftBtn");
-        if (shiftOpen && !shiftClose) { 
-            btn.innerText = "🔒 Закрыть смену"; btn.style.background = "#c2412c"; btn.style.color = "white";
-            if(burgerBtn) { burgerBtn.innerText = "🔒 Закрыть смену"; burgerBtn.style.background = "#c2412c"; burgerBtn.style.color = "white"; }
-        } else { 
-            btn.innerText = "🚀 Открыть смену"; btn.style.background = "#FFD100"; btn.style.color = "#231F20";
-            if(burgerBtn) { burgerBtn.innerText = "🚀 Открыть смену"; burgerBtn.style.background = "#FFD100"; burgerBtn.style.color = "#231F20"; }
-        }
+        let st=document.getElementById("shiftStatus"), op=document.getElementById("shiftOpenTime"), cl=document.getElementById("shiftCloseTime"), btn=document.getElementById("shiftToggleBtn");
+        if(shiftOpen && !shiftClose) { st.innerText="🟢 Открыта"; op.innerText=shiftOpen; cl.innerText="—"; btn.innerText="🔒 Закрыть смену"; btn.classList.add("btn-danger"); btn.classList.remove("btn-warning"); }
+        else { st.innerText=shiftOpen?"🔴 Закрыта":"⚫ Не открыта"; op.innerText=shiftOpen||"—"; cl.innerText=shiftClose||"—"; btn.innerText="🚀 Открыть смену"; btn.classList.remove("btn-danger"); btn.classList.add("btn-warning"); }
     }
     function toggleShift() {
-        if (!shiftOpen || shiftClose) { shiftOpen = new Date().toLocaleString(); shiftClose = null; saveShift(); updateShiftUI(); alert("Смена открыта: " + shiftOpen); }
-        else if (confirm("Закрыть смену?")) { shiftClose = new Date().toLocaleString(); saveShift(); updateShiftUI(); alert("Смена закрыта: " + shiftClose); }
+        if(!shiftOpen || shiftClose) { shiftOpen=new Date().toLocaleString(); shiftClose=null; saveShift(); updateShiftUI(); alert("Смена открыта: "+shiftOpen); }
+        else if(confirm("Закрыть смену?")) { shiftClose=new Date().toLocaleString(); saveShift(); updateShiftUI(); alert("Смена закрыта: "+shiftClose); }
     }
 
     function loadData() {
-        let s = localStorage.getItem(SERVICES_KEY); if (s) services = JSON.parse(s);
-        let o = localStorage.getItem(OPERATORS_KEY); if (o) operators = JSON.parse(o);
-        let ord = localStorage.getItem(ORDERS_KEY); if (ord) allOrders = JSON.parse(ord);
+        let s=localStorage.getItem(SERVICES_KEY); if(s) services=JSON.parse(s);
+        let o=localStorage.getItem(OPERATORS_KEY); if(o) operators=JSON.parse(o);
+        let ord=localStorage.getItem(ORDERS_KEY); if(ord) allOrders=JSON.parse(ord);
         renderServices(); renderCart(); renderHistory(); loadShift();
-        updateBurgerOperatorName();
-    }
-
-    function updateBurgerOperatorName() {
+        document.getElementById("currentOperatorName").innerHTML = `${currentUser.name} ${currentUser.role==="admin"?"👑":""}`;
         let burgerSpan = document.getElementById("burgerOperatorName");
-        if (burgerSpan && currentUser) {
-            burgerSpan.innerText = `${currentUser.name} ${currentUser.role === "admin" ? "👑" : ""}`;
-        }
+        if(burgerSpan) burgerSpan.innerText = `${currentUser.name} ${currentUser.role==="admin"?"👑":""}`;
     }
 
-    let tempQtys = {};
     function renderServices() {
         const grid = document.getElementById("servicesGrid");
         grid.innerHTML = "";
@@ -816,384 +701,233 @@
             card.innerHTML = `
                 <div class="service-name">${escapeHtml(s.name)}</div>
                 <div class="service-price">${s.price} ₽</div>
-                <div class="qty-controls">
-                    <button class="qty-btn minus" data-id="${s.id}">−</button>
-                    <span class="qty-value" id="qty_${s.id}">0</span>
-                    <button class="qty-btn plus" data-id="${s.id}">+</button>
+                <div class="qty-control">
+                    <input type="number" id="qty_${s.id}" value="0" min="0" step="1" placeholder="кол-во" class="qty-input">
                 </div>
                 <button class="add-btn" data-id="${s.id}">➕ Добавить</button>
             `;
             grid.appendChild(card);
         });
-        document.querySelectorAll(".plus").forEach(btn => btn.onclick = (e) => { e.stopPropagation(); let id = parseInt(btn.getAttribute("data-id")); changeQty(id, 1); });
-        document.querySelectorAll(".minus").forEach(btn => btn.onclick = (e) => { e.stopPropagation(); let id = parseInt(btn.getAttribute("data-id")); changeQty(id, -1); });
         document.querySelectorAll(".add-btn").forEach(btn => btn.onclick = (e) => { e.stopPropagation(); let id = parseInt(btn.getAttribute("data-id")); addServiceById(id); });
     }
 
-    function changeQty(serviceId, delta) { if (!tempQtys[serviceId]) tempQtys[serviceId] = 0; tempQtys[serviceId] += delta; if (tempQtys[serviceId] < 0) tempQtys[serviceId] = 0; let span = document.getElementById(`qty_${serviceId}`); if (span) span.innerText = tempQtys[serviceId]; }
     function addServiceById(serviceId) {
         let service = services.find(s => s.id === serviceId);
-        let qty = tempQtys[serviceId] || 0;
-        if (qty <= 0) { alert("Выберите количество (+/–)"); return; }
+        let qtyInput = document.getElementById(`qty_${serviceId}`);
+        let qty = parseInt(qtyInput?.value) || 0;
+        if(qty <= 0) { alert("Введите количество (1 и больше)"); return; }
         let existing = cart.find(i => i.id === serviceId);
-        if (existing) existing.qty += qty;
+        if(existing) existing.qty += qty;
         else cart.push({ id: serviceId, name: service.name, price: service.price, qty: qty });
-        tempQtys[serviceId] = 0; let span = document.getElementById(`qty_${serviceId}`); if (span) span.innerText = "0";
+        if(qtyInput) qtyInput.value = "0";
         renderCart();
     }
 
     function renderCart() {
         let container = document.getElementById("cartList");
-        let subtotal = 0;
-        let html = "";
+        let subtotal = 0, html = "";
         cart.forEach((item, idx) => {
             let sum = item.price * item.qty;
             subtotal += sum;
-            html += `<div class="cart-item">
-                        <div class="cart-item-info">
-                            <div class="cart-item-name">${escapeHtml(item.name)}</div>
-                            <div class="cart-item-detail">${item.qty} шт × ${item.price} ₽</div>
-                        </div>
-                        <div class="cart-item-price">${sum} ₽</div>
-                        <button class="remove-btn" data-idx="${idx}">Удалить</button>
-                    </div>`;
+            html += `<div class="cart-item"><div class="cart-item-info"><div class="cart-item-name">${escapeHtml(item.name)}</div><div class="cart-item-detail">${item.qty} шт × ${item.price} ₽</div></div><div class="cart-item-price">${sum} ₽</div><button class="remove-btn" data-idx="${idx}">Удалить</button></div>`;
         });
-        container.innerHTML = html || "<div style='padding:30px; text-align:center; color:#8C8C8C;'>Корзина пуста</div>";
-        document.querySelectorAll(".remove-btn").forEach(btn => btn.onclick = () => { let idx = parseInt(btn.getAttribute("data-idx")); cart.splice(idx, 1); renderCart(); });
+        container.innerHTML = html || "<div style='padding:30px;text-align:center;color:var(--text-gray);'>Корзина пуста</div>";
+        document.querySelectorAll(".remove-btn").forEach(btn => btn.onclick = () => { let idx = parseInt(btn.getAttribute("data-idx")); cart.splice(idx,1); renderCart(); });
         let discount = 0;
-        if (discountPct > 0) discount = subtotal * discountPct / 100;
-        else if (discountAmt > 0) discount = Math.min(discountAmt, subtotal);
-        let finalTotal = subtotal - discount;
-        document.getElementById("cartSubtotal").innerHTML = subtotal + " ₽";
-        if (discount > 0) { document.getElementById("discountLine").style.display = "flex"; document.getElementById("cartDiscount").innerHTML = discount + " ₽"; }
-        else document.getElementById("discountLine").style.display = "none";
-        document.getElementById("cartTotal").innerHTML = finalTotal + " ₽";
+        if(discountPct>0) discount = subtotal*discountPct/100;
+        else if(discountAmt>0) discount = Math.min(discountAmt, subtotal);
+        let final = subtotal - discount;
+        document.getElementById("cartSubtotal").innerHTML = subtotal+" ₽";
+        if(discount>0) { document.getElementById("discountLine").style.display="flex"; document.getElementById("cartDiscount").innerHTML = discount+" ₽"; }
+        else document.getElementById("discountLine").style.display="none";
+        document.getElementById("cartTotal").innerHTML = final+" ₽";
     }
 
-    function applyDiscount() { discountPct = parseFloat(document.getElementById("discountPercent").value) || 0; discountAmt = parseFloat(document.getElementById("discountAmount").value) || 0; if (discountPct > 0 && discountAmt > 0) alert("Выберите один тип скидки"); renderCart(); }
-    
+    function applyDiscount() {
+        discountPct = parseFloat(document.getElementById("discountPercent").value) || 0;
+        discountAmt = parseFloat(document.getElementById("discountAmount").value) || 0;
+        if(discountPct>0 && discountAmt>0) alert("Выберите один тип скидки");
+        renderCart();
+    }
+
     function completeOrder() {
-        if (cart.length === 0) { alert("Корзина пуста"); return; }
-        if (!shiftOpen || shiftClose) { alert("Смена не открыта! Нажмите «Открыть смену»"); return; }
+        if(cart.length===0) { alert("Корзина пуста"); return; }
+        if(!shiftOpen || shiftClose) { alert("Смена не открыта! Нажмите «Открыть смену»"); return; }
         let client = document.getElementById("clientName").value.trim() || "Клиент";
         let comment = document.getElementById("orderComment").value;
         let payment = document.querySelector('input[name="payment"]:checked').value;
-        let subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
-        let discount = 0, discPct = 0;
-        if (discountPct > 0) { discount = subtotal * discountPct / 100; discPct = discountPct; }
-        else if (discountAmt > 0) discount = Math.min(discountAmt, subtotal);
-        let finalTotal = subtotal - discount;
-        let newOrder = { id: Date.now(), client, items: cart.map(i => ({ name: i.name, price: i.price, qty: i.qty })), subtotal, discount, discountPercent: discPct, finalTotal, paymentMethod: payment, comment, date: new Date().toLocaleString(), operator: currentUser.name };
-        allOrders.push(newOrder); saveOrders();
-        cart = []; discountPct = 0; discountAmt = 0;
-        document.getElementById("discountPercent").value = 0; document.getElementById("discountAmount").value = 0;
-        document.getElementById("clientName").value = ""; document.getElementById("orderComment").value = "";
+        let subtotal = cart.reduce((s,i)=>s+i.price*i.qty,0);
+        let discount=0, discPct=0;
+        if(discountPct>0) { discount=subtotal*discountPct/100; discPct=discountPct; }
+        else if(discountAmt>0) discount=Math.min(discountAmt,subtotal);
+        let order = { id:Date.now(), client, items:cart.map(i=>({ name:i.name, price:i.price, qty:i.qty })), subtotal, discount, discountPercent:discPct, finalTotal:subtotal-discount, paymentMethod:payment, comment, date:new Date().toLocaleString(), operator:currentUser.name };
+        allOrders.push(order); saveOrders();
+        cart=[]; discountPct=0; discountAmt=0;
+        document.getElementById("discountPercent").value=0; document.getElementById("discountAmount").value=0;
+        document.getElementById("clientName").value=""; document.getElementById("orderComment").value="";
         renderCart(); renderHistory();
-        alert(`Заказ №${newOrder.id} на ${finalTotal} ₽`);
+        alert(`Заказ №${order.id} на ${order.finalTotal} ₽`);
     }
-    
-    function getMyOrders() { return (currentUser.role === "admin") ? allOrders : allOrders.filter(o => o.operator === currentUser.name); }
-    
+
+    function getMyOrders() { return currentUser.role==="admin" ? allOrders : allOrders.filter(o=>o.operator===currentUser.name); }
     function renderHistory() {
         let my = getMyOrders();
-        let container = document.getElementById("historyList");
-        if (my.length === 0) { container.innerHTML = "<div style='padding:40px; text-align:center; color:#8C8C8C;'>Нет заказов</div>"; return; }
-        let html = "";
-        [...my].reverse().forEach(o => {
-            let itemsShort = o.items.map(i => `${i.name} x${i.qty}`).join(", ");
-            html += `<div class="history-item">
-                        <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
-                            <span><strong>${escapeHtml(o.client)}</strong> | ${o.date}</span>
-                            <span style="font-weight: 800; color: var(--c-magenta);">${o.finalTotal} ₽</span>
-                        </div>
-                        <div style="font-size: 11px; margin: 8px 0; color: #8C8C8C;">${itemsShort}</div>
-                        <div style="font-size: 11px;">${o.paymentMethod === "cash" ? "💵 Наличные" : "💳 Карта"} ${o.comment ? " | " + o.comment : ""}</div>
-                        <button class="delete-order" data-id="${o.id}" style="margin-top: 8px; background:#c2412c; border:none; border-radius:30px; padding:5px 14px; color:white; font-size:11px;">Удалить</button>
-                    </div>`;
+        let cont = document.getElementById("historyList");
+        if(!my.length) { cont.innerHTML="<div style='padding:40px;text-align:center;color:var(--text-gray);'>Нет заказов</div>"; return; }
+        let html="";
+        [...my].reverse().forEach(o=>{
+            html+=`<div class="history-item"><div style="display:flex;justify-content:space-between;"><span><strong>${escapeHtml(o.client)}</strong> | ${o.date}</span><span style="font-weight:800;">${o.finalTotal} ₽</span></div><div style="font-size:11px;margin:6px 0;">${o.items.map(i=>`${i.name} x${i.qty}`).join(", ")}</div><div style="font-size:11px;">${o.paymentMethod==="cash"?"💵 Наличные":"💳 Карта"} ${o.comment?" | "+o.comment:""}</div><button class="delete-order" data-id="${o.id}" style="margin-top:8px; background:#C2412C; border:none; border-radius:30px; padding:5px 14px; color:white;">Удалить</button></div>`;
         });
-        container.innerHTML = html;
-        document.querySelectorAll(".delete-order").forEach(btn => btn.onclick = () => { let id = parseInt(btn.getAttribute("data-id")); allOrders = allOrders.filter(o => o.id !== id); saveOrders(); renderHistory(); });
+        cont.innerHTML=html;
+        document.querySelectorAll(".delete-order").forEach(btn=>btn.onclick=()=>{ let id=parseInt(btn.getAttribute("data-id")); allOrders=allOrders.filter(o=>o.id!==id); saveOrders(); renderHistory(); });
     }
-    
-    function clearMyOrders() { if (confirm("Очистить все свои заказы?")) { if (currentUser.role === "admin") allOrders = []; else allOrders = allOrders.filter(o => o.operator !== currentUser.name); saveOrders(); renderHistory(); } }
-    
-    // ========== ПЕЧАТЬ БЛАНКА ЗАКАЗА (2 экземпляра на А4) ==========
-    function printOrderBlank() {
-        if (cart.length === 0) {
-            alert("Корзина пуста! Добавьте услуги для печати бланка.");
-            return;
-        }
-        
-        let client = document.getElementById("clientName").value.trim() || "Клиент";
-        let comment = document.getElementById("orderComment").value;
-        let payment = document.querySelector('input[name="payment"]:checked').value;
-        let subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
-        let discount = 0;
-        if (discountPct > 0) discount = subtotal * discountPct / 100;
-        else if (discountAmt > 0) discount = Math.min(discountAmt, subtotal);
-        let finalTotal = subtotal - discount;
-        let orderNumber = Date.now();
-        let currentDate = new Date().toLocaleString();
-        
-        let itemsHtml = "";
-        cart.forEach(item => {
-            let sum = item.price * item.qty;
-            itemsHtml += `<tr><td>${escapeHtml(item.name)}</td><td style="text-align:center">${item.qty}</td><td style="text-align:center">${item.price} ₽</td><td style="text-align:right">${sum} ₽</td></tr>`;
+    function clearMyOrders() { if(confirm("Очистить все свои заказы?")) { if(currentUser.role==="admin") allOrders=[]; else allOrders=allOrders.filter(o=>o.operator!==currentUser.name); saveOrders(); renderHistory(); } }
+
+    function getOperatorsStats() {
+        let stats={};
+        for(let [login,data] of Object.entries(operators)) stats[login]={ name:data.name, orders:0, revenue:0, cash:0, card:0 };
+        allOrders.forEach(o=>{
+            let op=Object.keys(operators).find(l=>operators[l].name===o.operator);
+            if(op){ stats[op].orders++; stats[op].revenue+=o.finalTotal; if(o.paymentMethod==="cash") stats[op].cash+=o.finalTotal; else stats[op].card+=o.finalTotal; }
         });
-        
-        let blankHtml = `
-            <div class="blank-page">
-                <div class="blank-header">
-                    <h2>A4‑ПРИНТ</h2>
-                    <div class="cmyk-colors"><div style="background:#00A3E0"></div><div style="background:#E2007A"></div><div style="background:#FFD100"></div><div style="background:#231F20"></div></div>
-                    <p>Копировальный центр | Кассовый чек</p>
-                </div>
-                <div class="blank-order-info">
-                    <span><strong>№ заказа:</strong> ${orderNumber}</span>
-                    <span><strong>Дата:</strong> ${currentDate}</span>
-                    <span><strong>Оператор:</strong> ${currentUser.name}</span>
-                </div>
-                <div class="blank-order-info">
-                    <span><strong>Клиент:</strong> ${escapeHtml(client)}</span>
-                    <span><strong>Оплата:</strong> ${payment === "cash" ? "Наличные" : "Карта"}</span>
-                </div>
-                <table class="blank-items">
-                    <thead><tr><th>Услуга</th><th style="width:60px">Кол-во</th><th style="width:80px">Цена</th><th style="width:80px">Сумма</th></tr></thead>
-                    <tbody>${itemsHtml}</tbody>
-                </table>
-                <div class="blank-total">
-                    <div>Подытог: ${subtotal} ₽</div>
-                    ${discount > 0 ? `<div>Скидка: -${discount} ₽</div>` : ""}
-                    <div style="font-size:16px; margin-top:8px;"><strong>ИТОГО: ${finalTotal} ₽</strong></div>
-                </div>
-                ${comment ? `<div style="margin:10px 0; padding:8px; background:#f5f5f5;"><strong>Комментарий:</strong> ${escapeHtml(comment)}</div>` : ""}
-                <div class="blank-footer">
-                    <span>Спасибо за заказ!</span>
-                    <span>тел: +7 (XXX) XXX-XX-XX</span>
-                </div>
-                <div class="copy-label">────────── ОСНОВНОЙ ЭКЗЕМПЛЯР ──────────</div>
-            </div>
-            <div class="blank-page">
-                <div class="blank-header">
-                    <h2>A4‑ПРИНТ</h2>
-                    <div class="cmyk-colors"><div style="background:#00A3E0"></div><div style="background:#E2007A"></div><div style="background:#FFD100"></div><div style="background:#231F20"></div></div>
-                    <p>Копировальный центр | Копия для клиента</p>
-                </div>
-                <div class="blank-order-info">
-                    <span><strong>№ заказа:</strong> ${orderNumber}</span>
-                    <span><strong>Дата:</strong> ${currentDate}</span>
-                    <span><strong>Оператор:</strong> ${currentUser.name}</span>
-                </div>
-                <div class="blank-order-info">
-                    <span><strong>Клиент:</strong> ${escapeHtml(client)}</span>
-                    <span><strong>Оплата:</strong> ${payment === "cash" ? "Наличные" : "Карта"}</span>
-                </div>
-                <table class="blank-items">
-                    <thead><tr><th>Услуга</th><th style="width:60px">Кол-во</th><th style="width:80px">Цена</th><th style="width:80px">Сумма</th></tr></thead>
-                    <tbody>${itemsHtml}</tbody>
-                </table>
-                <div class="blank-total">
-                    <div>Подытог: ${subtotal} ₽</div>
-                    ${discount > 0 ? `<div>Скидка: -${discount} ₽</div>` : ""}
-                    <div style="font-size:16px; margin-top:8px;"><strong>ИТОГО: ${finalTotal} ₽</strong></div>
-                </div>
-                ${comment ? `<div style="margin:10px 0; padding:8px; background:#f5f5f5;"><strong>Комментарий:</strong> ${escapeHtml(comment)}</div>` : ""}
-                <div class="blank-footer">
-                    <span>Спасибо за заказ!</span>
-                    <span>тел: +7 (XXX) XXX-XX-XX</span>
-                </div>
-                <div class="copy-label">─────────────── КОПИЯ ───────────────</div>
-            </div>
-        `;
-        
-        let container = document.getElementById("printBlankContainer");
-        container.innerHTML = blankHtml;
-        
-        window.print();
-        
-        setTimeout(() => {
-            container.innerHTML = "";
-        }, 1000);
+        return stats;
     }
-    
-    function getFullOperatorsStats() {
-        let stats = [];
-        for (let [login, data] of Object.entries(operators)) {
-            let operatorOrders = allOrders.filter(o => o.operator === data.name);
-            let totalRevenue = operatorOrders.reduce((sum, o) => sum + o.finalTotal, 0);
-            let totalCash = operatorOrders.filter(o => o.paymentMethod === "cash").reduce((sum, o) => sum + o.finalTotal, 0);
-            let totalCard = operatorOrders.filter(o => o.paymentMethod === "card").reduce((sum, o) => sum + o.finalTotal, 0);
-            let avgCheck = operatorOrders.length > 0 ? Math.round(totalRevenue / operatorOrders.length) : 0;
-            stats.push({ login, name: data.name, role: data.role, ordersCount: operatorOrders.length, totalRevenue, totalCash, totalCard, avgCheck });
-        }
-        return stats.sort((a,b) => b.totalRevenue - a.totalRevenue);
-    }
-    
+
     function showOperatorsStats() {
-        let stats = getFullOperatorsStats();
-        let container = document.getElementById("operatorsStatsContent");
-        let html = `<div style="margin-bottom: 16px;"><strong>Общая статистика по всем операторам</strong></div>`;
-        stats.forEach(stat => {
-            html += `<div class="stat-card">
-                        <div class="stat-row"><span><strong>${escapeHtml(stat.name)}</strong> ${stat.role === "admin" ? "👑" : "👤"}</span><span class="stat-value">${stat.ordersCount} заказов</span></div>
-                        <div class="stat-row"><span>💰 Общая выручка:</span><span class="stat-value">${stat.totalRevenue.toLocaleString()} ₽</span></div>
-                        <div class="stat-row"><span>💵 Наличные:</span><span>${stat.totalCash.toLocaleString()} ₽</span></div>
-                        <div class="stat-row"><span>💳 Карта:</span><span>${stat.totalCard.toLocaleString()} ₽</span></div>
-                        <div class="stat-row"><span>📊 Средний чек:</span><span class="stat-value">${stat.avgCheck.toLocaleString()} ₽</span></div>
-                    </div>`;
-        });
-        let totalRevenueAll = stats.reduce((sum, s) => sum + s.totalRevenue, 0);
-        let totalOrdersAll = stats.reduce((sum, s) => sum + s.ordersCount, 0);
-        html += `<div class="stat-card" style="background: #E6F4FA;"><div class="stat-row"><span><strong>📊 ИТОГО ПО ЦЕНТРУ</strong></span><span class="stat-value">${totalOrdersAll} заказов</span></div><div class="stat-row"><span>💰 Общая выручка:</span><span class="stat-value">${totalRevenueAll.toLocaleString()} ₽</span></div></div>`;
-        container.innerHTML = html;
-        document.getElementById("operatorsStatsModal").style.display = "flex";
+        let stats=getOperatorsStats();
+        let html="";
+        for(let [login,st] of Object.entries(stats)) {
+            let avg=st.orders?Math.round(st.revenue/st.orders):0;
+            html+=`<div class="stat-card"><div class="stat-row"><span><strong>${st.name}</strong> ${login==="admin"?"👑":"👤"}</span><span class="stat-value">${st.orders} заказов</span></div><div class="stat-row"><span>💰 Выручка:</span><span class="stat-value">${st.revenue.toLocaleString()} ₽</span></div><div class="stat-row"><span>💵 Наличные:</span><span>${st.cash.toLocaleString()} ₽</span></div><div class="stat-row"><span>💳 Карта:</span><span>${st.card.toLocaleString()} ₽</span></div><div class="stat-row"><span>📊 Средний чек:</span><span class="stat-value">${avg.toLocaleString()} ₽</span></div></div>`;
+        }
+        document.getElementById("operatorsStatsContent").innerHTML=html;
+        document.getElementById("operatorsStatsModal").style.display="flex";
     }
-    
-    function exportStatsToExcel() {
-        let stats = getFullOperatorsStats();
-        let data = [["Оператор", "Роль", "Кол-во заказов", "Выручка (₽)", "Наличные (₽)", "Карта (₽)", "Средний чек (₽)"]];
-        stats.forEach(stat => data.push([stat.name, stat.role === "admin" ? "Администратор" : "Оператор", stat.ordersCount, stat.totalRevenue, stat.totalCash, stat.totalCard, stat.avgCheck]));
-        let totalRevenueAll = stats.reduce((sum, s) => sum + s.totalRevenue, 0);
-        let totalOrdersAll = stats.reduce((sum, s) => sum + s.ordersCount, 0);
-        data.push(["ИТОГО", "", totalOrdersAll, totalRevenueAll, "", "", ""]);
-        let ws = XLSX.utils.aoa_to_sheet(data);
-        let wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "Статистика_операторов");
-        XLSX.writeFile(wb, `A4print_статистика_операторов_${new Date().toISOString().slice(0,10)}.xlsx`);
+
+    function exportStatsExcel() {
+        let stats=getOperatorsStats();
+        let data=[["Оператор","Заказов","Выручка (₽)","Наличные","Карта","Средний чек"]];
+        for(let [login,st] of Object.entries(stats)) {
+            let avg=st.orders?Math.round(st.revenue/st.orders):0;
+            data.push([st.name, st.orders, st.revenue, st.cash, st.card, avg]);
+        }
+        let ws=XLSX.utils.aoa_to_sheet(data), wb=XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb,ws,"Статистика");
+        XLSX.writeFile(wb,`A4print_stats_${new Date().toISOString().slice(0,19)}.xlsx`);
     }
-    
+
     function generatePDFReport() {
-        let my = getMyOrders();
-        let totalCash = my.filter(o => o.paymentMethod === "cash").reduce((s, o) => s + o.finalTotal, 0);
-        let totalCard = my.filter(o => o.paymentMethod === "card").reduce((s, o) => s + o.finalTotal, 0);
-        let totalRevenue = totalCash + totalCard;
-        let html = `<div class="pdf-report"><div style="text-align:center;"><h2>A4-ПРИНТ</h2><p>Кассовый отчёт</p><p>Оператор: ${currentUser.name}</p><p>Смена: ${shiftOpen || "—"} → ${shiftClose || "—"}</p></div><hr><div><strong>ИТОГИ:</strong></div><div>📦 Заказов: ${my.length}</div><div>💰 Выручка: ${totalRevenue} ₽</div><div>💵 Наличные: ${totalCash} ₽</div><div>💳 Карта: ${totalCard} ₽</div><hr><div><strong>ДЕТАЛИ ЗАКАЗОВ:</strong></div>${my.map(o => `<div style="border:1px solid #aaa; margin:12px 0; padding:10px;"><div>№${o.id} | ${o.date}</div><div>${o.client}</div><div>${o.items.map(i => `${i.name} x${i.qty}`).join(", ")}</div><div>Итого: ${o.finalTotal} ₽ | ${o.paymentMethod === "cash" ? "Нал" : "Карта"} ${o.comment ? " | " + o.comment : ""}</div></div>`).join('')}<hr><div style="text-align:center;">Подпись: _______________</div></div>`;
-        let el = document.createElement('div'); el.innerHTML = html; document.body.appendChild(el);
-        html2pdf().set({ margin: 0.5, filename: `A4print_${currentUser.name}_${Date.now()}.pdf`, html2canvas: { scale: 2 } }).from(el).save().then(() => el.remove());
+        let my=getMyOrders();
+        let cash=my.filter(o=>o.paymentMethod==="cash").reduce((s,o)=>s+o.finalTotal,0);
+        let card=my.filter(o=>o.paymentMethod==="card").reduce((s,o)=>s+o.finalTotal,0);
+        let html=`<div style="font-family:monospace; padding:20px;"><div style="text-align:center;"><h2>A4-ПРИНТ</h2><p>Отчёт за смену</p><p>${currentUser.name} | ${shiftOpen||"—"} → ${shiftClose||"—"}</p></div><hr><div><strong>ИТОГИ:</strong><br>📦 Заказов: ${my.length}<br>💰 Выручка: ${cash+card} ₽<br>💵 Наличные: ${cash} ₽<br>💳 Карта: ${card} ₽</div><hr><div><strong>ДЕТАЛИ:</strong></div>${my.map(o=>`<div style="border:1px solid #aaa; margin:10px 0; padding:8px;"><div>№${o.id} | ${o.date}</div><div>${o.client}</div><div>${o.items.map(i=>`${i.name} x${i.qty}`).join(", ")}</div><div>Итого: ${o.finalTotal} ₽ | ${o.paymentMethod==="cash"?"Нал":"Карта"} ${o.comment?" | "+o.comment:""}</div></div>`).join('')}<hr><div style="text-align:center;">Подпись: _______________</div></div>`;
+        let el=document.createElement('div'); el.innerHTML=html; document.body.appendChild(el);
+        html2pdf().set({ margin:0.5, filename:`A4print_report_${currentUser.name}.pdf`, html2canvas:{scale:2} }).from(el).save().then(()=>el.remove());
     }
-    
+
+    function printOrderBlank() {
+        if(cart.length===0) { alert("Корзина пуста"); return; }
+        let client=document.getElementById("clientName").value.trim()||"Клиент";
+        let comment=document.getElementById("orderComment").value;
+        let payment=document.querySelector('input[name="payment"]:checked').value;
+        let subtotal=cart.reduce((s,i)=>s+i.price*i.qty,0);
+        let discount=discountPct?subtotal*discountPct/100:(discountAmt?Math.min(discountAmt,subtotal):0);
+        let final=subtotal-discount;
+        let itemsHtml=cart.map(i=>`<tr><td>${escapeHtml(i.name)}</td><td>${i.qty}</td><td>${i.price} ₽</td><td>${i.price*i.qty} ₽</td></tr>`).join('');
+        let html=`<div class="blank-page"><div style="text-align:center; margin-bottom:20px;"><h2>A4-ПРИНТ</h2><p>Копировальный центр</p></div><div><strong>№ заказа:</strong> ${Date.now()}</div><div><strong>Дата:</strong> ${new Date().toLocaleString()}</div><div><strong>Оператор:</strong> ${currentUser.name}</div><div><strong>Клиент:</strong> ${escapeHtml(client)}</div><div><strong>Оплата:</strong> ${payment==="cash"?"Наличные":"Карта"}</div><table border="1" cellpadding="5" cellspacing="0" style="width:100%; margin:15px 0;"><tr><th>Услуга</th><th>Кол-во</th><th>Цена</th><th>Сумма</th></tr>${itemsHtml}</table><div style="text-align:right;">Подытог: ${subtotal} ₽<br>${discount?`Скидка: -${discount} ₽<br>`:""}<strong>ИТОГО: ${final} ₽</strong></div>${comment?`<div>Комментарий: ${escapeHtml(comment)}</div>`:""}<div style="margin-top:30px; text-align:center;">Спасибо за заказ!</div><div class="copy-label">──────── ОСНОВНОЙ ЭКЗЕМПЛЯР ────────</div></div><div class="blank-page"><div style="text-align:center; margin-bottom:20px;"><h2>A4-ПРИНТ</h2><p>Копировальный центр — КОПИЯ</p></div><div><strong>№ заказа:</strong> ${Date.now()}</div><div><strong>Дата:</strong> ${new Date().toLocaleString()}</div><div><strong>Оператор:</strong> ${currentUser.name}</div><div><strong>Клиент:</strong> ${escapeHtml(client)}</div><div><strong>Оплата:</strong> ${payment==="cash"?"Наличные":"Карта"}</div><table border="1" cellpadding="5" cellspacing="0" style="width:100%; margin:15px 0;"><tr><th>Услуга</th><th>Кол-во</th><th>Цена</th><th>Сумма</th></tr>${itemsHtml}</table><div style="text-align:right;">Подытог: ${subtotal} ₽<br>${discount?`Скидка: -${discount} ₽<br>`:""}<strong>ИТОГО: ${final} ₽</strong></div>${comment?`<div>Комментарий: ${escapeHtml(comment)}</div>`:""}<div style="margin-top:30px; text-align:center;">Спасибо за заказ!</div><div class="copy-label">─────────── КОПИЯ КЛИЕНТА ───────────</div></div>`;
+        let cont=document.getElementById("printBlankContainer"); cont.innerHTML=html;
+        window.print(); setTimeout(()=>cont.innerHTML="",1000);
+    }
+
     function exportExcel() {
-        let my = getMyOrders();
-        if (!my.length) return alert("Нет данных");
-        let data = [["ID","Клиент","Услуги","Сумма","Скидка","Итого","Оплата","Дата","Комментарий"]];
-        my.forEach(o => data.push([o.id, o.client, o.items.map(i=>`${i.name} x${i.qty}`).join("; "), o.subtotal, o.discount, o.finalTotal, o.paymentMethod==="cash"?"Наличные":"Карта", o.date, o.comment||""]));
-        let ws = XLSX.utils.aoa_to_sheet(data); let wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "A4_Принт"); XLSX.writeFile(wb, `A4print_${currentUser.name}.xlsx`);
+        let my=getMyOrders();
+        if(!my.length) return alert("Нет данных");
+        let data=[["ID","Клиент","Услуги","Сумма","Скидка","Итого","Оплата","Дата","Комментарий"]];
+        my.forEach(o=>data.push([o.id, o.client, o.items.map(i=>`${i.name} x${i.qty}`).join("; "), o.subtotal, o.discount, o.finalTotal, o.paymentMethod==="cash"?"Наличные":"Карта", o.date, o.comment||""]));
+        let ws=XLSX.utils.aoa_to_sheet(data), wb=XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb,ws,"A4_Принт");
+        XLSX.writeFile(wb,`A4print_${currentUser.name}.xlsx`);
     }
 
     function renderAdmin() {
-        let adminServices = document.getElementById("adminServicesList");
-        adminServices.innerHTML = "";
-        services.forEach(s => {
-            adminServices.innerHTML += `<div style="display:flex; gap:12px; margin-bottom:12px; align-items:center; flex-wrap:wrap;"><span style="flex:2; font-size:13px;">${s.name}</span><input type="number" id="price_${s.id}" value="${s.price}" style="width:90px;"><button class="updateService" data-id="${s.id}" style="background: var(--c-cyan); color: var(--c-black);">💾</button><button class="deleteService" data-id="${s.id}" style="background: var(--c-magenta);">🗑</button></div>`;
-        });
-        document.querySelectorAll(".updateService").forEach(btn => btn.onclick = () => { let id = parseInt(btn.getAttribute("data-id")); let s = services.find(x => x.id === id); if (s) { s.price = parseInt(document.getElementById(`price_${id}`).value); saveServices(); renderServices(); renderAdmin(); } });
-        document.querySelectorAll(".deleteService").forEach(btn => btn.onclick = () => { let id = parseInt(btn.getAttribute("data-id")); if (services.length <= 1) return alert("Нельзя удалить последнюю услугу"); services = services.filter(x => x.id !== id); saveServices(); renderServices(); renderAdmin(); });
-        let opsDiv = document.getElementById("operatorsList");
-        opsDiv.innerHTML = "";
-        for (let [login, data] of Object.entries(operators)) { if (login === "admin") continue; opsDiv.innerHTML += `<div style="display:flex; gap:12px; margin-bottom:12px; align-items:center; flex-wrap:wrap;"><span style="min-width:100px;">${data.name} (${login})</span><input type="password" id="pass_${login}" placeholder="Новый пароль" style="flex:1;"><button class="changePass" data-login="${login}" style="background: var(--c-yellow); color: var(--c-black);">🔑</button><button class="deleteOp" data-login="${login}" style="background: var(--c-magenta);">🗑</button></div>`; }
-        document.querySelectorAll(".changePass").forEach(btn => btn.onclick = () => { let log = btn.getAttribute("data-login"); let newP = document.getElementById(`pass_${log}`).value; if (newP) { operators[log].password = newP; saveOperators(); alert("Пароль изменён"); } });
-        document.querySelectorAll(".deleteOp").forEach(btn => btn.onclick = () => { let log = btn.getAttribute("data-login"); if (confirm("Удалить оператора?")) { delete operators[log]; saveOperators(); renderAdmin(); } });
+        let aDiv=document.getElementById("adminServicesList");
+        aDiv.innerHTML="";
+        services.forEach(s=>{ aDiv.innerHTML+=`<div style="display:flex; gap:12px; margin-bottom:12px;"><span style="flex:2;">${s.name}</span><input type="number" id="price_${s.id}" value="${s.price}" style="width:90px;"><button class="updateService" data-id="${s.id}" style="background:var(--primary-blue);">💾</button><button class="deleteService" data-id="${s.id}" style="background:#C2412C;">🗑</button></div>`; });
+        document.querySelectorAll(".updateService").forEach(btn=>btn.onclick=()=>{ let id=parseInt(btn.getAttribute("data-id")); let s=services.find(x=>x.id===id); if(s){ s.price=parseInt(document.getElementById(`price_${id}`).value); saveServices(); renderServices(); renderAdmin(); } });
+        document.querySelectorAll(".deleteService").forEach(btn=>btn.onclick=()=>{ let id=parseInt(btn.getAttribute("data-id")); if(services.length<=1) return alert("Нельзя удалить последнюю услугу"); services=services.filter(x=>x.id!==id); saveServices(); renderServices(); renderAdmin(); });
+        let opDiv=document.getElementById("operatorsList");
+        opDiv.innerHTML="";
+        for(let [login,data] of Object.entries(operators)){ if(login==="admin") continue; opDiv.innerHTML+=`<div style="display:flex; gap:12px; margin-bottom:12px; flex-wrap:wrap;"><span>${data.name} (${login})</span><input type="password" id="pass_${login}" placeholder="Новый пароль"><button class="changePass" data-login="${login}" style="background:var(--primary-yellow); color:black;">🔑</button><button class="deleteOp" data-login="${login}" style="background:#C2412C;">🗑</button></div>`; }
+        document.querySelectorAll(".changePass").forEach(btn=>btn.onclick=()=>{ let log=btn.getAttribute("data-login"); let p=document.getElementById(`pass_${log}`).value; if(p){ operators[log].password=p; saveOperators(); alert("Пароль изменён"); } });
+        document.querySelectorAll(".deleteOp").forEach(btn=>btn.onclick=()=>{ let log=btn.getAttribute("data-login"); if(confirm("Удалить оператора?")){ delete operators[log]; saveOperators(); renderAdmin(); } });
     }
 
-    function initTheme() { 
-        if (localStorage.getItem("a4print_theme") === "dark") { 
-            document.body.classList.add("dark"); 
-            document.getElementById("themeToggleBtn").innerHTML = "☀️ Светлая";
-            let burgerTheme = document.getElementById("burgerThemeToggle");
-            if(burgerTheme) burgerTheme.innerHTML = "☀️ Светлая";
-        } else {
-            document.getElementById("themeToggleBtn").innerHTML = "🌙 Тёмная";
-            let burgerTheme = document.getElementById("burgerThemeToggle");
-            if(burgerTheme) burgerTheme.innerHTML = "🌙 Тёмная";
+    let theme=localStorage.getItem("a4print_theme");
+    if(theme==="dark") document.body.classList.add("dark");
+    function toggleTheme(){
+        if(document.body.classList.contains("dark")){ document.body.classList.remove("dark"); localStorage.setItem("a4print_theme","light"); }
+        else{ document.body.classList.add("dark"); localStorage.setItem("a4print_theme","dark"); }
+    }
+
+    function login(login,pwd){
+        let u=operators[login.toLowerCase()];
+        if(u && u.password===pwd){
+            currentUser={...u, username:login.toLowerCase()};
+            localStorage.setItem("a4print_current_user",JSON.stringify(currentUser));
+            document.getElementById("loginOverlay").style.display="none";
+            document.getElementById("mainContent").style.display="block";
+            loadData();
+            return true;
         }
+        document.getElementById("loginError").innerText="Неверный логин или пароль";
+        return false;
     }
-    function toggleTheme() { 
-        if (document.body.classList.contains("dark")) { 
-            document.body.classList.remove("dark"); 
-            localStorage.setItem("a4print_theme", "light"); 
-            document.getElementById("themeToggleBtn").innerHTML = "🌙 Тёмная";
-            let burgerTheme = document.getElementById("burgerThemeToggle");
-            if(burgerTheme) burgerTheme.innerHTML = "🌙 Тёмная";
-        } else { 
-            document.body.classList.add("dark"); 
-            localStorage.setItem("a4print_theme", "dark"); 
-            document.getElementById("themeToggleBtn").innerHTML = "☀️ Светлая";
-            let burgerTheme = document.getElementById("burgerThemeToggle");
-            if(burgerTheme) burgerTheme.innerHTML = "☀️ Светлая";
-        } 
-    }
-    
-    function login(login, pwd) { let u = operators[login.toLowerCase()]; if (u && u.password === pwd) { currentUser = { ...u, username: login.toLowerCase() }; localStorage.setItem("a4print_current_user", JSON.stringify(currentUser)); document.getElementById("loginOverlay").style.display = "none"; document.getElementById("mainContent").style.display = "block"; document.getElementById("currentOperatorName").innerHTML = `${u.name} ${u.role === "admin" ? "👑" : ""}`; loadData(); return true; } document.getElementById("loginError").innerText = "Неверный логин/пароль"; return false; }
-    function logout() { currentUser = null; localStorage.removeItem("a4print_current_user"); location.reload(); }
-    function escapeHtml(str) { return str ? String(str).replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m])) : ""; }
+    function logout(){ currentUser=null; localStorage.removeItem("a4print_current_user"); location.reload(); }
+    function escapeHtml(str){ return str?String(str).replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m])):""; }
 
-    function initBurger() {
-        const burgerBtn = document.getElementById("burgerBtn");
-        const burgerMenu = document.getElementById("burgerMenu");
-        if (burgerBtn && burgerMenu) {
-            burgerBtn.addEventListener("click", (e) => {
-                e.stopPropagation();
-                burgerMenu.classList.toggle("show");
-            });
-            document.addEventListener("click", (e) => {
-                if (!burgerMenu.contains(e.target) && !burgerBtn.contains(e.target)) {
-                    burgerMenu.classList.remove("show");
-                }
-            });
+    function initBurger(){
+        let btn=document.getElementById("burgerBtn"), menu=document.getElementById("burgerMenu");
+        if(btn && menu){
+            btn.onclick=(e)=>{ e.stopPropagation(); menu.classList.toggle("show"); };
+            document.addEventListener("click",(e)=>{ if(!menu.contains(e.target) && !btn.contains(e.target)) menu.classList.remove("show"); });
         }
-        
-        let burgerTheme = document.getElementById("burgerThemeToggle");
-        if(burgerTheme) burgerTheme.onclick = () => { toggleTheme(); burgerMenu.classList.remove("show"); };
-        
-        let burgerAdmin = document.getElementById("burgerAdminBtn");
-        if(burgerAdmin) burgerAdmin.onclick = () => { 
-            if(currentUser && currentUser.role === "admin") { renderAdmin(); document.getElementById("adminModal").style.display = "flex"; }
-            else alert("Доступно только администратору");
-            burgerMenu.classList.remove("show");
-        };
-        
-        let burgerShift = document.getElementById("burgerShiftBtn");
-        if(burgerShift) burgerShift.onclick = () => { toggleShift(); burgerMenu.classList.remove("show"); };
-        
-        let burgerPdf = document.getElementById("burgerPdfBtn");
-        if(burgerPdf) burgerPdf.onclick = () => { generatePDFReport(); burgerMenu.classList.remove("show"); };
-        
-        let burgerPrintBlank = document.getElementById("burgerPrintBlankBtn");
-        if(burgerPrintBlank) burgerPrintBlank.onclick = () => { printOrderBlank(); burgerMenu.classList.remove("show"); };
-        
-        let burgerLogout = document.getElementById("burgerLogoutBtn");
-        if(burgerLogout) burgerLogout.onclick = () => { logout(); burgerMenu.classList.remove("show"); };
+        document.getElementById("burgerThemeToggle").onclick=()=>{ toggleTheme(); menu.classList.remove("show"); };
+        document.getElementById("burgerAdminBtn").onclick=()=>{ if(currentUser?.role==="admin"){ renderAdmin(); document.getElementById("adminModal").style.display="flex"; } else alert("Доступно только администратору"); menu.classList.remove("show"); };
+        document.getElementById("burgerShiftBtn").onclick=()=>{ toggleShift(); menu.classList.remove("show"); };
+        document.getElementById("burgerPdfBtn").onclick=()=>{ generatePDFReport(); menu.classList.remove("show"); };
+        document.getElementById("burgerPrintBtn").onclick=()=>{ printOrderBlank(); menu.classList.remove("show"); };
+        document.getElementById("burgerLogoutBtn").onclick=()=>{ logout(); menu.classList.remove("show"); };
     }
 
-    document.addEventListener("DOMContentLoaded", () => {
-        initTheme();
-        let saved = localStorage.getItem("a4print_current_user");
-        if (saved) { try { currentUser = JSON.parse(saved); if (operators[currentUser.username]) { document.getElementById("loginOverlay").style.display = "none"; document.getElementById("mainContent").style.display = "block"; document.getElementById("currentOperatorName").innerHTML = `${currentUser.name} ${currentUser.role === "admin" ? "👑" : ""}`; loadData(); initBurger(); } else logout(); } catch(e) { logout(); } } else { initBurger(); }
-        
-        document.getElementById("themeToggleBtn").onclick = toggleTheme;
-        document.getElementById("loginBtn").onclick = () => login(document.getElementById("loginUsername").value, document.getElementById("loginPassword").value);
-        document.getElementById("logoutBtn").onclick = logout;
-        document.getElementById("applyDiscountBtn").onclick = applyDiscount;
-        document.getElementById("completeOrderBtn").onclick = completeOrder;
-        document.getElementById("clearCartBtn").onclick = () => { cart = []; discountPct = 0; discountAmt = 0; renderCart(); };
-        document.getElementById("exportExcelBtn").onclick = exportExcel;
-        document.getElementById("clearHistoryBtn").onclick = clearMyOrders;
-        document.getElementById("pdfReportBtn").onclick = generatePDFReport;
-        document.getElementById("shiftToggleBtn").onclick = toggleShift;
-        document.getElementById("printBlankBtn").onclick = printOrderBlank;
-        
-        let adminModal = document.getElementById("adminModal");
-        document.getElementById("adminPanelBtn").onclick = () => { renderAdmin(); adminModal.style.display = "flex"; };
-        document.getElementById("closeAdminModal").onclick = () => adminModal.style.display = "none";
-        
-        document.getElementById("viewOperatorsStatsBtn").onclick = showOperatorsStats;
-        document.getElementById("closeStatsModal").onclick = () => document.getElementById("operatorsStatsModal").style.display = "none";
-        document.getElementById("exportStatsExcelBtn").onclick = exportStatsToExcel;
-        
-        document.getElementById("addServiceBtn").onclick = () => { let name = document.getElementById("newServiceName").value.trim(); let price = parseInt(document.getElementById("newServicePrice").value); if (name && price > 0) { services.push({ id: Date.now(), name, price }); saveServices(); renderServices(); renderAdmin(); } else alert("Введите название и цену"); };
-        document.getElementById("addOperatorBtn").onclick = () => { let login = document.getElementById("newOpLogin").value.trim().toLowerCase(); let name = document.getElementById("newOpName").value.trim(); let pass = document.getElementById("newOpPass").value.trim(); if (login && name && pass) { if (operators[login]) { alert("Логин уже есть"); return; } operators[login] = { password: pass, name, role: "operator" }; saveOperators(); renderAdmin(); } else alert("Заполните все поля"); };
-        
-        window.onclick = (e) => { if (e.target === adminModal) adminModal.style.display = "none"; if (e.target === document.getElementById("operatorsStatsModal")) document.getElementById("operatorsStatsModal").style.display = "none"; };
+    document.addEventListener("DOMContentLoaded",()=>{
+        let saved=localStorage.getItem("a4print_current_user");
+        if(saved){
+            try{
+                currentUser=JSON.parse(saved);
+                if(operators[currentUser.username]){ document.getElementById("loginOverlay").style.display="none"; document.getElementById("mainContent").style.display="block"; loadData(); initBurger(); }
+                else logout();
+            }catch(e){ logout(); }
+        } else { initBurger(); }
+        document.getElementById("themeToggleBtn").onclick=toggleTheme;
+        document.getElementById("loginBtn").onclick=()=>login(document.getElementById("loginUsername").value, document.getElementById("loginPassword").value);
+        document.getElementById("logoutBtn").onclick=logout;
+        document.getElementById("applyDiscountBtn").onclick=applyDiscount;
+        document.getElementById("completeOrderBtn").onclick=completeOrder;
+        document.getElementById("clearCartBtn").onclick=()=>{ cart=[]; discountPct=0; discountAmt=0; renderCart(); };
+        document.getElementById("exportExcelBtn").onclick=exportExcel;
+        document.getElementById("clearHistoryBtn").onclick=clearMyOrders;
+        document.getElementById("pdfReportBtn").onclick=generatePDFReport;
+        document.getElementById("shiftToggleBtn").onclick=toggleShift;
+        document.getElementById("printBlankBtn").onclick=printOrderBlank;
+        let admModal=document.getElementById("adminModal");
+        document.getElementById("adminPanelBtn").onclick=()=>{ renderAdmin(); admModal.style.display="flex"; };
+        document.getElementById("closeAdminModal").onclick=()=>admModal.style.display="none";
+        document.getElementById("viewOperatorsStatsBtn").onclick=showOperatorsStats;
+        document.getElementById("closeStatsModal").onclick=()=>document.getElementById("operatorsStatsModal").style.display="none";
+        document.getElementById("exportStatsExcelBtn").onclick=exportStatsExcel;
+        document.getElementById("addServiceBtn").onclick=()=>{ let name=document.getElementById("newServiceName").value.trim(); let price=parseInt(document.getElementById("newServicePrice").value); if(name && price>0){ services.push({id:Date.now(), name, price}); saveServices(); renderServices(); renderAdmin(); } else alert("Введите название и цену"); };
+        document.getElementById("addOperatorBtn").onclick=()=>{ let lgn=document.getElementById("newOpLogin").value.trim().toLowerCase(); let nm=document.getElementById("newOpName").value.trim(); let ps=document.getElementById("newOpPass").value.trim(); if(lgn && nm && ps){ if(operators[lgn]) alert("Логин уже есть"); else { operators[lgn]={password:ps, name:nm, role:"operator"}; saveOperators(); renderAdmin(); } } else alert("Заполните все поля"); };
+        window.onclick=(e)=>{ if(e.target===admModal) admModal.style.display="none"; if(e.target===document.getElementById("operatorsStatsModal")) document.getElementById("operatorsStatsModal").style.display="none"; };
     });
 </script>
 </body>
