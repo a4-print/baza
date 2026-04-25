@@ -42,7 +42,8 @@
         body.dark .cart-panel,
         body.dark .history-section,
         body.dark .shift-bar,
-        body.dark .fast-service-card {
+        body.dark .fast-service-card,
+        body.dark .instruction-modal .modal-card {
             background: #1E2A3A;
             border-color: #2D3A4A;
         }
@@ -66,7 +67,6 @@
             margin: 0 auto;
         }
 
-        /* ШАПКА */
         .header {
             display: flex;
             justify-content: space-between;
@@ -80,10 +80,6 @@
             box-shadow: 0 4px 12px rgba(0,0,0,0.04);
             border-left: 6px solid var(--primary-blue);
             position: relative;
-        }
-
-        body.dark .header {
-            background: #1E2A3A;
         }
 
         .logo-area {
@@ -106,7 +102,6 @@
             letter-spacing: -0.3px;
             color: var(--primary-black);
         }
-        body.dark h1 { color: white; }
 
         .sub {
             font-size: 11px;
@@ -121,9 +116,7 @@
             padding: 6px 20px;
             border-radius: 60px;
         }
-        body.dark .user-bar { background: #0F1722; }
 
-        /* БУРГЕР */
         .burger-btn {
             display: none;
             background: none;
@@ -134,7 +127,6 @@
             border-radius: 50%;
             color: var(--primary-black);
         }
-        body.dark .burger-btn { color: white; }
 
         .burger-menu {
             position: absolute;
@@ -151,9 +143,17 @@
             z-index: 200;
             border: 1px solid var(--border-light);
         }
-        body.dark .burger-menu { background: #1E2A3A; }
-        .burger-menu.show { display: flex; }
-        .burger-menu button { width: 100%; text-align: center; padding: 10px; font-size: 14px; }
+
+        .burger-menu.show {
+            display: flex;
+        }
+
+        .burger-menu button {
+            width: 100%;
+            text-align: center;
+            padding: 10px;
+            font-size: 14px;
+        }
 
         button {
             background: var(--primary-black);
@@ -166,15 +166,37 @@
             cursor: pointer;
             transition: 0.15s;
         }
-        button:hover { transform: translateY(-1px); filter: brightness(0.92); }
 
-        .btn-outline { background: transparent; border: 1.5px solid var(--border-light); color: var(--text-dark); }
-        body.dark .btn-outline { border-color: #4A5A6E; color: #E2E8F0; }
-        .btn-primary { background: var(--primary-blue); }
-        .btn-success { background: #1F8A5C; }
-        .btn-danger { background: #C2412C; }
-        .btn-warning { background: #E68A2E; }
-        .btn-info { background: #3B82F6; }
+        button:hover {
+            transform: translateY(-1px);
+            filter: brightness(0.92);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1.5px solid var(--border-light);
+            color: var(--text-dark);
+        }
+
+        .btn-primary {
+            background: var(--primary-blue);
+        }
+
+        .btn-success {
+            background: #1F8A5C;
+        }
+
+        .btn-danger {
+            background: #C2412C;
+        }
+
+        .btn-warning {
+            background: #E68A2E;
+        }
+
+        .btn-info {
+            background: #3B82F6;
+        }
 
         .shift-bar {
             background: var(--card-white);
@@ -190,7 +212,7 @@
             border-left: 4px solid var(--primary-blue);
         }
 
-        /* МОДАЛЬНОЕ ОКНО ДЛЯ КОММЕНТАРИЯ СМЕНЫ */
+        /* Модалка комментария к смене */
         .shift-comment-modal {
             position: fixed;
             top: 0;
@@ -204,6 +226,7 @@
             justify-content: center;
             z-index: 1100;
         }
+
         .shift-comment-modal .modal-card {
             background: var(--card-white);
             border-radius: 32px;
@@ -211,15 +234,13 @@
             width: 90%;
             padding: 28px;
         }
-        body.dark .shift-comment-modal .modal-card {
-            background: #1E2A3A;
-        }
+
         .shift-comment-modal textarea {
             margin: 16px 0;
             min-height: 100px;
         }
 
-        /* МОДАЛЬНОЕ ОКНО ИНСТРУКЦИИ */
+        /* Модалка инструкции */
         .modal-instruction {
             position: fixed;
             top: 0;
@@ -233,6 +254,7 @@
             justify-content: center;
             z-index: 1000;
         }
+
         .modal-instruction .modal-card {
             background: var(--card-white);
             border-radius: 32px;
@@ -241,11 +263,8 @@
             max-height: 85vh;
             overflow-y: auto;
             padding: 24px;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.3);
         }
-        body.dark .modal-instruction .modal-card {
-            background: #1E2A3A;
-        }
+
         .instruction-header {
             display: flex;
             justify-content: space-between;
@@ -254,9 +273,7 @@
             padding-bottom: 12px;
             border-bottom: 2px solid var(--primary-blue);
         }
-        .instruction-header h2 {
-            font-size: 20px;
-        }
+
         .close-instruction {
             background: none;
             font-size: 28px;
@@ -265,6 +282,7 @@
             height: 36px;
             border-radius: 50%;
         }
+
         .instruction-tabs {
             display: flex;
             gap: 8px;
@@ -272,6 +290,7 @@
             border-bottom: 1px solid var(--border-light);
             flex-wrap: wrap;
         }
+
         .tab-btn {
             background: none;
             color: var(--text-gray);
@@ -279,21 +298,26 @@
             border-radius: 30px;
             cursor: pointer;
         }
+
         .tab-btn.active {
             background: var(--primary-blue);
             color: white;
         }
+
         .instruction-content {
             display: none;
         }
+
         .instruction-content.active {
             display: block;
         }
+
         .instruction-step {
             margin-bottom: 16px;
             padding-left: 24px;
             position: relative;
         }
+
         .instruction-step:before {
             content: "✓";
             position: absolute;
@@ -301,6 +325,7 @@
             color: var(--primary-blue);
             font-weight: bold;
         }
+
         .instruction-note {
             background: var(--bg-light);
             padding: 12px;
@@ -310,7 +335,6 @@
             border-left: 3px solid var(--primary-yellow);
         }
 
-        /* ОСНОВНАЯ СЕТКА */
         .dashboard {
             display: flex;
             gap: 24px;
@@ -370,10 +394,24 @@
             cursor: pointer;
             transition: 0.1s;
         }
-        .service-card:hover { transform: translateY(-2px); border-color: var(--primary-blue); }
 
-        .service-name { font-weight: 700; font-size: 13px; margin-bottom: 6px; }
-        .service-price { font-size: 17px; font-weight: 800; color: var(--primary-magenta); margin: 6px 0; }
+        .service-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--primary-blue);
+        }
+
+        .service-name {
+            font-weight: 700;
+            font-size: 13px;
+            margin-bottom: 6px;
+        }
+
+        .service-price {
+            font-size: 17px;
+            font-weight: 800;
+            color: var(--primary-magenta);
+            margin: 6px 0;
+        }
 
         .qty-control {
             display: flex;
@@ -382,6 +420,7 @@
             gap: 8px;
             margin: 10px 0 6px;
         }
+
         .qty-control input {
             width: 80px;
             text-align: center;
@@ -390,6 +429,7 @@
             font-weight: 600;
             border-radius: 30px;
         }
+
         .add-btn {
             background: var(--primary-blue);
             width: 100%;
@@ -406,18 +446,17 @@
             margin-top: 16px;
             border: 1px dashed var(--primary-blue);
         }
+
         .fast-service-row {
             display: flex;
             gap: 10px;
             align-items: center;
             flex-wrap: wrap;
         }
+
         .fast-service-row input {
             flex: 1;
             min-width: 120px;
-        }
-        .fast-service-row button {
-            white-space: nowrap;
         }
 
         .cart-list {
@@ -441,10 +480,26 @@
             border-left: 4px solid var(--primary-magenta);
         }
 
-        .cart-item-info { flex: 2; }
-        .cart-item-name { font-weight: 700; font-size: 13px; margin-bottom: 4px; }
-        .cart-item-detail { font-size: 11px; color: var(--text-gray); }
-        .cart-item-price { font-weight: 800; font-size: 15px; color: var(--primary-magenta); }
+        .cart-item-info {
+            flex: 2;
+        }
+
+        .cart-item-name {
+            font-weight: 700;
+            font-size: 13px;
+            margin-bottom: 4px;
+        }
+
+        .cart-item-detail {
+            font-size: 11px;
+            color: var(--text-gray);
+        }
+
+        .cart-item-price {
+            font-weight: 800;
+            font-size: 15px;
+            color: var(--primary-magenta);
+        }
 
         .remove-btn {
             background: #FFE4E0;
@@ -454,9 +509,10 @@
             font-size: 11px;
             font-weight: 600;
         }
-        body.dark .remove-btn { background: #3A2A2A; color: #FF9A86; }
 
-        input, select, textarea {
+        input,
+        select,
+        textarea {
             width: 100%;
             padding: 12px 16px;
             background: var(--bg-light);
@@ -465,10 +521,13 @@
             font-size: 14px;
             font-family: inherit;
         }
-        input:focus, select:focus, textarea:focus {
+
+        input:focus,
+        select:focus,
+        textarea:focus {
             outline: none;
             border-color: var(--primary-blue);
-            box-shadow: 0 0 0 3px rgba(0,102,179,0.1);
+            box-shadow: 0 0 0 3px rgba(0, 102, 179, 0.1);
         }
 
         .total-line {
@@ -479,7 +538,12 @@
             font-weight: 600;
             font-size: 14px;
         }
-        .grand-total { font-size: 22px; font-weight: 800; color: var(--primary-blue); }
+
+        .grand-total {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--primary-blue);
+        }
 
         .row-2 {
             display: flex;
@@ -488,8 +552,19 @@
             flex-wrap: wrap;
             align-items: flex-end;
         }
-        .discount-group { flex: 1; min-width: 100px; }
-        .discount-group label { font-size: 11px; font-weight: 600; display: block; margin-bottom: 4px; color: var(--text-gray); }
+
+        .discount-group {
+            flex: 1;
+            min-width: 100px;
+        }
+
+        .discount-group label {
+            font-size: 11px;
+            font-weight: 600;
+            display: block;
+            margin-bottom: 4px;
+            color: var(--text-gray);
+        }
 
         .history-list {
             display: flex;
@@ -498,6 +573,7 @@
             max-height: 300px;
             overflow-y: auto;
         }
+
         .history-item {
             background: var(--bg-light);
             border-radius: 20px;
@@ -511,13 +587,14 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0,0,0,0.5);
+            background: rgba(0, 0, 0, 0.5);
             backdrop-filter: blur(4px);
             display: none;
             align-items: center;
             justify-content: center;
             z-index: 1000;
         }
+
         .modal-card {
             background: var(--card-white);
             border-radius: 40px;
@@ -527,7 +604,6 @@
             overflow-y: auto;
             padding: 28px;
         }
-        body.dark .modal-card { background: #1E2A3A; }
 
         .stat-card {
             background: var(--bg-light);
@@ -536,16 +612,47 @@
             margin-bottom: 12px;
             border-left: 4px solid var(--primary-blue);
         }
-        .stat-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 13px; }
-        .stat-value { font-weight: 800; font-size: 16px; color: var(--primary-magenta); }
 
-        .print-blank { display: none; }
-        @media print {
-            body * { visibility: hidden; }
-            .print-blank, .print-blank * { visibility: visible; }
-            .print-blank { display: block; position: absolute; top: 0; left: 0; width: 100%; }
-            .blank-page { page-break-after: always; }
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 13px;
         }
+
+        .stat-value {
+            font-weight: 800;
+            font-size: 16px;
+            color: var(--primary-magenta);
+        }
+
+        .print-blank {
+            display: none;
+        }
+
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+
+            .print-blank,
+            .print-blank * {
+                visibility: visible;
+            }
+
+            .print-blank {
+                display: block;
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+            }
+
+            .blank-page {
+                page-break-after: always;
+            }
+        }
+
         .blank-page {
             width: 210mm;
             min-height: 297mm;
@@ -556,330 +663,774 @@
         }
 
         @media (max-width: 850px) {
-            body { padding: 12px; }
-            .user-bar { display: none !important; }
-            .burger-btn { display: block; }
+            body {
+                padding: 12px;
+            }
+
+            .user-bar {
+                display: none !important;
+            }
+
+            .burger-btn {
+                display: block;
+            }
+
             .services-grid {
                 grid-template-columns: repeat(4, 1fr) !important;
                 gap: 8px;
             }
-            .service-card { padding: 8px 4px; }
-            .service-name { font-size: 10px; margin-bottom: 4px; }
-            .service-price { font-size: 13px; }
-            .qty-control input { width: 55px; padding: 4px 0; font-size: 12px; }
-            .add-btn { padding: 5px; font-size: 10px; }
+
+            .service-card {
+                padding: 8px 4px;
+            }
+
+            .service-name {
+                font-size: 10px;
+                margin-bottom: 4px;
+            }
+
+            .service-price {
+                font-size: 13px;
+            }
+
+            .qty-control input {
+                width: 55px;
+                padding: 4px 0;
+                font-size: 12px;
+            }
+
+            .add-btn {
+                padding: 5px;
+                font-size: 10px;
+            }
         }
 
         @media (max-width: 550px) {
-            .services-grid { gap: 6px; }
-            .service-card { padding: 6px 2px; }
-            .service-name { font-size: 9px; }
-            .service-price { font-size: 11px; }
-            .qty-control input { width: 45px; font-size: 10px; }
+            .services-grid {
+                gap: 6px;
+            }
+
+            .service-card {
+                padding: 6px 2px;
+            }
+
+            .service-name {
+                font-size: 9px;
+            }
+
+            .service-price {
+                font-size: 11px;
+            }
+
+            .qty-control input {
+                width: 45px;
+                font-size: 10px;
+            }
         }
 
         @media (min-width: 851px) {
-            .burger-menu { display: none !important; }
+            .burger-menu {
+                display: none !important;
+            }
         }
     </style>
 </head>
 <body>
 
-<div id="loginOverlay" class="modal" style="display: flex;">
-    <div class="modal-card" style="max-width: 380px;">
-        <h2 style="text-align:center;">A4-Принт</h2>
-        <input type="text" id="loginUsername" placeholder="Логин" style="margin: 14px 0;">
-        <input type="password" id="loginPassword" placeholder="Пароль">
-        <button id="loginBtn" style="width:100%; margin-top: 20px;">Войти</button>
-        <div id="loginError" style="color:#C2412C; margin-top: 12px; text-align:center;"></div>
-    </div>
-</div>
-
-<div id="mainContent" style="display: none;">
-<div class="app">
-    <div class="header">
-        <div class="logo-area">
-            <img src="https://github.com/a4print2026-jpg/baza/blob/dbcda72ab60f0a9f8d8984e17375f6649cf677f0/images/logo_soc2.png?raw=true" class="logo" onerror="this.style.display='none'">
-            <div><h1>A4‑ПРИНТ</h1><div class="sub">База данных копировального центра</div></div>
-        </div>
-        
-        <div class="user-bar">
-            <span id="currentOperatorName" style="font-weight:500;"></span>
-            <button id="helpBtn" class="btn-info">❓ Помощь</button>
-            <button id="themeToggleBtn" class="btn-outline">🌙 Тёмная</button>
-            <button id="adminPanelBtn" class="btn-primary">Админ</button>
-            <button id="shiftToggleBtn" class="btn-warning">🚀 Открыть смену</button>
-            <button id="pdfReportBtn" class="btn-success">📄 Отчёт</button>
-            <button id="printBlankBtn" class="btn-primary">🖨️ Бланк заказа</button>
-            <button id="logoutBtn" class="btn-outline">Выйти</button>
-        </div>
-        
-        <button class="burger-btn" id="burgerBtn">☰</button>
-        
-        <div class="burger-menu" id="burgerMenu">
-            <span id="burgerOperatorName" style="font-weight:600; padding-bottom:6px; border-bottom: 1px solid #ccc;"></span>
-            <button id="burgerHelpBtn">❓ Помощь</button>
-            <button id="burgerThemeToggle">🌙 Тёмная</button>
-            <button id="burgerAdminBtn">Админ</button>
-            <button id="burgerShiftBtn">🚀 Смена</button>
-            <button id="burgerPdfBtn">📄 Отчёт</button>
-            <button id="burgerPrintBtn">🖨️ Бланк</button>
-            <button id="burgerLogoutBtn">Выйти</button>
+    <div id="loginOverlay" class="modal" style="display: flex;">
+        <div class="modal-card" style="max-width: 380px;">
+            <h2 style="text-align:center;">A4-Принт</h2>
+            <input type="text" id="loginUsername" placeholder="Логин" style="margin: 14px 0;">
+            <input type="password" id="loginPassword" placeholder="Пароль">
+            <button id="loginBtn" style="width:100%; margin-top: 20px;">Войти</button>
+            <div id="loginError" style="color:#C2412C; margin-top: 12px; text-align:center;"></div>
         </div>
     </div>
 
-    <div class="shift-bar">
-        <span>🕒 Смена: <strong id="shiftStatus">Закрыта</strong></span>
-        <span>🟢 Открыта: <span id="shiftOpenTime">—</span></span>
-        <span>🔴 Закрыта: <span id="shiftCloseTime">—</span></span>
+    <div id="mainContent" style="display: none;">
+        <div class="app">
+            <div class="header">
+                <div class="logo-area">
+                    <img src="https://github.com/a4print2026-jpg/baza/blob/dbcda72ab60f0a9f8d8984e17375f6649cf677f0/images/logo_soc2.png?raw=true"
+                        class="logo" onerror="this.style.display='none'">
+                    <div>
+                        <h1>A4‑ПРИНТ</h1>
+                        <div class="sub">База данных копировального центра</div>
+                    </div>
+                </div>
+
+                <div class="user-bar">
+                    <span id="currentOperatorName" style="font-weight:500;"></span>
+                    <button id="helpBtn" class="btn-info">❓ Помощь</button>
+                    <button id="themeToggleBtn" class="btn-outline">🌙 Тёмная</button>
+                    <button id="adminPanelBtn" class="btn-primary">Админ</button>
+                    <button id="shiftToggleBtn" class="btn-warning">🚀 Открыть смену</button>
+                    <button id="pdfReportBtn" class="btn-success">📄 Отчёт</button>
+                    <button id="printBlankBtn" class="btn-primary">🖨️ Бланк заказа</button>
+                    <button id="logoutBtn" class="btn-outline">Выйти</button>
+                </div>
+
+                <button class="burger-btn" id="burgerBtn">☰</button>
+
+                <div class="burger-menu" id="burgerMenu">
+                    <span id="burgerOperatorName" style="font-weight:600; padding-bottom:6px; border-bottom: 1px solid #ccc;"></span>
+                    <button id="burgerHelpBtn">❓ Помощь</button>
+                    <button id="burgerThemeToggle">🌙 Тёмная</button>
+                    <button id="burgerAdminBtn">Админ</button>
+                    <button id="burgerShiftBtn">🚀 Смена</button>
+                    <button id="burgerPdfBtn">📄 Отчёт</button>
+                    <button id="burgerPrintBtn">🖨️ Бланк</button>
+                    <button id="burgerLogoutBtn">Выйти</button>
+                </div>
+            </div>
+
+            <div class="shift-bar">
+                <span>🕒 Смена: <strong id="shiftStatus">Закрыта</strong></span>
+                <span>🟢 Открыта: <span id="shiftOpenTime">—</span></span>
+                <span>🔴 Закрыта: <span id="shiftCloseTime">—</span></span>
+            </div>
+
+            <div class="dashboard">
+                <div class="card">
+                    <div class="panel-title">📋 УСЛУГИ</div>
+                    <div id="servicesGrid" class="services-grid"></div>
+
+                    <div class="fast-service-card">
+                        <div class="fast-service-row">
+                            <input type="text" id="fastServiceName" placeholder="Название услуги (любое)" style="flex:2;">
+                            <input type="number" id="fastServicePrice" placeholder="Цена ₽" style="flex:1;" value="0"
+                                step="10">
+                            <button id="addFastServiceBtn" class="btn-primary" style="white-space: nowrap;">➕ Быстрая
+                                услуга</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="cart-panel">
+                    <div class="panel-title">🧾 ОФОРМЛЕНИЕ ЗАКАЗА</div>
+                    <input type="text" id="clientName" placeholder="Имя клиента (необязательно)" style="margin-bottom: 12px;">
+                    <input type="tel" id="clientPhone" placeholder="Телефон клиента (необязательно)" style="margin-bottom: 16px;">
+                    <div class="cart-list" id="cartList"></div>
+
+                    <div class="row-2">
+                        <div class="discount-group">
+                            <label>Скидка, %</label>
+                            <input type="number" id="discountPercent" value="0" step="1" placeholder="%">
+                        </div>
+                        <div class="discount-group">
+                            <label>Скидка, ₽</label>
+                            <input type="number" id="discountAmount" value="0" step="10" placeholder="₽">
+                        </div>
+                        <button id="applyDiscountBtn" class="btn-outline" style="margin-top: 22px;">Применить</button>
+                    </div>
+
+                    <div class="row-2">
+                        <label><input type="radio" name="payment" value="cash" checked> 💵 Наличные</label>
+                        <label><input type="radio" name="payment" value="card"> 💳 Карта</label>
+                    </div>
+
+                    <textarea id="orderComment" rows="2" placeholder="Комментарий к заказу..."></textarea>
+
+                    <div class="total-line"><span>Подытог</span><span id="cartSubtotal">0 ₽</span></div>
+                    <div class="total-line" id="discountLine" style="display:none;"><span>Скидка</span><span id="cartDiscount">0
+                            ₽</span></div>
+                    <div class="total-line grand-total"><span>ИТОГО</span><span id="cartTotal">0 ₽</span></div>
+
+                    <div class="row-2">
+                        <button id="completeOrderBtn" class="btn-primary" style="flex:2;">✅ Оформить</button>
+                        <button id="clearCartBtn" class="btn-outline" style="flex:1;">Очистить</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="history-section">
+                <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 16px;">
+                    <div class="panel-title" style="margin-bottom:0;">📜 ИСТОРИЯ ЗАКАЗОВ</div>
+                    <div style="display: flex; gap: 10px;">
+                        <button id="exportExcelBtn" class="btn-success">📎 Excel</button>
+                        <button id="clearHistoryBtn" class="btn-danger">🗑 Очистить мои</button>
+                    </div>
+                </div>
+                <div id="historyList" class="history-list"></div>
+            </div>
+        </div>
     </div>
 
-    <div class="dashboard">
-        <div class="card">
-            <div class="panel-title">📋 УСЛУГИ</div>
-            <div id="servicesGrid" class="services-grid"></div>
-            
-            <div class="fast-service-card">
-                <div class="fast-service-row">
-                    <input type="text" id="fastServiceName" placeholder="Название услуги (любое)" style="flex:2;">
-                    <input type="number" id="fastServicePrice" placeholder="Цена ₽" style="flex:1;" value="0" step="10">
-                    <button id="addFastServiceBtn" class="btn-primary" style="white-space: nowrap;">➕ Быстрая услуга</button>
+    <!-- Модалка комментария к смене -->
+    <div id="shiftCommentModal" class="shift-comment-modal">
+        <div class="modal-card">
+            <h3 id="shiftCommentTitle" style="margin-bottom: 12px;">📝 Комментарий к открытию смены</h3>
+            <textarea id="shiftCommentText" rows="3"
+                placeholder="Укажите причину, финансовые замечания, проблемы с оборудованием и т.д."></textarea>
+            <div style="display: flex; gap: 12px; justify-content: flex-end;">
+                <button id="shiftCommentCancel" class="btn-outline">Отмена</button>
+                <button id="shiftCommentConfirm" class="btn-primary">Подтвердить</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модалка инструкции -->
+    <div id="instructionModal" class="modal-instruction">
+        <div class="modal-card">
+            <div class="instruction-header">
+                <h2>📘 Инструкция по работе с A4-Принт</h2>
+                <button id="closeInstructionBtn" class="close-instruction">✕</button>
+            </div>
+            <div class="instruction-tabs">
+                <button class="tab-btn active" data-tab="operator">👤 Для оператора</button>
+                <button class="tab-btn" data-tab="admin">👑 Для администратора</button>
+            </div>
+
+            <div class="instruction-content active" id="tab-operator">
+                <div class="instruction-step"><strong>1. Вход в систему</strong><br>Введите свой логин и пароль → «Войти».
+                </div>
+                <div class="instruction-step"><strong>2. Открытие смены</strong><br>Нажмите «🚀 Открыть смену» → при
+                    необходимости добавьте комментарий (нехватка сдачи, проблемы с техникой и т.д.).</div>
+                <div class="instruction-step"><strong>3. Приём заказа</strong><br>Выберите услугу → введите количество →
+                    «Добавить». При необходимости используйте «➕ Быстрая услуга».</div>
+                <div class="instruction-step"><strong>4. Оформление заказа</strong><br>Укажите имя/телефон клиента
+                    (опционально), примените скидку, выберите оплату (нал/карта), добавьте комментарий → «Оформить».</div>
+                <div class="instruction-step"><strong>5. Печать бланка</strong><br>Нажмите «🖨️ Бланк заказа» — сформируется
+                    А4 с двумя экземплярами (основной + копия клиента).</div>
+                <div class="instruction-step"><strong>6. Закрытие смены</strong><br>В конце дня нажмите «🔒 Закрыть смену» →
+                    добавьте итоговый комментарий. Затем «📄 Отчёт» — сохраните PDF для бухгалтерии.</div>
+                <div class="instruction-note">💡 В мобильной версии все кнопки — под меню-бургер ☰ в правом верхнем углу.
+                </div>
+            </div>
+
+            <div class="instruction-content" id="tab-admin">
+                <div class="instruction-step"><strong>1. Вход с правами администратора</strong><br>Логин: <strong>admin</strong>,
+                    пароль: <strong>admin123</strong>.</div>
+                <div class="instruction-step"><strong>2. Управление услугами</strong><br>«Админ» → вкладка «Управление
+                    услугами»: изменение цены (💾), удаление (🗑), добавление новой.</div>
+                <div class="instruction-step"><strong>3. Управление операторами</strong><br>Там же → «Операторы»: смена
+                    пароля (🔑), удаление, добавление нового сотрудника.</div>
+                <div class="instruction-step"><strong>4. Статистика операторов</strong><br>Кнопка «📊 Статистика операторов»
+                    — заказы, выручка, средний чек по каждому. Можно экспортировать в Excel.</div>
+                <div class="instruction-step"><strong>5. Комментарии к смене</strong><br>При открытии и закрытии смены можно
+                    оставлять служебные заметки (финансовые нюансы, поломки). Комментарии сохраняются и видны в PDF-отчёте.
+                </div>
+                <div class="instruction-note">🔐 Пароль администратора можно сменить в разделе «Операторы» (строка admin).
                 </div>
             </div>
         </div>
+    </div>
 
-        <div class="cart-panel">
-            <div class="panel-title">🧾 ОФОРМЛЕНИЕ ЗАКАЗА</div>
-            <input type="text" id="clientName" placeholder="Имя клиента (необязательно)" style="margin-bottom: 12px;">
-            <input type="tel" id="clientPhone" placeholder="Телефон клиента (необязательно)" style="margin-bottom: 16px;">
-            <div class="cart-list" id="cartList"></div>
+    <div class="print-blank" id="printBlankContainer"></div>
 
-            <div class="row-2">
-                <div class="discount-group">
-                    <label>Скидка, %</label>
-                    <input type="number" id="discountPercent" value="0" step="1" placeholder="%">
-                </div>
-                <div class="discount-group">
-                    <label>Скидка, ₽</label>
-                    <input type="number" id="discountAmount" value="0" step="10" placeholder="₽">
-                </div>
-                <button id="applyDiscountBtn" class="btn-outline" style="margin-top: 22px;">Применить</button>
+    <div id="adminModal" class="modal">
+        <div class="modal-card">
+            <div style="display:flex; justify-content:space-between;">
+                <h2>Администрирование</h2>
+                <button id="closeAdminModal" style="background:none; font-size:28px;">✕</button>
             </div>
-
-            <div class="row-2">
-                <label><input type="radio" name="payment" value="cash" checked> 💵 Наличные</label>
-                <label><input type="radio" name="payment" value="card"> 💳 Карта</label>
+            <button id="viewOperatorsStatsBtn" class="btn-primary" style="width:100%; margin: 16px 0;">📊 Статистика
+                операторов</button>
+            <h3>Управление услугами</h3>
+            <div id="adminServicesList"></div>
+            <div style="display:flex; gap:12px; margin:16px 0;">
+                <input type="text" id="newServiceName" placeholder="Название">
+                <input type="number" id="newServicePrice" placeholder="Цена">
+                <button id="addServiceBtn" class="btn-primary">Добавить</button>
             </div>
-
-            <textarea id="orderComment" rows="2" placeholder="Комментарий к заказу..."></textarea>
-
-            <div class="total-line"><span>Подытог</span><span id="cartSubtotal">0 ₽</span></div>
-            <div class="total-line" id="discountLine" style="display:none;"><span>Скидка</span><span id="cartDiscount">0 ₽</span></div>
-            <div class="total-line grand-total"><span>ИТОГО</span><span id="cartTotal">0 ₽</span></div>
-
-            <div class="row-2">
-                <button id="completeOrderBtn" class="btn-primary" style="flex:2;">✅ Оформить</button>
-                <button id="clearCartBtn" class="btn-outline" style="flex:1;">Очистить</button>
+            <hr>
+            <h3>Операторы</h3>
+            <div id="operatorsList"></div>
+            <div style="display:flex; gap:12px; margin:16px 0;">
+                <input type="text" id="newOpLogin" placeholder="Логин">
+                <input type="text" id="newOpName" placeholder="Имя">
+                <input type="text" id="newOpPass" placeholder="Пароль">
+                <button id="addOperatorBtn" class="btn-primary">Добавить</button>
             </div>
+            <div class="instruction-note" style="margin-top: 16px;">🔐 Текущие учётные: admin / admin123 | anna / anna321 |
+                sergey / sergey321</div>
         </div>
     </div>
 
-    <div class="history-section">
-        <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 16px;">
-            <div class="panel-title" style="margin-bottom:0;">📜 ИСТОРИЯ ЗАКАЗОВ</div>
-            <div style="display: flex; gap: 10px;">
-                <button id="exportExcelBtn" class="btn-success">📎 Excel</button>
-                <button id="clearHistoryBtn" class="btn-danger">🗑 Очистить мои</button>
+    <div id="operatorsStatsModal" class="modal">
+        <div class="modal-card">
+            <div style="display:flex; justify-content:space-between;">
+                <h2>Статистика операторов</h2>
+                <button id="closeStatsModal" style="background:none; font-size:28px;">✕</button>
             </div>
-        </div>
-        <div id="historyList" class="history-list"></div>
-    </div>
-</div>
-</div>
-
-<!-- МОДАЛЬНОЕ ОКНО ДЛЯ КОММЕНТАРИЯ СМЕНЫ -->
-<div id="shiftCommentModal" class="shift-comment-modal">
-    <div class="modal-card">
-        <h3 id="shiftCommentTitle" style="margin-bottom: 12px;">📝 Комментарий к открытию смены</h3>
-        <textarea id="shiftCommentText" rows="3" placeholder="Укажите причину, финансовые замечания, проблемы с оборудованием и т.д."></textarea>
-        <div style="display: flex; gap: 12px; justify-content: flex-end;">
-            <button id="shiftCommentCancel" class="btn-outline">Отмена</button>
-            <button id="shiftCommentConfirm" class="btn-primary">Подтвердить</button>
+            <div id="operatorsStatsContent"></div>
+            <button id="exportStatsExcelBtn" class="btn-success" style="margin-top:20px; width:100%;">📎 Экспорт в
+                Excel</button>
         </div>
     </div>
-</div>
 
-<!-- МОДАЛЬНОЕ ОКНО ИНСТРУКЦИИ -->
-<div id="instructionModal" class="modal-instruction">
-    <div class="modal-card">
-        <div class="instruction-header">
-            <h2>📘 Инструкция по работе с A4-Принт</h2>
-            <button id="closeInstructionBtn" class="close-instruction">✕</button>
-        </div>
-        <div class="instruction-tabs">
-            <button class="tab-btn active" data-tab="operator">👤 Для оператора</button>
-            <button class="tab-btn" data-tab="admin">👑 Для администратора</button>
-        </div>
-        
-        <div class="instruction-content active" id="tab-operator">
-            <div class="instruction-step"><strong>1. Вход в систему</strong><br>Введите свой логин и пароль → «Войти».</div>
-            <div class="instruction-step"><strong>2. Открытие смены</strong><br>Нажмите «🚀 Открыть смену» → при необходимости добавьте комментарий (нехватка сдачи, проблемы с техникой и т.д.).</div>
-            <div class="instruction-step"><strong>3. Приём заказа</strong><br>Выберите услугу → введите количество → «Добавить». При необходимости используйте «➕ Быстрая услуга».</div>
-            <div class="instruction-step"><strong>4. Оформление заказа</strong><br>Укажите имя/телефон клиента (опционально), примените скидку, выберите оплату (нал/карта), добавьте комментарий → «Оформить».</div>
-            <div class="instruction-step"><strong>5. Печать бланка</strong><br>Нажмите «🖨️ Бланк заказа» — сформируется А4 с двумя экземплярами (основной + копия клиента).</div>
-            <div class="instruction-step"><strong>6. Закрытие смены</strong><br>В конце дня нажмите «🔒 Закрыть смену» → добавьте итоговый комментарий. Затем «📄 Отчёт» — сохраните PDF для бухгалтерии.</div>
-            <div class="instruction-note">💡 В мобильной версии все кнопки — под меню-бургер ☰ в правом верхнем углу.</div>
-        </div>
-        
-        <div class="instruction-content" id="tab-admin">
-            <div class="instruction-step"><strong>1. Вход с правами администратора</strong><br>Логин: <strong>admin</strong>, пароль: <strong>admin123</strong>.</div>
-            <div class="instruction-step"><strong>2. Управление услугами</strong><br>«Админ» → вкладка «Управление услугами»: изменение цены (💾), удаление (🗑), добавление новой.</div>
-            <div class="instruction-step"><strong>3. Управление операторами</strong><br>Там же → «Операторы»: смена пароля (🔑), удаление, добавление нового сотрудника.</div>
-            <div class="instruction-step"><strong>4. Статистика операторов</strong><br>Кнопка «📊 Статистика операторов» — заказы, выручка, средний чек по каждому. Можно экспортировать в Excel.</div>
-            <div class="instruction-step"><strong>5. Комментарии к смене</strong><br>При открытии и закрытии смены можно оставлять служебные заметки (финансовые нюансы, поломки, пересменка). Комментарии сохраняются и видны в PDF-отчёте.</div>
-            <div class="instruction-note">🔐 Пароль администратора можно сменить в разделе «Операторы» (строка admin).</div>
-        </div>
-    </div>
-</div>
-
-<div class="print-blank" id="printBlankContainer"></div>
-
-<div id="adminModal" class="modal">
-    <div class="modal-card">
-        <div style="display:flex; justify-content:space-between;">
-            <h2>Администрирование</h2>
-            <button id="closeAdminModal" style="background:none; font-size:28px;">✕</button>
-        </div>
-        <button id="viewOperatorsStatsBtn" class="btn-primary" style="width:100%; margin: 16px 0;">📊 Статистика операторов</button>
-        <h3>Управление услугами</h3>
-        <div id="adminServicesList"></div>
-        <div style="display:flex; gap:12px; margin:16px 0;">
-            <input type="text" id="newServiceName" placeholder="Название">
-            <input type="number" id="newServicePrice" placeholder="Цена">
-            <button id="addServiceBtn" class="btn-primary">Добавить</button>
-        </div>
-        <hr>
-        <h3>Операторы</h3>
-        <div id="operatorsList"></div>
-        <div style="display:flex; gap:12px; margin:16px 0;">
-            <input type="text" id="newOpLogin" placeholder="Логин">
-            <input type="text" id="newOpName" placeholder="Имя">
-            <input type="text" id="newOpPass" placeholder="Пароль">
-            <button id="addOperatorBtn" class="btn-primary">Добавить</button>
-        </div>
-        <div class="instruction-note" style="margin-top: 16px;">🔐 Текущие учётные: admin / admin123 | anna / anna321 | sergey / sergey321</div>
-    </div>
-</div>
-
-<div id="operatorsStatsModal" class="modal">
-    <div class="modal-card">
-        <div style="display:flex; justify-content:space-between;">
-            <h2>Статистика операторов</h2>
-            <button id="closeStatsModal" style="background:none; font-size:28px;">✕</button>
-        </div>
-        <div id="operatorsStatsContent"></div>
-        <button id="exportStatsExcelBtn" class="btn-success" style="margin-top:20px; width:100%;">📎 Экспорт в Excel</button>
-    </div>
-</div>
-
-<script>
-    // ---------- БАЗА ДАННЫХ ----------
-    let services = [/* полный список услуг */];
-    let operators = { "admin":{ password:"admin123", name:"Администратор", role:"admin" }, "anna":{ password:"anna321", name:"Анна", role:"operator" }, "sergey":{ password:"sergey321", name:"Сергей", role:"operator" } };
-    let allOrders = [], currentUser = null, cart = [], discountPct = 0, discountAmt = 0;
-    let shiftOpen = null, shiftClose = null, shiftOpenComment = "", shiftCloseComment = "";
-    const SERVICES_KEY = "a4print_services", OPERATORS_KEY = "a4print_operators", ORDERS_KEY = "a4print_orders", SHIFT_KEY = "a4print_shift";
-
-    // Инициализация услуг (полный список из 25 позиций)
-    function initServices() {
-        if(localStorage.getItem(SERVICES_KEY)) return;
-        services = [
-            { id:1, name:"Копирование ч/б A4 (1-20)", price:25 }, { id:2, name:"Копирование цветное A4 (1-20)", price:35 },
-            { id:3, name:"Сканирование A4", price:25 }, { id:4, name:"Ламинирование A6", price:50 },
-            { id:5, name:"Ламинирование A5", price:100 }, { id:6, name:"Ламинирование A4", price:150 },
-            { id:7, name:"Ламинирование A3", price:200 }, { id:8, name:"Брошюровка (до 50 стр)", price:350 },
-            { id:9, name:"Набор текста (1 стр)", price:150 }, { id:10, name:"Печать фото 10x15", price:55 },
-            { id:11, name:"Печать фото 13x18", price:50 }, { id:12, name:"Печать фото 15x21", price:75 },
-            { id:13, name:"Печать фото 21x30", price:200 }, { id:14, name:"Печать фото 30x40", price:450 },
-            { id:15, name:"ФНД", price:350 }, { id:16, name:"Печать на кружке", price:1000 },
-            { id:17, name:"Печать на футболке", price:1500 }, { id:18, name:"Ретушь фото", price:200 },
-            { id:19, name:"Кадрирование", price:30 }, { id:20, name:"Печать на самоклейке ЦВ", price:75 },
-            { id:21, name:"Печать на самоклейке ЧБ", price:50 }, { id:22, name:"ФНД Виза", price:400 },
-            { id:23, name:"Копирование ч/б A4 (20-50)", price:20 }, { id:24, name:"Фото в рамке А4", price:400 },
-            { id:25, name:"Фото в рамке 10х15", price:200 }
+    <script>
+        // ---------- ПОЛНЫЙ СПИСОК УСЛУГ ----------
+        let services = [
+            { id: 1, name: "Копирование ч/б A4 (1-20)", price: 25 }, { id: 2, name: "Копирование цветное A4 (1-20)", price: 35 },
+            { id: 3, name: "Сканирование A4", price: 25 }, { id: 4, name: "Ламинирование A6", price: 50 },
+            { id: 5, name: "Ламинирование A5", price: 100 }, { id: 6, name: "Ламинирование A4", price: 150 },
+            { id: 7, name: "Ламинирование A3", price: 200 }, { id: 8, name: "Брошюровка (до 50 стр)", price: 350 },
+            { id: 9, name: "Набор текста (1 стр)", price: 150 }, { id: 10, name: "Печать фото 10x15", price: 55 },
+            { id: 11, name: "Печать фото 13x18", price: 50 }, { id: 12, name: "Печать фото 15x21", price: 75 },
+            { id: 13, name: "Печать фото 21x30", price: 200 }, { id: 14, name: "Печать фото 30x40", price: 450 },
+            { id: 15, name: "ФНД", price: 350 }, { id: 16, name: "Печать на кружке", price: 1000 },
+            { id: 17, name: "Печать на футболке", price: 1500 }, { id: 18, name: "Ретушь фото", price: 200 },
+            { id: 19, name: "Кадрирование", price: 30 }, { id: 20, name: "Печать на самоклейке ЦВ", price: 75 },
+            { id: 21, name: "Печать на самоклейке ЧБ", price: 50 }, { id: 22, name: "ФНД Виза", price: 400 },
+            { id: 23, name: "Копирование ч/б A4 (20-50)", price: 20 }, { id: 24, name: "Фото в рамке А4", price: 400 },
+            { id: 25, name: "Фото в рамке 10х15", price: 200 }
         ];
-        saveServices();
-    }
-    function saveServices() { localStorage.setItem(SERVICES_KEY, JSON.stringify(services)); }
-    function saveOperators() { localStorage.setItem(OPERATORS_KEY, JSON.stringify(operators)); }
-    function saveOrders() { localStorage.setItem(ORDERS_KEY, JSON.stringify(allOrders)); }
-    function saveShift() { localStorage.setItem(SHIFT_KEY, JSON.stringify({ open: shiftOpen, close: shiftClose, openComment: shiftOpenComment, closeComment: shiftCloseComment, operator: currentUser?.name })); }
 
-    function loadShift() {
-        let s = localStorage.getItem(SHIFT_KEY);
-        if(s) { let d=JSON.parse(s); if(d.operator===currentUser?.name) { shiftOpen=d.open; shiftClose=d.close; shiftOpenComment=d.openComment||""; shiftCloseComment=d.closeComment||""; } }
-        updateShiftUI();
-    }
-    function updateShiftUI() {
-        let st=document.getElementById("shiftStatus"), op=document.getElementById("shiftOpenTime"), cl=document.getElementById("shiftCloseTime"), btn=document.getElementById("shiftToggleBtn");
-        if(shiftOpen && !shiftClose) { st.innerText="🟢 Открыта"; op.innerText=shiftOpen+" "+(shiftOpenComment?"📝":""); cl.innerText="—"; btn.innerText="🔒 Закрыть смену"; btn.classList.add("btn-danger"); btn.classList.remove("btn-warning"); }
-        else { st.innerText=shiftOpen?"🔴 Закрыта":"⚫ Не открыта"; op.innerText=shiftOpen||"—"; cl.innerText=shiftClose||"—"+(shiftCloseComment?" 📝":""); btn.innerText="🚀 Открыть смену"; btn.classList.remove("btn-danger"); btn.classList.add("btn-warning"); }
-    }
-    
-    function toggleShiftWithComment() {
-        if(!shiftOpen || shiftClose) {
-            // Открытие смены
-            document.getElementById("shiftCommentTitle").innerText = "📝 Комментарий к открытию смены";
-            document.getElementById("shiftCommentText").value = "";
-            document.getElementById("shiftCommentModal").style.display = "flex";
-            window._pendingShiftAction = "open";
-        } else {
-            // Закрытие смены
-            document.getElementById("shiftCommentTitle").innerText = "📝 Комментарий к закрытию смены";
-            document.getElementById("shiftCommentText").value = "";
-            document.getElementById("shiftCommentModal").style.display = "flex";
-            window._pendingShiftAction = "close";
-        }
-    }
-    
-    function confirmShiftWithComment() {
-        let comment = document.getElementById("shiftCommentText").value.trim();
-        if(window._pendingShiftAction === "open") {
-            shiftOpen = new Date().toLocaleString();
-            shiftClose = null;
-            shiftOpenComment = comment;
-            shiftCloseComment = "";
-            saveShift();
+        let operators = {
+            "admin": { password: "admin123", name: "Администратор", role: "admin" },
+            "anna": { password: "anna321", name: "Анна", role: "operator" },
+            "sergey": { password: "sergey321", name: "Сергей", role: "operator" }
+        };
+
+        let allOrders = [], currentUser = null, cart = [], discountPct = 0, discountAmt = 0;
+        let shiftOpen = null, shiftClose = null, shiftOpenComment = "", shiftCloseComment = "";
+        let tempQtys = {};
+
+        const SERVICES_KEY = "a4print_services", OPERATORS_KEY = "a4print_operators", ORDERS_KEY = "a4print_orders", SHIFT_KEY = "a4print_shift";
+
+        function saveServices() { localStorage.setItem(SERVICES_KEY, JSON.stringify(services)); }
+        function saveOperators() { localStorage.setItem(OPERATORS_KEY, JSON.stringify(operators)); }
+        function saveOrders() { localStorage.setItem(ORDERS_KEY, JSON.stringify(allOrders)); }
+        function saveShift() { localStorage.setItem(SHIFT_KEY, JSON.stringify({ open: shiftOpen, close: shiftClose, openComment: shiftOpenComment, closeComment: shiftCloseComment, operator: currentUser?.name })); }
+
+        function loadShift() {
+            let s = localStorage.getItem(SHIFT_KEY);
+            if (s) {
+                let d = JSON.parse(s);
+                if (d.operator === currentUser?.name) {
+                    shiftOpen = d.open;
+                    shiftClose = d.close;
+                    shiftOpenComment = d.openComment || "";
+                    shiftCloseComment = d.closeComment || "";
+                }
+            }
             updateShiftUI();
-            alert("Смена открыта: "+shiftOpen + (comment ? "\nКомментарий: "+comment : ""));
-        } else if(window._pendingShiftAction === "close") {
-            if(!shiftOpen || shiftClose) { alert("Смена не открыта"); return; }
-            shiftClose = new Date().toLocaleString();
-            shiftCloseComment = comment;
-            saveShift();
-            updateShiftUI();
-            alert("Смена закрыта: "+shiftClose + (comment ? "\nКомментарий: "+comment : ""));
         }
-        document.getElementById("shiftCommentModal").style.display = "none";
-        window._pendingShiftAction = null;
-    }
 
-    function cancelShiftComment() {
-        document.getElementById("shiftCommentModal").style.display = "none";
-        window._pendingShiftAction = null;
-    }
+        function updateShiftUI() {
+            let st = document.getElementById("shiftStatus"), op = document.getElementById("shiftOpenTime"), cl = document.getElementById("shiftCloseTime"), btn = document.getElementById("shiftToggleBtn");
+            if (shiftOpen && !shiftClose) {
+                st.innerText = "🟢 Открыта";
+                op.innerText = shiftOpen + (shiftOpenComment ? " 📝" : "");
+                cl.innerText = "—";
+                btn.innerText = "🔒 Закрыть смену";
+                btn.classList.add("btn-danger");
+                btn.classList.remove("btn-warning");
+            } else {
+                st.innerText = shiftOpen ? "🔴 Закрыта" : "⚫ Не открыта";
+                op.innerText = shiftOpen || "—";
+                cl.innerText = shiftClose || "—" + (shiftCloseComment ? " 📝" : "");
+                btn.innerText = "🚀 Открыть смену";
+                btn.classList.remove("btn-danger");
+                btn.classList.add("btn-warning");
+            }
+        }
 
-    function loadData() { /* загрузка всех данных */ }
-    function renderServices() { /* отрисовка услуг */ }
-    function renderCart() { /* отрисовка корзины */ }
-    function renderHistory() { /* отрисовка истории */ }
-    // ... остальные функции (addToCart, completeOrder, exportExcel, renderAdmin, initHelpModal, initBurger, login, logout и т.д.) ...
-    // Для краткости здесь приведены только новые функции и ключевые моменты. Полный код версии 2.7 доступен в репозитории.
-    
-    document.getElementById("shiftCommentConfirm").onclick = confirmShiftWithComment;
-    document.getElementById("shiftCommentCancel").onclick = cancelShiftComment;
-    document.getElementById("shiftToggleBtn").onclick = toggleShiftWithComment;
-    // ... остальные обработчики
-</script>
+        function toggleShiftWithComment() {
+            if (!shiftOpen || shiftClose) {
+                document.getElementById("shiftCommentTitle").innerText = "📝 Комментарий к открытию смены";
+                document.getElementById("shiftCommentText").value = "";
+                document.getElementById("shiftCommentModal").style.display = "flex";
+                window._pendingShiftAction = "open";
+            } else {
+                document.getElementById("shiftCommentTitle").innerText = "📝 Комментарий к закрытию смены";
+                document.getElementById("shiftCommentText").value = "";
+                document.getElementById("shiftCommentModal").style.display = "flex";
+                window._pendingShiftAction = "close";
+            }
+        }
+
+        function confirmShiftWithComment() {
+            let comment = document.getElementById("shiftCommentText").value.trim();
+            if (window._pendingShiftAction === "open") {
+                shiftOpen = new Date().toLocaleString();
+                shiftClose = null;
+                shiftOpenComment = comment;
+                shiftCloseComment = "";
+                saveShift();
+                updateShiftUI();
+                alert("Смена открыта: " + shiftOpen + (comment ? "\nКомментарий: " + comment : ""));
+            } else if (window._pendingShiftAction === "close") {
+                if (!shiftOpen || shiftClose) { alert("Смена не открыта"); return; }
+                shiftClose = new Date().toLocaleString();
+                shiftCloseComment = comment;
+                saveShift();
+                updateShiftUI();
+                alert("Смена закрыта: " + shiftClose + (comment ? "\nКомментарий: " + comment : ""));
+            }
+            document.getElementById("shiftCommentModal").style.display = "none";
+            window._pendingShiftAction = null;
+        }
+
+        function cancelShiftComment() {
+            document.getElementById("shiftCommentModal").style.display = "none";
+            window._pendingShiftAction = null;
+        }
+
+        function loadData() {
+            let s = localStorage.getItem(SERVICES_KEY); if (s) services = JSON.parse(s);
+            let o = localStorage.getItem(OPERATORS_KEY); if (o) operators = JSON.parse(o);
+            let ord = localStorage.getItem(ORDERS_KEY); if (ord) allOrders = JSON.parse(ord);
+            renderServices();
+            renderCart();
+            renderHistory();
+            loadShift();
+            let nameSpan = document.getElementById("currentOperatorName");
+            if (nameSpan) nameSpan.innerHTML = `${currentUser.name} ${currentUser.role === "admin" ? "👑" : ""}`;
+            let burgerSpan = document.getElementById("burgerOperatorName");
+            if (burgerSpan) burgerSpan.innerText = `${currentUser.name} ${currentUser.role === "admin" ? "👑" : ""}`;
+        }
+
+        function renderServices() {
+            const grid = document.getElementById("servicesGrid");
+            grid.innerHTML = "";
+            services.forEach(s => {
+                let card = document.createElement("div");
+                card.className = "service-card";
+                card.innerHTML = `
+                <div class="service-name">${escapeHtml(s.name)}</div>
+                <div class="service-price">${s.price} ₽</div>
+                <div class="qty-control">
+                    <input type="number" id="qty_${s.id}" value="0" min="0" step="1" placeholder="кол-во" class="qty-input">
+                </div>
+                <button class="add-btn" data-id="${s.id}">➕ Добавить</button>
+            `;
+                grid.appendChild(card);
+            });
+            document.querySelectorAll(".add-btn").forEach(btn => btn.onclick = (e) => { e.stopPropagation(); let id = parseInt(btn.getAttribute("data-id")); addServiceById(id); });
+        }
+
+        function addServiceById(serviceId) {
+            let service = services.find(s => s.id === serviceId);
+            let qtyInput = document.getElementById(`qty_${serviceId}`);
+            let qty = parseInt(qtyInput?.value) || 0;
+            if (qty <= 0) { alert("Введите количество (1 и больше)"); return; }
+            let existing = cart.find(i => i.id === serviceId);
+            if (existing) existing.qty += qty;
+            else cart.push({ id: serviceId, name: service.name, price: service.price, qty: qty });
+            if (qtyInput) qtyInput.value = "0";
+            renderCart();
+        }
+
+        function addFastService() {
+            let name = document.getElementById("fastServiceName").value.trim();
+            let price = parseFloat(document.getElementById("fastServicePrice").value);
+            if (!name) { alert("Введите название услуги"); return; }
+            if (isNaN(price) || price <= 0) { alert("Введите корректную цену"); return; }
+            let qty = 1;
+            let existing = cart.find(i => i.name === name && i.isFast === true);
+            if (existing) existing.qty += qty;
+            else cart.push({ id: Date.now(), name: name, price: price, qty: qty, isFast: true });
+            document.getElementById("fastServiceName").value = "";
+            document.getElementById("fastServicePrice").value = "";
+            renderCart();
+        }
+
+        function renderCart() {
+            let container = document.getElementById("cartList");
+            let subtotal = 0, html = "";
+            cart.forEach((item, idx) => {
+                let sum = item.price * item.qty;
+                subtotal += sum;
+                html += `<div class="cart-item"><div class="cart-item-info"><div class="cart-item-name">${escapeHtml(item.name)}</div><div class="cart-item-detail">${item.qty} шт × ${item.price} ₽</div></div><div class="cart-item-price">${sum} ₽</div><button class="remove-btn" data-idx="${idx}">Удалить</button></div>`;
+            });
+            container.innerHTML = html || "<div style='padding:30px;text-align:center;color:var(--text-gray);'>Корзина пуста</div>";
+            document.querySelectorAll(".remove-btn").forEach(btn => btn.onclick = () => { let idx = parseInt(btn.getAttribute("data-idx")); cart.splice(idx, 1); renderCart(); });
+            let discount = 0;
+            if (discountPct > 0) discount = subtotal * discountPct / 100;
+            else if (discountAmt > 0) discount = Math.min(discountAmt, subtotal);
+            let final = subtotal - discount;
+            document.getElementById("cartSubtotal").innerHTML = subtotal + " ₽";
+            if (discount > 0) { document.getElementById("discountLine").style.display = "flex"; document.getElementById("cartDiscount").innerHTML = discount + " ₽"; }
+            else document.getElementById("discountLine").style.display = "none";
+            document.getElementById("cartTotal").innerHTML = final + " ₽";
+        }
+
+        function applyDiscount() {
+            discountPct = parseFloat(document.getElementById("discountPercent").value) || 0;
+            discountAmt = parseFloat(document.getElementById("discountAmount").value) || 0;
+            if (discountPct > 0 && discountAmt > 0) alert("Выберите один тип скидки");
+            renderCart();
+        }
+
+        function completeOrder() {
+            if (cart.length === 0) { alert("Корзина пуста"); return; }
+            if (!shiftOpen || shiftClose) { alert("Смена не открыта! Нажмите «Открыть смену»"); return; }
+            let client = document.getElementById("clientName").value.trim() || "Клиент";
+            let phone = document.getElementById("clientPhone").value.trim();
+            let comment = document.getElementById("orderComment").value;
+            let payment = document.querySelector('input[name="payment"]:checked').value;
+            let subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
+            let discount = 0, discPct = 0;
+            if (discountPct > 0) { discount = subtotal * discountPct / 100; discPct = discountPct; }
+            else if (discountAmt > 0) discount = Math.min(discountAmt, subtotal);
+            let order = {
+                id: Date.now(), client, phone, items: cart.map(i => ({ name: i.name, price: i.price, qty: i.qty })),
+                subtotal, discount, discountPercent: discPct, finalTotal: subtotal - discount, paymentMethod: payment,
+                comment, date: new Date().toLocaleString(), operator: currentUser.name
+            };
+            allOrders.push(order);
+            saveOrders();
+            cart = [];
+            discountPct = 0;
+            discountAmt = 0;
+            document.getElementById("discountPercent").value = 0;
+            document.getElementById("discountAmount").value = 0;
+            document.getElementById("clientName").value = "";
+            document.getElementById("clientPhone").value = "";
+            document.getElementById("orderComment").value = "";
+            renderCart();
+            renderHistory();
+            alert(`Заказ №${order.id} на ${order.finalTotal} ₽`);
+        }
+
+        function getMyOrders() { return currentUser.role === "admin" ? allOrders : allOrders.filter(o => o.operator === currentUser.name); }
+
+        function renderHistory() {
+            let my = getMyOrders();
+            let cont = document.getElementById("historyList");
+            if (!my.length) { cont.innerHTML = "<div style='padding:40px;text-align:center;color:var(--text-gray);'>Нет заказов</div>"; return; }
+            let html = "";
+            [...my].reverse().forEach(o => {
+                html += `<div class="history-item"><div style="display:flex;justify-content:space-between;"><span><strong>${escapeHtml(o.client)}</strong> ${o.phone ? `📞 ${escapeHtml(o.phone)}` : ""} | ${o.date}</span><span style="font-weight:800;">${o.finalTotal} ₽</span></div><div style="font-size:11px;margin:6px 0;">${o.items.map(i => `${i.name} x${i.qty}`).join(", ")}</div><div style="font-size:11px;">${o.paymentMethod === "cash" ? "💵 Наличные" : "💳 Карта"} ${o.comment ? " | " + o.comment : ""}</div><button class="delete-order" data-id="${o.id}" style="margin-top:8px; background:#C2412C; border:none; border-radius:30px; padding:5px 14px; color:white;">Удалить</button></div>`;
+            });
+            cont.innerHTML = html;
+            document.querySelectorAll(".delete-order").forEach(btn => btn.onclick = () => { let id = parseInt(btn.getAttribute("data-id")); allOrders = allOrders.filter(o => o.id !== id); saveOrders(); renderHistory(); });
+        }
+
+        function clearMyOrders() {
+            if (confirm("Очистить все свои заказы?")) {
+                if (currentUser.role === "admin") allOrders = [];
+                else allOrders = allOrders.filter(o => o.operator !== currentUser.name);
+                saveOrders();
+                renderHistory();
+            }
+        }
+
+        function getOperatorsStats() {
+            let stats = {};
+            for (let [login, data] of Object.entries(operators)) stats[login] = { name: data.name, orders: 0, revenue: 0, cash: 0, card: 0 };
+            allOrders.forEach(o => {
+                let op = Object.keys(operators).find(l => operators[l].name === o.operator);
+                if (op) {
+                    stats[op].orders++;
+                    stats[op].revenue += o.finalTotal;
+                    if (o.paymentMethod === "cash") stats[op].cash += o.finalTotal;
+                    else stats[op].card += o.finalTotal;
+                }
+            });
+            return stats;
+        }
+
+        function showOperatorsStats() {
+            let stats = getOperatorsStats();
+            let html = "";
+            for (let [login, st] of Object.entries(stats)) {
+                let avg = st.orders ? Math.round(st.revenue / st.orders) : 0;
+                html += `<div class="stat-card"><div class="stat-row"><span><strong>${st.name}</strong> ${login === "admin" ? "👑" : "👤"}</span><span class="stat-value">${st.orders} заказов</span></div><div class="stat-row"><span>💰 Выручка:</span><span class="stat-value">${st.revenue.toLocaleString()} ₽</span></div><div class="stat-row"><span>💵 Наличные:</span><span>${st.cash.toLocaleString()} ₽</span></div><div class="stat-row"><span>💳 Карта:</span><span>${st.card.toLocaleString()} ₽</span></div><div class="stat-row"><span>📊 Средний чек:</span><span class="stat-value">${avg.toLocaleString()} ₽</span></div></div>`;
+            }
+            document.getElementById("operatorsStatsContent").innerHTML = html;
+            document.getElementById("operatorsStatsModal").style.display = "flex";
+        }
+
+        function exportStatsExcel() {
+            let stats = getOperatorsStats();
+            let data = [["Оператор", "Заказов", "Выручка (₽)", "Наличные", "Карта", "Средний чек"]];
+            for (let [login, st] of Object.entries(stats)) {
+                let avg = st.orders ? Math.round(st.revenue / st.orders) : 0;
+                data.push([st.name, st.orders, st.revenue, st.cash, st.card, avg]);
+            }
+            let ws = XLSX.utils.aoa_to_sheet(data), wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Статистика");
+            XLSX.writeFile(wb, `A4print_stats_${new Date().toISOString().slice(0, 19)}.xlsx`);
+        }
+
+        function generatePDFReport() {
+            let my = getMyOrders();
+            let cash = my.filter(o => o.paymentMethod === "cash").reduce((s, o) => s + o.finalTotal, 0);
+            let card = my.filter(o => o.paymentMethod === "card").reduce((s, o) => s + o.finalTotal, 0);
+            let html = `<div style="font-family:monospace; padding:20px;"><div style="text-align:center;"><h2>A4-ПРИНТ</h2><p>Отчёт за смену</p><p>${currentUser.name} | ${shiftOpen || "—"} → ${shiftClose || "—"}</p>${shiftOpenComment ? `<p>📝 Комментарий открытия: ${escapeHtml(shiftOpenComment)}</p>` : ""}${shiftCloseComment ? `<p>📝 Комментарий закрытия: ${escapeHtml(shiftCloseComment)}</p>` : ""}</div><hr><div><strong>ИТОГИ:</strong><br>📦 Заказов: ${my.length}<br>💰 Выручка: ${cash + card} ₽<br>💵 Наличные: ${cash} ₽<br>💳 Карта: ${card} ₽</div><hr><div><strong>ДЕТАЛИ:</strong></div>${my.map(o => `<div style="border:1px solid #aaa; margin:10px 0; padding:8px;"><div>№${o.id} | ${o.date}</div><div>${o.client} ${o.phone ? `📞 ${o.phone}` : ""}</div><div>${o.items.map(i => `${i.name} x${i.qty}`).join(", ")}</div><div>Итого: ${o.finalTotal} ₽ | ${o.paymentMethod === "cash" ? "Нал" : "Карта"} ${o.comment ? " | " + o.comment : ""}</div></div>`).join('')}<hr><div style="text-align:center;">Подпись: _______________</div></div>`;
+            let el = document.createElement('div');
+            el.innerHTML = html;
+            document.body.appendChild(el);
+            html2pdf().set({ margin: 0.5, filename: `A4print_report_${currentUser.name}.pdf`, html2canvas: { scale: 2 } }).from(el).save().then(() => el.remove());
+        }
+
+        function printOrderBlank() {
+            if (cart.length === 0) { alert("Корзина пуста"); return; }
+            let client = document.getElementById("clientName").value.trim() || "Клиент";
+            let phone = document.getElementById("clientPhone").value.trim();
+            let comment = document.getElementById("orderComment").value;
+            let payment = document.querySelector('input[name="payment"]:checked').value;
+            let subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
+            let discount = discountPct ? subtotal * discountPct / 100 : (discountAmt ? Math.min(discountAmt, subtotal) : 0);
+            let final = subtotal - discount;
+            let itemsHtml = cart.map(i => `<tr><td>${escapeHtml(i.name)}</td><td style="text-align:center">${i.qty}</td><td style="text-align:center">${i.price} ₽</td><td style="text-align:right">${i.price * i.qty} ₽</td>`).join('');
+            let phoneLine = phone ? `<div><strong>Телефон:</strong> ${escapeHtml(phone)}</div>` : '';
+            let html = `<div class="blank-page"><div style="text-align:center; margin-bottom:20px;"><h2>A4-ПРИНТ</h2><p>Копировальный центр</p></div><div><strong>№ заказа:</strong> ${Date.now()}</div><div><strong>Дата:</strong> ${new Date().toLocaleString()}</div><div><strong>Оператор:</strong> ${currentUser.name}</div><div><strong>Клиент:</strong> ${escapeHtml(client)}</div>${phoneLine}<div><strong>Оплата:</strong> ${payment === "cash" ? "Наличные" : "Карта"}</div><table border="1" cellpadding="5" cellspacing="0" style="width:100%; margin:15px 0;"><thead><tr><th>Услуга</th><th>Кол-во</th><th>Цена</th><th>Сумма</th></tr></thead><tbody>${itemsHtml}</tbody></table><div style="text-align:right;">Подытог: ${subtotal} ₽<br>${discount ? `Скидка: -${discount} ₽<br>` : ""}<strong>ИТОГО: ${final} ₽</strong></div>${comment ? `<div>Комментарий: ${escapeHtml(comment)}</div>` : ""}<div style="margin-top:30px; text-align:center;">Спасибо за заказ!</div><div class="copy-label">──────── ОСНОВНОЙ ЭКЗЕМПЛЯР ────────</div></div><div class="blank-page"><div style="text-align:center; margin-bottom:20px;"><h2>A4-ПРИНТ</h2><p>Копировальный центр — КОПИЯ</p></div><div><strong>№ заказа:</strong> ${Date.now()}</div><div><strong>Дата:</strong> ${new Date().toLocaleString()}</div><div><strong>Оператор:</strong> ${currentUser.name}</div><div><strong>Клиент:</strong> ${escapeHtml(client)}</div>${phoneLine}<div><strong>Оплата:</strong> ${payment === "cash" ? "Наличные" : "Карта"}</div><table border="1" cellpadding="5" cellspacing="0" style="width:100%; margin:15px 0;"><thead><tr><th>Услуга</th><th>Кол-во</th><th>Цена</th><th>Сумма</th></tr></thead><tbody>${itemsHtml}</tbody></table><div style="text-align:right;">Подытог: ${subtotal} ₽<br>${discount ? `Скидка: -${discount} ₽<br>` : ""}<strong>ИТОГО: ${final} ₽</strong></div>${comment ? `<div>Комментарий: ${escapeHtml(comment)}</div>` : ""}<div style="margin-top:30px; text-align:center;">Спасибо за заказ!</div><div class="copy-label">─────────── КОПИЯ КЛИЕНТА ───────────</div></div>`;
+            let cont = document.getElementById("printBlankContainer");
+            cont.innerHTML = html;
+            window.print();
+            setTimeout(() => cont.innerHTML = "", 1000);
+        }
+
+        function exportExcel() {
+            let my = getMyOrders();
+            if (!my.length) return alert("Нет данных");
+            let data = [["ID", "Клиент", "Телефон", "Услуги", "Сумма", "Скидка", "Итого", "Оплата", "Дата", "Комментарий"]];
+            my.forEach(o => data.push([o.id, o.client, o.phone || "", o.items.map(i => `${i.name} x${i.qty}`).join("; "), o.subtotal, o.discount, o.finalTotal, o.paymentMethod === "cash" ? "Наличные" : "Карта", o.date, o.comment || ""]));
+            let ws = XLSX.utils.aoa_to_sheet(data), wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "A4_Принт");
+            XLSX.writeFile(wb, `A4print_${currentUser.name}.xlsx`);
+        }
+
+        function renderAdmin() {
+            let aDiv = document.getElementById("adminServicesList");
+            aDiv.innerHTML = "";
+            services.forEach(s => {
+                aDiv.innerHTML += `<div style="display:flex; gap:12px; margin-bottom:12px;"><span style="flex:2;">${s.name}</span><input type="number" id="price_${s.id}" value="${s.price}" style="width:90px;"><button class="updateService" data-id="${s.id}" style="background:var(--primary-blue);">💾</button><button class="deleteService" data-id="${s.id}" style="background:#C2412C;">🗑</button></div>`;
+            });
+            document.querySelectorAll(".updateService").forEach(btn => btn.onclick = () => { let id = parseInt(btn.getAttribute("data-id")); let s = services.find(x => x.id === id); if (s) { s.price = parseInt(document.getElementById(`price_${id}`).value); saveServices(); renderServices(); renderAdmin(); } });
+            document.querySelectorAll(".deleteService").forEach(btn => btn.onclick = () => { let id = parseInt(btn.getAttribute("data-id")); if (services.length <= 1) return alert("Нельзя удалить последнюю услугу"); services = services.filter(x => x.id !== id); saveServices(); renderServices(); renderAdmin(); });
+            let opDiv = document.getElementById("operatorsList");
+            opDiv.innerHTML = "";
+            for (let [login, data] of Object.entries(operators)) {
+                if (login === "admin") continue;
+                opDiv.innerHTML += `<div style="display:flex; gap:12px; margin-bottom:12px; flex-wrap:wrap;"><span>${data.name} (${login})</span><input type="password" id="pass_${login}" placeholder="Новый пароль"><button class="changePass" data-login="${login}" style="background:var(--primary-yellow); color:black;">🔑</button><button class="deleteOp" data-login="${login}" style="background:#C2412C;">🗑</button></div>`;
+            }
+            document.querySelectorAll(".changePass").forEach(btn => btn.onclick = () => { let log = btn.getAttribute("data-login"); let p = document.getElementById(`pass_${log}`).value; if (p) { operators[log].password = p; saveOperators(); alert("Пароль изменён"); } });
+            document.querySelectorAll(".deleteOp").forEach(btn => btn.onclick = () => { let log = btn.getAttribute("data-login"); if (confirm("Удалить оператора?")) { delete operators[log]; saveOperators(); renderAdmin(); } });
+        }
+
+        // ИНИЦИАЛИЗАЦИЯ ПОМОЩИ (ИНСТРУКЦИИ)
+        function initHelpModal() {
+            const modal = document.getElementById('instructionModal');
+            const helpBtns = [document.getElementById('helpBtn'), document.getElementById('burgerHelpBtn')];
+            const closeBtn = document.getElementById('closeInstructionBtn');
+            if (!modal) return;
+
+            helpBtns.forEach(btn => {
+                if (btn) {
+                    btn.onclick = (e) => {
+                        e.preventDefault();
+                        modal.style.display = 'flex';
+                    };
+                }
+            });
+
+            if (closeBtn) closeBtn.onclick = () => modal.style.display = 'none';
+            modal.onclick = (e) => { if (e.target === modal) modal.style.display = 'none'; };
+
+            const tabs = modal.querySelectorAll('.tab-btn');
+            const contents = modal.querySelectorAll('.instruction-content');
+            tabs.forEach(tab => {
+                tab.onclick = () => {
+                    const tabId = tab.getAttribute('data-tab');
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    contents.forEach(c => c.classList.remove('active'));
+                    const activeContent = modal.querySelector(`#tab-${tabId}`);
+                    if (activeContent) activeContent.classList.add('active');
+                };
+            });
+        }
+
+        let theme = localStorage.getItem("a4print_theme");
+        if (theme === "dark") document.body.classList.add("dark");
+
+        function toggleTheme() {
+            if (document.body.classList.contains("dark")) {
+                document.body.classList.remove("dark");
+                localStorage.setItem("a4print_theme", "light");
+            } else {
+                document.body.classList.add("dark");
+                localStorage.setItem("a4print_theme", "dark");
+            }
+        }
+
+        function login(login, pwd) {
+            let u = operators[login.toLowerCase()];
+            if (u && u.password === pwd) {
+                currentUser = { ...u, username: login.toLowerCase() };
+                localStorage.setItem("a4print_current_user", JSON.stringify(currentUser));
+                document.getElementById("loginOverlay").style.display = "none";
+                document.getElementById("mainContent").style.display = "block";
+                loadData();
+                initHelpModal();
+                return true;
+            }
+            document.getElementById("loginError").innerText = "Неверный логин или пароль";
+            return false;
+        }
+
+        function logout() {
+            currentUser = null;
+            localStorage.removeItem("a4print_current_user");
+            location.reload();
+        }
+
+        function escapeHtml(str) { return str ? String(str).replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m])) : ""; }
+
+        function initBurger() {
+            let btn = document.getElementById("burgerBtn"), menu = document.getElementById("burgerMenu");
+            if (btn && menu) {
+                btn.onclick = (e) => { e.stopPropagation(); menu.classList.toggle("show"); };
+                document.addEventListener("click", (e) => { if (!menu.contains(e.target) && !btn.contains(e.target)) menu.classList.remove("show"); });
+            }
+            document.getElementById("burgerThemeToggle").onclick = () => { toggleTheme(); if (menu) menu.classList.remove("show"); };
+            document.getElementById("burgerAdminBtn").onclick = () => { if (currentUser?.role === "admin") { renderAdmin(); document.getElementById("adminModal").style.display = "flex"; } else alert("Доступно только администратору"); if (menu) menu.classList.remove("show"); };
+            document.getElementById("burgerShiftBtn").onclick = () => { toggleShiftWithComment(); if (menu) menu.classList.remove("show"); };
+            document.getElementById("burgerPdfBtn").onclick = () => { generatePDFReport(); if (menu) menu.classList.remove("show"); };
+            document.getElementById("burgerPrintBtn").onclick = () => { printOrderBlank(); if (menu) menu.classList.remove("show"); };
+            document.getElementById("burgerLogoutBtn").onclick = () => { logout(); if (menu) menu.classList.remove("show"); };
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            let saved = localStorage.getItem("a4print_current_user");
+            if (saved) {
+                try {
+                    currentUser = JSON.parse(saved);
+                    if (operators[currentUser.username]) {
+                        document.getElementById("loginOverlay").style.display = "none";
+                        document.getElementById("mainContent").style.display = "block";
+                        loadData();
+                        initBurger();
+                        initHelpModal();
+                    } else logout();
+                } catch (e) { logout(); }
+            } else {
+                initBurger();
+                initHelpModal();
+            }
+
+            document.getElementById("themeToggleBtn").onclick = toggleTheme;
+            document.getElementById("loginBtn").onclick = () => login(document.getElementById("loginUsername").value, document.getElementById("loginPassword").value);
+            document.getElementById("logoutBtn").onclick = logout;
+            document.getElementById("applyDiscountBtn").onclick = applyDiscount;
+            document.getElementById("completeOrderBtn").onclick = completeOrder;
+            document.getElementById("clearCartBtn").onclick = () => { cart = []; discountPct = 0; discountAmt = 0; renderCart(); };
+            document.getElementById("exportExcelBtn").onclick = exportExcel;
+            document.getElementById("clearHistoryBtn").onclick = clearMyOrders;
+            document.getElementById("pdfReportBtn").onclick = generatePDFReport;
+            document.getElementById("printBlankBtn").onclick = printOrderBlank;
+            document.getElementById("addFastServiceBtn").onclick = addFastService;
+
+            // Смена с комментарием
+            document.getElementById("shiftToggleBtn").onclick = toggleShiftWithComment;
+            document.getElementById("shiftCommentConfirm").onclick = confirmShiftWithComment;
+            document.getElementById("shiftCommentCancel").onclick = cancelShiftComment;
+
+            let admModal = document.getElementById("adminModal");
+            document.getElementById("adminPanelBtn").onclick = () => { renderAdmin(); admModal.style.display = "flex"; };
+            document.getElementById("closeAdminModal").onclick = () => admModal.style.display = "none";
+            document.getElementById("viewOperatorsStatsBtn").onclick = showOperatorsStats;
+            document.getElementById("closeStatsModal").onclick = () => document.getElementById("operatorsStatsModal").style.display = "none";
+            document.getElementById("exportStatsExcelBtn").onclick = exportStatsExcel;
+            document.getElementById("addServiceBtn").onclick = () => { let name = document.getElementById("newServiceName").value.trim(); let price = parseInt(document.getElementById("newServicePrice").value); if (name && price > 0) { services.push({ id: Date.now(), name, price }); saveServices(); renderServices(); renderAdmin(); } else alert("Введите название и цену"); };
+            document.getElementById("addOperatorBtn").onclick = () => { let lgn = document.getElementById("newOpLogin").value.trim().toLowerCase(); let nm = document.getElementById("newOpName").value.trim(); let ps = document.getElementById("newOpPass").value.trim(); if (lgn && nm && ps) { if (operators[lgn]) alert("Логин уже есть"); else { operators[lgn] = { password: ps, name: nm, role: "operator" }; saveOperators(); renderAdmin(); } } else alert("Заполните все поля"); };
+            window.onclick = (e) => { if (e.target === admModal) admModal.style.display = "none"; if (e.target === document.getElementById("operatorsStatsModal")) document.getElementById("operatorsStatsModal").style.display = "none"; };
+        });
+    </script>
 </body>
 </html>
