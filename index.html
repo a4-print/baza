@@ -1009,7 +1009,7 @@
         let final=subtotal-discount;
         let itemsHtml=cart.map(i=>`<tr><td>${escapeHtml(i.name)}</td><td>${i.qty}</td><td>${i.price} ₽</td><td>${i.price*i.qty} ₽</td>`).join('');
         let phoneLine = phone ? `<div><strong>Телефон:</strong> ${escapeHtml(phone)}</div>` : '';
-        let html=`<div class="blank-page"><div style="text-align:center; margin-bottom:20px;"><h2>A4-ПРИНТ</h2><p>Копировальный центр</p></div><div><strong>№ заказа:</strong> ${Date.now()}</div><div><strong>Дата:</strong> ${new Date().toLocaleString()}</div><div><strong>Оператор:</strong> ${currentUser.name}</div><div><strong>Клиент:</strong> ${escapeHtml(client)}</div>${phoneLine}<div><strong>Оплата:</strong> ${payment==="cash"?"Наличные":"Карта"}</div><table border="1" cellpadding="5" cellspacing="0" style="width:100%; margin:15px 0;"><tr><th>Услуга</th><th>Кол-во</th><th>Цена</th><th>Сумма</th></tr>${itemsHtml}</table><div style="text-align:right;">Подытог: ${subtotal} ₽<br>${discount?`Скидка: -${discount} ₽<br>`:""}<strong>ИТОГО: ${final} ₽</strong></div>${comment?`<div>Комментарий: ${escapeHtml(comment)}</div>`:""}<div style="margin-top:30px; text-align:center;">Спасибо за заказ!</div><div class="copy-label">──────── ОСНОВНОЙ ЭКЗЕМПЛЯР ────────</div></div><div class="blank-page"><div style="text-align:center; margin-bottom:20px;"><h2>A4-ПРИНТ</h2><p>Копировальный центр — КОПИЯ</p></div><div><strong>№ заказа:</strong> ${Date.now()}</div><div><strong>Дата:</strong> ${new Date().toLocaleString()}</div><div><strong>Оператор:</strong> ${currentUser.name}</div><div><strong>Клиент:</strong> ${escapeHtml(client)}</div>${phoneLine}<div><strong>Оплата:</strong> ${payment==="cash"?"Наличные":"Карта"}</div><table border="1" cellpadding="5" cellspacing="0" style="width:100%; margin:15px 0;"><tr><th>Услуга</th><th>Кол-во</th><th>Цена</th><th>Сумма</th></tr>${itemsHtml}</table><div style="text-align:right;">Подытог: ${subtotal} ₽<br>${discount?`Скидка: -${discount} ₽<br>`:""}<strong>ИТОГО: ${final} ₽</strong></div>${comment?`<div>Комментарий: ${escapeHtml(comment)}</div>`:""}<div style="margin-top:30px; text-align:center;">Спасибо за заказ!</div><div class="copy-label">─────────── КОПИЯ КЛИЕНТА ───────────</div></div>`;
+        let html=`<div class="blank-page"><div style="text-align:center; margin-bottom:20px;"><h2>A4-ПРИНТ</h2><p>Копировальный центр</p></div><div><strong>№ заказа:</strong> ${Date.now()}</div><div><strong>Дата:</strong> ${new Date().toLocaleString()}</div><div><strong>Оператор:</strong> ${currentUser.name}</div><div><strong>Клиент:</strong> ${escapeHtml(client)}</div>${phoneLine}<div><strong>Оплата:</strong> ${payment==="cash"?"Наличные":"Карта"}</div><table border="1" cellpadding="5" cellspacing="0" style="width:100%; margin:15px 0;"><tr><th>Услуга</th><th>Кол-во</th><th>Цена</th><th>Сумма</th><tr>${itemsHtml}</table><div style="text-align:right;">Подытог: ${subtotal} ₽<br>${discount?`Скидка: -${discount} ₽<br>`:""}<strong>ИТОГО: ${final} ₽</strong></div>${comment?`<div>Комментарий: ${escapeHtml(comment)}</div>`:""}<div style="margin-top:30px; text-align:center;">Спасибо за заказ!</div><div class="copy-label">──────── ОСНОВНОЙ ЭКЗЕМПЛЯР ────────</div></div><div class="blank-page"><div style="text-align:center; margin-bottom:20px;"><h2>A4-ПРИНТ</h2><p>Копировальный центр — КОПИЯ</p></div><div><strong>№ заказа:</strong> ${Date.now()}</div><div><strong>Дата:</strong> ${new Date().toLocaleString()}</div><div><strong>Оператор:</strong> ${currentUser.name}</div><div><strong>Клиент:</strong> ${escapeHtml(client)}</div>${phoneLine}<div><strong>Оплата:</strong> ${payment==="cash"?"Наличные":"Карта"}</div><table border="1" cellpadding="5" cellspacing="0" style="width:100%; margin:15px 0;"><tr><th>Услуга</th><th>Кол-во</th><th>Цена</th><th>Сумма</th><tr>${itemsHtml}</table><div style="text-align:right;">Подытог: ${subtotal} ₽<br>${discount?`Скидка: -${discount} ₽<br>`:""}<strong>ИТОГО: ${final} ₽</strong></div>${comment?`<div>Комментарий: ${escapeHtml(comment)}</div>`:""}<div style="margin-top:30px; text-align:center;">Спасибо за заказ!</div><div class="copy-label">─────────── КОПИЯ КЛИЕНТА ───────────</div></div>`;
         let cont=document.getElementById("printBlankContainer"); cont.innerHTML=html;
         window.print(); setTimeout(()=>cont.innerHTML="",1000);
     }
@@ -1037,26 +1037,43 @@
         document.querySelectorAll(".deleteOp").forEach(btn=>btn.onclick=()=>{ let log=btn.getAttribute("data-login"); if(confirm("Удалить оператора?")){ delete operators[log]; saveOperators(); renderAdmin(); } });
     }
 
-    // Инструкция с вкладками в модальном окне
+    // ИНСТРУКЦИЯ — модальное окно
     function initInstructionModal() {
         const modal = document.getElementById('instructionModal');
-        const openBtns = document.querySelectorAll('#helpBtn, #burgerHelpBtn');
+        const openBtns = [document.getElementById('helpBtn'), document.getElementById('burgerHelpBtn')];
         const closeBtn = document.getElementById('closeInstructionBtn');
         
         openBtns.forEach(btn => {
-            if(btn) btn.onclick = () => { modal.style.display = 'flex'; };
+            if(btn) {
+                btn.onclick = (e) => {
+                    e.preventDefault();
+                    modal.style.display = 'flex';
+                };
+            }
         });
-        if(closeBtn) closeBtn.onclick = () => { modal.style.display = 'none'; };
-        modal.onclick = (e) => { if(e.target === modal) modal.style.display = 'none'; };
         
-        const tabs = document.querySelectorAll('#instructionModal .tab-btn');
+        if(closeBtn) {
+            closeBtn.onclick = () => {
+                modal.style.display = 'none';
+            };
+        }
+        
+        modal.onclick = (e) => {
+            if(e.target === modal) modal.style.display = 'none';
+        };
+        
+        // Вкладки внутри модального окна
+        const tabs = modal.querySelectorAll('.tab-btn');
+        const contents = modal.querySelectorAll('.instruction-content');
+        
         tabs.forEach(tab => {
             tab.addEventListener('click', () => {
                 const tabId = tab.getAttribute('data-tab');
                 tabs.forEach(t => t.classList.remove('active'));
                 tab.classList.add('active');
-                document.querySelectorAll('#instructionModal .instruction-content').forEach(c => c.classList.remove('active'));
-                document.getElementById(`#instructionModal #tab-${tabId}`).classList.add('active');
+                contents.forEach(c => c.classList.remove('active'));
+                const activeContent = modal.querySelector(`#tab-${tabId}`);
+                if(activeContent) activeContent.classList.add('active');
             });
         });
     }
