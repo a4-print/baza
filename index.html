@@ -133,7 +133,7 @@
         .yellow-bg { background: var(--c-yellow); }
         .black-bg { background: var(--c-black); }
 
-        /* ========== БУРГЕР МЕНЮ (только на мобилках) ========== */
+        /* ========== БУРГЕР МЕНЮ ========== */
         .burger-btn {
             display: none;
             background: none;
@@ -177,7 +177,6 @@
             font-size: 14px;
         }
 
-        /* Десктопная панель пользователя */
         .user-bar {
             display: flex;
             gap: 12px;
@@ -431,15 +430,122 @@
         .stat-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 13px; }
         .stat-value { font-weight: 800; font-size: 16px; color: var(--c-magenta); }
 
-        .pdf-report {
-            padding: 20px;
-            font-family: monospace;
-            color: #000 !important;
-            background: white !important;
+        /* ========== СТИЛИ ДЛЯ ПЕЧАТИ БЛАНКА (А4, 2 экземпляра) ========== */
+        .print-blank {
+            display: none;
         }
-        .pdf-report * { color: #000 !important; }
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            .print-blank, .print-blank * {
+                visibility: visible;
+            }
+            .print-blank {
+                display: block;
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                padding: 0;
+                margin: 0;
+            }
+            .blank-page {
+                page-break-after: always;
+                page-break-inside: avoid;
+            }
+            .blank-page:last-child {
+                page-break-after: auto;
+            }
+        }
 
-        /* ========== МОБИЛЬНАЯ АДАПТАЦИЯ ========== */
+        .blank-page {
+            width: 210mm;
+            min-height: 297mm;
+            padding: 15mm;
+            margin: 0 auto;
+            background: white;
+            font-family: 'Courier New', 'Inter', monospace;
+            font-size: 11pt;
+            color: black;
+            box-sizing: border-box;
+            border: 1px dashed #ccc;
+        }
+
+        .blank-header {
+            text-align: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--c-cyan);
+            padding-bottom: 15px;
+        }
+        .blank-header h2 {
+            color: var(--c-black);
+            font-size: 24px;
+            letter-spacing: 2px;
+        }
+        .blank-header p {
+            color: var(--c-gray);
+            font-size: 12px;
+        }
+        .cmyk-colors {
+            display: flex;
+            justify-content: center;
+            gap: 4px;
+            margin: 10px 0;
+        }
+        .cmyk-colors div {
+            width: 40px;
+            height: 4px;
+        }
+        .blank-order-info {
+            margin: 15px 0;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            border: 1px solid #ddd;
+            padding: 10px;
+            background: #f9f9f9;
+        }
+        .blank-items {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        .blank-items th, .blank-items td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+            font-size: 11px;
+        }
+        .blank-items th {
+            background: #f0f0f0;
+            font-weight: bold;
+        }
+        .blank-total {
+            text-align: right;
+            margin: 15px 0;
+            padding: 10px;
+            border-top: 2px solid var(--c-black);
+            font-weight: bold;
+        }
+        .blank-footer {
+            margin-top: 30px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 10px;
+            color: #666;
+            border-top: 1px dashed #ccc;
+            padding-top: 15px;
+        }
+        .copy-label {
+            text-align: center;
+            font-size: 10px;
+            color: #999;
+            margin-top: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
         @media (max-width: 768px) {
             body { padding: 12px; }
             .header { padding: 12px 16px; }
@@ -447,7 +553,7 @@
             h1 { font-size: 18px; }
             
             .user-bar {
-                display: none; /* Скрываем десктопное меню */
+                display: none;
             }
             
             .burger-btn {
@@ -509,26 +615,25 @@
             </div>
         </div>
         
-        <!-- Десктопное меню -->
         <div class="user-bar">
             <span id="currentOperatorName" style="font-weight: 500;"></span>
             <button id="themeToggleBtn" class="btn-outline">🌙 Тёмная</button>
             <button id="adminPanelBtn" style="background: var(--c-cyan); color: var(--c-black);">Админ</button>
             <button id="shiftToggleBtn" style="background: var(--c-yellow); color: var(--c-black);">🚀 Смена</button>
             <button id="pdfReportBtn" style="background: var(--c-magenta);">📄 Отчёт</button>
+            <button id="printBlankBtn" class="btn-success">🖨️ Бланк заказа</button>
             <button id="logoutBtn" class="btn-outline">Выйти</button>
         </div>
         
-        <!-- Бургер кнопка (только на мобилках) -->
         <button class="burger-btn" id="burgerBtn">☰</button>
         
-        <!-- Выпадающее меню -->
         <div class="burger-menu" id="burgerMenu">
             <span style="padding: 8px 0; font-weight: 600; border-bottom: 1px solid #E0E0E0;" id="burgerOperatorName"></span>
             <button id="burgerThemeToggle" class="btn-outline">🌙 Тёмная</button>
             <button id="burgerAdminBtn" style="background: var(--c-cyan); color: var(--c-black);">Админ</button>
             <button id="burgerShiftBtn" style="background: var(--c-yellow); color: var(--c-black);">🚀 Смена</button>
             <button id="burgerPdfBtn" style="background: var(--c-magenta);">📄 Отчёт</button>
+            <button id="burgerPrintBlankBtn" class="btn-success">🖨️ Бланк</button>
             <button id="burgerLogoutBtn" class="btn-outline">Выйти</button>
         </div>
     </div>
@@ -587,6 +692,9 @@
     </div>
 </div>
 </div>
+
+<!-- Скрытый блок для печати бланка заказа -->
+<div class="print-blank" id="printBlankContainer"></div>
 
 <div id="adminModal" class="modal">
     <div class="modal-card">
@@ -809,6 +917,105 @@
     
     function clearMyOrders() { if (confirm("Очистить все свои заказы?")) { if (currentUser.role === "admin") allOrders = []; else allOrders = allOrders.filter(o => o.operator !== currentUser.name); saveOrders(); renderHistory(); } }
     
+    // ========== ПЕЧАТЬ БЛАНКА ЗАКАЗА (2 экземпляра на А4) ==========
+    function printOrderBlank() {
+        if (cart.length === 0) {
+            alert("Корзина пуста! Добавьте услуги для печати бланка.");
+            return;
+        }
+        
+        let client = document.getElementById("clientName").value.trim() || "Клиент";
+        let comment = document.getElementById("orderComment").value;
+        let payment = document.querySelector('input[name="payment"]:checked').value;
+        let subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
+        let discount = 0;
+        if (discountPct > 0) discount = subtotal * discountPct / 100;
+        else if (discountAmt > 0) discount = Math.min(discountAmt, subtotal);
+        let finalTotal = subtotal - discount;
+        let orderNumber = Date.now();
+        let currentDate = new Date().toLocaleString();
+        
+        let itemsHtml = "";
+        cart.forEach(item => {
+            let sum = item.price * item.qty;
+            itemsHtml += `<tr><td>${escapeHtml(item.name)}</td><td style="text-align:center">${item.qty}</td><td style="text-align:center">${item.price} ₽</td><td style="text-align:right">${sum} ₽</td></tr>`;
+        });
+        
+        let blankHtml = `
+            <div class="blank-page">
+                <div class="blank-header">
+                    <h2>A4‑ПРИНТ</h2>
+                    <div class="cmyk-colors"><div style="background:#00A3E0"></div><div style="background:#E2007A"></div><div style="background:#FFD100"></div><div style="background:#231F20"></div></div>
+                    <p>Копировальный центр | Кассовый чек</p>
+                </div>
+                <div class="blank-order-info">
+                    <span><strong>№ заказа:</strong> ${orderNumber}</span>
+                    <span><strong>Дата:</strong> ${currentDate}</span>
+                    <span><strong>Оператор:</strong> ${currentUser.name}</span>
+                </div>
+                <div class="blank-order-info">
+                    <span><strong>Клиент:</strong> ${escapeHtml(client)}</span>
+                    <span><strong>Оплата:</strong> ${payment === "cash" ? "Наличные" : "Карта"}</span>
+                </div>
+                <table class="blank-items">
+                    <thead><tr><th>Услуга</th><th style="width:60px">Кол-во</th><th style="width:80px">Цена</th><th style="width:80px">Сумма</th></tr></thead>
+                    <tbody>${itemsHtml}</tbody>
+                </table>
+                <div class="blank-total">
+                    <div>Подытог: ${subtotal} ₽</div>
+                    ${discount > 0 ? `<div>Скидка: -${discount} ₽</div>` : ""}
+                    <div style="font-size:16px; margin-top:8px;"><strong>ИТОГО: ${finalTotal} ₽</strong></div>
+                </div>
+                ${comment ? `<div style="margin:10px 0; padding:8px; background:#f5f5f5;"><strong>Комментарий:</strong> ${escapeHtml(comment)}</div>` : ""}
+                <div class="blank-footer">
+                    <span>Спасибо за заказ!</span>
+                    <span>тел: +7 (XXX) XXX-XX-XX</span>
+                </div>
+                <div class="copy-label">────────── ОСНОВНОЙ ЭКЗЕМПЛЯР ──────────</div>
+            </div>
+            <div class="blank-page">
+                <div class="blank-header">
+                    <h2>A4‑ПРИНТ</h2>
+                    <div class="cmyk-colors"><div style="background:#00A3E0"></div><div style="background:#E2007A"></div><div style="background:#FFD100"></div><div style="background:#231F20"></div></div>
+                    <p>Копировальный центр | Копия для клиента</p>
+                </div>
+                <div class="blank-order-info">
+                    <span><strong>№ заказа:</strong> ${orderNumber}</span>
+                    <span><strong>Дата:</strong> ${currentDate}</span>
+                    <span><strong>Оператор:</strong> ${currentUser.name}</span>
+                </div>
+                <div class="blank-order-info">
+                    <span><strong>Клиент:</strong> ${escapeHtml(client)}</span>
+                    <span><strong>Оплата:</strong> ${payment === "cash" ? "Наличные" : "Карта"}</span>
+                </div>
+                <table class="blank-items">
+                    <thead><tr><th>Услуга</th><th style="width:60px">Кол-во</th><th style="width:80px">Цена</th><th style="width:80px">Сумма</th></tr></thead>
+                    <tbody>${itemsHtml}</tbody>
+                </table>
+                <div class="blank-total">
+                    <div>Подытог: ${subtotal} ₽</div>
+                    ${discount > 0 ? `<div>Скидка: -${discount} ₽</div>` : ""}
+                    <div style="font-size:16px; margin-top:8px;"><strong>ИТОГО: ${finalTotal} ₽</strong></div>
+                </div>
+                ${comment ? `<div style="margin:10px 0; padding:8px; background:#f5f5f5;"><strong>Комментарий:</strong> ${escapeHtml(comment)}</div>` : ""}
+                <div class="blank-footer">
+                    <span>Спасибо за заказ!</span>
+                    <span>тел: +7 (XXX) XXX-XX-XX</span>
+                </div>
+                <div class="copy-label">─────────────── КОПИЯ ───────────────</div>
+            </div>
+        `;
+        
+        let container = document.getElementById("printBlankContainer");
+        container.innerHTML = blankHtml;
+        
+        window.print();
+        
+        setTimeout(() => {
+            container.innerHTML = "";
+        }, 1000);
+    }
+    
     function getFullOperatorsStats() {
         let stats = [];
         for (let [login, data] of Object.entries(operators)) {
@@ -920,7 +1127,6 @@
     function logout() { currentUser = null; localStorage.removeItem("a4print_current_user"); location.reload(); }
     function escapeHtml(str) { return str ? String(str).replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m])) : ""; }
 
-    // Бургер меню
     function initBurger() {
         const burgerBtn = document.getElementById("burgerBtn");
         const burgerMenu = document.getElementById("burgerMenu");
@@ -936,7 +1142,6 @@
             });
         }
         
-        // Связываем бургер-кнопки с действиями
         let burgerTheme = document.getElementById("burgerThemeToggle");
         if(burgerTheme) burgerTheme.onclick = () => { toggleTheme(); burgerMenu.classList.remove("show"); };
         
@@ -952,6 +1157,9 @@
         
         let burgerPdf = document.getElementById("burgerPdfBtn");
         if(burgerPdf) burgerPdf.onclick = () => { generatePDFReport(); burgerMenu.classList.remove("show"); };
+        
+        let burgerPrintBlank = document.getElementById("burgerPrintBlankBtn");
+        if(burgerPrintBlank) burgerPrintBlank.onclick = () => { printOrderBlank(); burgerMenu.classList.remove("show"); };
         
         let burgerLogout = document.getElementById("burgerLogoutBtn");
         if(burgerLogout) burgerLogout.onclick = () => { logout(); burgerMenu.classList.remove("show"); };
@@ -972,6 +1180,7 @@
         document.getElementById("clearHistoryBtn").onclick = clearMyOrders;
         document.getElementById("pdfReportBtn").onclick = generatePDFReport;
         document.getElementById("shiftToggleBtn").onclick = toggleShift;
+        document.getElementById("printBlankBtn").onclick = printOrderBlank;
         
         let adminModal = document.getElementById("adminModal");
         document.getElementById("adminPanelBtn").onclick = () => { renderAdmin(); adminModal.style.display = "flex"; };
