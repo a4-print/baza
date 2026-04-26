@@ -22,7 +22,7 @@
         body { background: var(--bg-light); font-family: 'Segoe UI', sans-serif; padding: 20px; color: var(--text-dark); transition: background 0.2s, color 0.2s; }
         body.dark { background: #121826; color: #E2E8F0; }
         body.dark .card, body.dark .cart-panel, body.dark .history-section, body.dark .shift-bar, body.dark .fast-service-card { background: #1E2A3A; border-color: #2D3A4A; }
-        body.dark .service-card, body.dark .cart-item, body.dark .history-item, body.dark .stat-card { background: #0F1722; border-color: #2D3A4A; }
+        body.dark .service-card, body.dark .cart-item, body.dark .history-item, body.dark .stat-card { background: #0F1722; border-color: #3D3A4C; }
         body.dark input, body.dark select, body.dark textarea { background: #0F1722; border-color: #2D3A4A; color: #E2E8F0; }
         .app { max-width: 1600px; margin: 0 auto; }
         .header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; margin-bottom: 24px; padding: 16px 24px; background: var(--card-white); border-radius: 28px; border-left: 6px solid var(--primary-blue); position: relative; }
@@ -216,7 +216,6 @@
     <div id="syncStatus" class="sync-status">💾 Готово</div>
     <div id="syncProgress" class="sync-progress">🔄 Синхронизация...</div>
 
-    <!-- Модалки (оставлены без изменений для краткости) -->
     <div id="reportChoiceModal" class="report-choice-modal">
         <div class="modal-card">
             <h3>📄 Выберите тип отчёта</h3>
@@ -248,6 +247,7 @@
                 <button id="closeAdminModal" style="background:none; font-size:28px;">✕</button>
             </div>
             <button id="viewOperatorsStatsBtn" class="btn-primary" style="width:100%; margin: 16px 0;">📊 Статистика операторов</button>
+            
             <div class="monthly-report-block">
                 <div class="monthly-report-title">📅 Отчёт за произвольную дату</div>
                 <div class="date-selector">
@@ -258,6 +258,7 @@
                 </div>
                 <div id="dateReportContent"></div>
             </div>
+            
             <div class="monthly-report-block">
                 <div class="monthly-report-title">📅 Полный отчёт за месяц</div>
                 <div class="date-selector">
@@ -268,16 +269,19 @@
                 </div>
                 <div id="monthlyReportContent"></div>
             </div>
+            
             <div class="monthly-report-block">
-                <div class="monthly-report-title">☁️ Настройки синхронизации</div>
+                <div class="monthly-report-title">☁️ Облачная синхронизация</div>
                 <div class="date-selector">
                     <input type="text" id="googleScriptUrl" placeholder="URL веб-приложения Apps Script" style="flex:3;">
                     <button id="saveGoogleSettingsBtn" class="btn-primary">Сохранить настройки</button>
                     <button id="testSyncBtn" class="btn-info">Тест синхронизации</button>
-                    <button id="syncAllOrdersBtn" class="btn-warning">🔄 Синхронизировать все заказы</button>
+                    <button id="syncAllOrdersBtn" class="btn-warning">🔼 Отправить все в облако</button>
+                    <button id="restoreFromCloudBtn" class="btn-success">⬇️ Восстановить из облака</button>
                 </div>
-                <div id="syncSettingsInfo" class="instruction-note" style="margin-top: 8px;">⚙️ Автоматическая синхронизация каждые 2 минуты</div>
+                <div id="syncSettingsInfo" class="instruction-note" style="margin-top: 8px;">⚙️ Автоматическая синхронизация каждые 2 минуты. Кнопка «Восстановить из облака» загрузит все заказы из Google Таблицы.</div>
             </div>
+            
             <hr>
             <h3>Управление услугами</h3>
             <div id="adminServicesList"></div>
@@ -323,7 +327,7 @@
                 <div class="instruction-step"><strong>3. Поиск услуги</strong><br>Начните вводить название в поле поиска — появятся подходящие варианты.</div>
                 <div class="instruction-step"><strong>4. Приём заказа</strong><br>Выберите услугу → количество → «Добавить».</div>
                 <div class="instruction-step"><strong>5. Оформление</strong><br>Клиент, скидка, оплата, комментарий → «Оформить».</div>
-                <div class="instruction-step"><strong>6. Автосинхронизация</strong><br>Каждые 2 минуты система автоматически сохраняет заказы в Google Таблицу.</div>
+                <div class="instruction-step"><strong>6. Автосинхронизация</strong><br>Каждые 2 минуты система автоматически сохраняет заказы в облако.</div>
                 <div class="instruction-step"><strong>7. Excel отчёт</strong><br>«📎 Excel» — полный отчёт с ежедневной выручкой и итогами по кассе.</div>
                 <div class="instruction-step"><strong>8. Закрыть смену</strong><br>«🔒 Закрыть смену» → затем «Отчёт» для бухгалтерии.</div>
             </div>
@@ -332,7 +336,8 @@
                 <div class="instruction-step"><strong>Управление услугами</strong><br>Цены, удаление, добавление.</div>
                 <div class="instruction-step"><strong>Управление операторами</strong><br>Смена пароля, добавление, удаление.</div>
                 <div class="instruction-step"><strong>Статистика операторов</strong><br>Заказы, выручка, средний чек по каждому.</div>
-                <div class="instruction-step"><strong>Excel отчёт</strong><br>Скачивается файл с двумя листами: детали заказов и ежедневная сводка с остатками в кассе.</div>
+                <div class="instruction-step"><strong>Облачная синхронизация</strong><br>«🔼 Отправить все в облако» — выгружает все заказы в Google Таблицу.<br>
+                «⬇️ Восстановить из облака» — загружает все заказы из таблицы (без дублей).</div>
             </div>
         </div>
     </div>
@@ -375,84 +380,101 @@
         function saveShift() { localStorage.setItem(SHIFT_KEY, JSON.stringify({ open: shiftOpen, close: shiftClose, openComment: shiftOpenComment, closeComment: shiftCloseComment, operator: currentUser?.name })); }
         function saveSyncedOrders() { localStorage.setItem("syncedOrders", JSON.stringify([...syncedOrders])); }
 
-        // ========== НОВЫЙ РАСШИРЕННЫЙ EXCEL ОТЧЁТ ==========
-        function exportExcelFull() {
-            let my = getMyOrders();
-            if (!my.length) return alert("Нет данных");
-            
-            // Формируем детальный лист с заказами
-            let detailsData = [["ID", "Дата", "Клиент", "Телефон", "Услуги", "Сумма", "Скидка", "Итого", "Оплата", "Оператор", "Комментарий"]];
-            my.forEach(o => {
-                detailsData.push([
-                    o.id, o.date, o.client, o.phone || "", 
-                    o.items.map(i => `${i.name} x${i.qty}`).join("; "), 
-                    o.subtotal, o.discount, o.finalTotal, 
-                    o.paymentMethod === "cash" ? "Наличные" : "Карта", 
-                    o.operator, o.comment || ""
-                ]);
-            });
-            
-            // === ЕЖЕДНЕВНАЯ СВОДКА ===
-            // Группируем заказы по датам
-            const dailyStats = new Map();
-            my.forEach(order => {
-                const date = order.date.split(',')[0]; // берем только дату без времени
-                if (!dailyStats.has(date)) {
-                    dailyStats.set(date, { orders: 0, total: 0, cash: 0, card: 0 });
+        // ========== ФУНКЦИЯ ДЛЯ ПАРСИНГА СТРОКИ УСЛУГ ==========
+        function parseItemsString(itemsStr) {
+            const items = [];
+            const parts = itemsStr.split(", ");
+            for (const part of parts) {
+                const match = part.match(/(.+)\s+x(\d+)$/);
+                if (match) {
+                    const name = match[1];
+                    const qty = parseInt(match[2]);
+                    // Ищем цену в основном списке услуг
+                    const service = services.find(s => s.name === name);
+                    const price = service ? service.price : 0;
+                    items.push({ name: name, price: price, qty: qty });
                 }
-                const stat = dailyStats.get(date);
-                stat.orders++;
-                stat.total += order.finalTotal;
-                if (order.paymentMethod === "cash") stat.cash += order.finalTotal;
-                else stat.card += order.finalTotal;
-            });
-            
-            // Сортируем даты по возрастанию
-            const sortedDates = Array.from(dailyStats.keys()).sort((a,b) => new Date(a) - new Date(b));
-            
-            // Формируем таблицу ежедневной сводки
-            let dailyData = [["Дата", "Кол-во заказов", "Выручка (₽)", "Наличные (₽)", "Карта (₽)", "Накоплено в кассе (₽)"]];
-            let cashInCashRegister = 0;
-            for (const date of sortedDates) {
-                const stat = dailyStats.get(date);
-                cashInCashRegister += stat.cash;
-                dailyData.push([
-                    date, stat.orders, stat.total, stat.cash, stat.card, cashInCashRegister
-                ]);
             }
-            
-            // Общие итоги
-            const totalOrders = my.length;
-            const totalRevenue = my.reduce((s,o) => s + o.finalTotal, 0);
-            const totalCash = my.filter(o => o.paymentMethod === "cash").reduce((s,o) => s + o.finalTotal, 0);
-            const totalCard = my.filter(o => o.paymentMethod === "card").reduce((s,o) => s + o.finalTotal, 0);
-            
-            // Добавляем итоговую строку в ежедневную сводку
-            dailyData.push(["", "", "", "", "", ""]);
-            dailyData.push(["ИТОГО:", totalOrders, totalRevenue, totalCash, totalCard, cashInCashRegister]);
-            
-            // Создаем книгу с двумя листами
-            const wb = XLSX.utils.book_new();
-            
-            // Лист с деталями заказов
-            const wsDetails = XLSX.utils.aoa_to_sheet(detailsData);
-            wsDetails['!cols'] = [{wch:12},{wch:20},{wch:20},{wch:15},{wch:40},{wch:10},{wch:10},{wch:12},{wch:12},{wch:15},{wch:25}];
-            XLSX.utils.book_append_sheet(wb, wsDetails, "Детали заказов");
-            
-            // Лист с ежедневной сводкой
-            const wsDaily = XLSX.utils.aoa_to_sheet(dailyData);
-            wsDaily['!cols'] = [{wch:12},{wch:15},{wch:15},{wch:15},{wch:15},{wch:20}];
-            XLSX.utils.book_append_sheet(wb, wsDaily, "Ежедневная сводка");
-            
-            // Сохраняем файл
-            XLSX.writeFile(wb, `A4print_${currentUser.name}_${new Date().toISOString().slice(0,19).replace(/:/g, '-')}.xlsx`);
-            showSyncStatus("📎 Excel отчёт скачан");
+            return items;
         }
 
-        // ========== СИНХРОНИЗАЦИЯ С GOOGLE SHEETS ==========
+        // ========== ВОССТАНОВЛЕНИЕ ДАННЫХ ИЗ GOOGLE SHEETS ==========
+        async function restoreFromCloud() {
+            if (!googleScriptUrl) {
+                alert("Сначала настройте URL веб-приложения в админ-панели");
+                return;
+            }
+            
+            showSyncStatus("🔄 Загрузка данных из облака...");
+            const progressDiv = document.getElementById("syncProgress");
+            progressDiv.style.display = "block";
+            progressDiv.textContent = "🔄 Чтение данных из Google Sheets...";
+            
+            try {
+                // Добавляем параметр action=getData для получения всех заказов
+                const response = await fetch(`${googleScriptUrl}?action=getData&t=${Date.now()}`);
+                const data = await response.json();
+                
+                if (data.success && data.orders && data.orders.length > 0) {
+                    progressDiv.textContent = `📥 Обработка ${data.orders.length} записей...`;
+                    
+                    // Конвертируем данные из формата таблицы
+                    const cloudOrders = [];
+                    for (const row of data.orders) {
+                        if (row[0] && row[0] !== "ID" && row[0] !== "") {
+                            const order = {
+                                id: parseInt(row[0]),
+                                date: row[1] || "",
+                                client: row[2] || "Клиент",
+                                phone: row[3] || "",
+                                items: parseItemsString(row[4] || ""),
+                                subtotal: parseFloat(row[5]) || 0,
+                                discount: parseFloat(row[6]) || 0,
+                                finalTotal: parseFloat(row[7]) || 0,
+                                paymentMethod: row[8] === "Наличные" ? "cash" : "card",
+                                operator: row[9] || currentUser?.name,
+                                comment: row[10] || ""
+                            };
+                            
+                            // Если у заказа нет позиций, но есть сумма, создаём одну позицию
+                            if (order.items.length === 0 && order.finalTotal > 0) {
+                                order.items = [{ name: "Услуга", price: order.finalTotal, qty: 1 }];
+                            }
+                            
+                            cloudOrders.push(order);
+                        }
+                    }
+                    
+                    // Объединяем с локальными заказами (без дублей по ID)
+                    const existingIds = new Set(allOrders.map(o => o.id));
+                    const newOrders = cloudOrders.filter(o => !existingIds.has(o.id));
+                    
+                    if (newOrders.length > 0) {
+                        allOrders = [...newOrders, ...allOrders];
+                        saveOrders();
+                        renderHistory();
+                        showSyncStatus(`✅ Загружено ${newOrders.length} заказов из облака`);
+                        alert(`Успешно загружено ${newOrders.length} новых заказов из Google Таблицы`);
+                    } else {
+                        showSyncStatus(`✅ Данные актуальны (новых заказов нет)`);
+                        alert("Все заказы уже синхронизированы. Новых записей не найдено.");
+                    }
+                } else {
+                    showSyncStatus("⚠️ В облаке нет данных для восстановления");
+                    alert("В Google Таблице нет данных для восстановления");
+                }
+            } catch (error) {
+                console.error("Ошибка восстановления:", error);
+                showSyncStatus("❌ Ошибка восстановления из облака");
+                alert("Ошибка при загрузке данных. Проверьте URL и доступ к таблице.\n\n" + error);
+            }
+            
+            progressDiv.style.display = "none";
+        }
+
+        // ========== ОТПРАВКА ВСЕХ ЗАКАЗОВ В ОБЛАКО ==========
         async function syncOrderToGoogle(order) {
             if (!googleScriptUrl) return false;
-            if (syncedOrders.has(order.id)) return true;
             
             const orderData = {
                 id: order.id,
@@ -463,7 +485,7 @@
                 subtotal: order.subtotal,
                 discount: order.discount,
                 finalTotal: order.finalTotal,
-                paymentMethod: order.paymentMethod,
+                paymentMethod: order.paymentMethod === "cash" ? "Наличные" : "Карта",
                 operator: order.operator,
                 comment: order.comment || ""
             };
@@ -475,13 +497,39 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(orderData)
                 });
-                syncedOrders.add(order.id);
-                saveSyncedOrders();
                 return true;
             } catch(e) {
                 console.error("Ошибка синхронизации:", e);
                 return false;
             }
+        }
+
+        async function syncAllOrdersToGoogle() {
+            if (!googleScriptUrl) {
+                alert("Сначала настройте URL веб-приложения в админ-панели");
+                return;
+            }
+            if (allOrders.length === 0) {
+                alert("Нет заказов для синхронизации");
+                return;
+            }
+            
+            const progressDiv = document.getElementById("syncProgress");
+            progressDiv.style.display = "block";
+            let successCount = 0;
+            let failCount = 0;
+            
+            for (let i = 0; i < allOrders.length; i++) {
+                progressDiv.textContent = `🔼 Синхронизация: ${i + 1} из ${allOrders.length}`;
+                const result = await syncOrderToGoogle(allOrders[i]);
+                if (result) successCount++;
+                else failCount++;
+                await new Promise(r => setTimeout(r, 200));
+            }
+            
+            progressDiv.style.display = "none";
+            showSyncStatus(`✅ Отправлено в облако: ${successCount} заказов`);
+            alert(`Синхронизация завершена!\nОтправлено: ${successCount}\nОшибок: ${failCount}`);
         }
 
         async function autoSyncAllOrders() {
@@ -497,10 +545,13 @@
             for (let i = 0; i < unsyncedOrders.length; i++) {
                 progressDiv.textContent = `🔄 Автосинхронизация: ${i + 1} из ${unsyncedOrders.length}`;
                 const result = await syncOrderToGoogle(unsyncedOrders[i]);
-                if (result) successCount++;
+                if (result) {
+                    successCount++;
+                    syncedOrders.add(unsyncedOrders[i].id);
+                }
                 await new Promise(r => setTimeout(r, 300));
             }
-            
+            saveSyncedOrders();
             progressDiv.style.display = "none";
             if (successCount > 0) {
                 showSyncStatus(`✅ Автосинхронизация: ${successCount} заказов отправлено`);
@@ -531,7 +582,7 @@
                 subtotal: 100,
                 discount: 0,
                 finalTotal: 100,
-                paymentMethod: "cash",
+                paymentMethod: "Наличные",
                 operator: currentUser?.name || "Система",
                 comment: "Тест синхронизации"
             };
@@ -547,31 +598,6 @@
                 showSyncStatus("❌ Ошибка теста");
                 alert("Ошибка синхронизации. Проверьте URL и настройки доступа.");
             });
-        }
-
-        async function syncAllOrdersToGoogle() {
-            if (!googleScriptUrl) {
-                alert("Сначала настройте URL веб-приложения в админ-панели");
-                return;
-            }
-            if (allOrders.length === 0) {
-                alert("Нет заказов для синхронизации");
-                return;
-            }
-            const progressDiv = document.getElementById("syncProgress");
-            progressDiv.style.display = "block";
-            let successCount = 0;
-            let failCount = 0;
-            for (let i = 0; i < allOrders.length; i++) {
-                progressDiv.textContent = `🔄 Синхронизация: ${i + 1} из ${allOrders.length}`;
-                const result = await syncOrderToGoogle(allOrders[i]);
-                if (result) successCount++;
-                else failCount++;
-                await new Promise(r => setTimeout(r, 200));
-            }
-            progressDiv.style.display = "none";
-            showSyncStatus(`✅ Синхронизация завершена: ${successCount} успешно, ${failCount} ошибок`);
-            alert(`Синхронизация завершена!\nУспешно: ${successCount}\nОшибок: ${failCount}`);
         }
 
         function saveGoogleSettings() {
@@ -610,7 +636,67 @@
             }
         }
 
-        // Загрузка данных
+        // ========== ЭКСПОРТ В EXCEL ==========
+        function exportExcelFull() {
+            let my = getMyOrders();
+            if (!my.length) return alert("Нет данных");
+            
+            let detailsData = [["ID", "Дата", "Клиент", "Телефон", "Услуги", "Сумма", "Скидка", "Итого", "Оплата", "Оператор", "Комментарий"]];
+            my.forEach(o => {
+                detailsData.push([
+                    o.id, o.date, o.client, o.phone || "", 
+                    o.items.map(i => `${i.name} x${i.qty}`).join("; "), 
+                    o.subtotal, o.discount, o.finalTotal, 
+                    o.paymentMethod === "cash" ? "Наличные" : "Карта", 
+                    o.operator, o.comment || ""
+                ]);
+            });
+            
+            // Ежедневная сводка
+            const dailyStats = new Map();
+            my.forEach(order => {
+                const date = order.date.split(',')[0];
+                if (!dailyStats.has(date)) {
+                    dailyStats.set(date, { orders: 0, total: 0, cash: 0, card: 0 });
+                }
+                const stat = dailyStats.get(date);
+                stat.orders++;
+                stat.total += order.finalTotal;
+                if (order.paymentMethod === "cash") stat.cash += order.finalTotal;
+                else stat.card += order.finalTotal;
+            });
+            
+            const sortedDates = Array.from(dailyStats.keys()).sort((a,b) => new Date(a) - new Date(b));
+            let dailyData = [["Дата", "Кол-во заказов", "Выручка (₽)", "Наличные (₽)", "Карта (₽)", "Накоплено в кассе (₽)"]];
+            let cashInCashRegister = 0;
+            for (const date of sortedDates) {
+                const stat = dailyStats.get(date);
+                cashInCashRegister += stat.cash;
+                dailyData.push([date, stat.orders, stat.total, stat.cash, stat.card, cashInCashRegister]);
+            }
+            
+            const totalOrders = my.length;
+            const totalRevenue = my.reduce((s,o) => s + o.finalTotal, 0);
+            const totalCash = my.filter(o => o.paymentMethod === "cash").reduce((s,o) => s + o.finalTotal, 0);
+            const totalCard = my.filter(o => o.paymentMethod === "card").reduce((s,o) => s + o.finalTotal, 0);
+            
+            dailyData.push(["", "", "", "", "", ""]);
+            dailyData.push(["ИТОГО:", totalOrders, totalRevenue, totalCash, totalCard, cashInCashRegister]);
+            
+            const wb = XLSX.utils.book_new();
+            const wsDetails = XLSX.utils.aoa_to_sheet(detailsData);
+            wsDetails['!cols'] = [{wch:12},{wch:20},{wch:20},{wch:15},{wch:40},{wch:10},{wch:10},{wch:12},{wch:12},{wch:15},{wch:25}];
+            XLSX.utils.book_append_sheet(wb, wsDetails, "Детали заказов");
+            
+            const wsDaily = XLSX.utils.aoa_to_sheet(dailyData);
+            wsDaily['!cols'] = [{wch:12},{wch:15},{wch:15},{wch:15},{wch:15},{wch:20}];
+            XLSX.utils.book_append_sheet(wb, wsDaily, "Ежедневная сводка");
+            
+            XLSX.writeFile(wb, `A4print_${currentUser.name}_${new Date().toISOString().slice(0,19).replace(/:/g, '-')}.xlsx`);
+            showSyncStatus("📎 Excel отчёт скачан");
+        }
+
+        // ========== ОСТАЛЬНЫЕ ФУНКЦИИ (загрузка данных, рендер, корзина и т.д.) ==========
         function loadShift() {
             let s = localStorage.getItem(SHIFT_KEY);
             if (s) { let d = JSON.parse(s); if (d.operator === currentUser?.name) { shiftOpen = d.open; shiftClose = d.close; shiftOpenComment = d.openComment || ""; shiftCloseComment = d.closeComment || ""; } }
@@ -694,7 +780,7 @@
             loadGoogleSettings();
         }
         
-        // ========== ПОИСК УСЛУГ ==========
+        // ПОИСК УСЛУГ
         let searchTimeout;
         function initSearch() {
             const searchInput = document.getElementById('searchService');
@@ -845,6 +931,8 @@
             allOrders.push(order); saveOrders();
             
             await syncOrderToGoogle(order);
+            syncedOrders.add(order.id);
+            saveSyncedOrders();
             
             cart = []; discountPct = 0; discountAmt = 0;
             document.getElementById("discountPercent").value = 0; document.getElementById("discountAmount").value = 0;
@@ -875,7 +963,7 @@
             }
         }
 
-        // ========== ОТЧЁТЫ С ВЫБОРОМ ==========
+        // ОТЧЁТЫ
         function generateReport(orders, title) {
             let cash = orders.filter(o => o.paymentMethod === "cash").reduce((s, o) => s + o.finalTotal, 0);
             let card = orders.filter(o => o.paymentMethod === "card").reduce((s, o) => s + o.finalTotal, 0);
@@ -916,7 +1004,7 @@
             document.getElementById("reportChoiceModal").style.display = "none";
         }
 
-        // Статистика за всё время (админ)
+        // Статистика операторов
         function getOperatorsStats() {
             let stats = {};
             for (let [login, data] of Object.entries(operators)) stats[login] = { name: data.name, orders: 0, revenue: 0, cash: 0, card: 0 };
@@ -955,7 +1043,7 @@
             XLSX.writeFile(wb, `A4print_stats_operators_${new Date().toISOString().slice(0, 19)}.xlsx`);
         }
 
-        // Отчёт за произвольную дату (админ)
+        // Отчёт за произвольную дату
         function getOrdersByDate(dateStr) { if (!dateStr) return []; return allOrders.filter(o => o.date.includes(dateStr)); }
         function showDateReport() {
             let date = document.getElementById("reportDate").value;
@@ -1184,6 +1272,7 @@
             document.getElementById("saveGoogleSettingsBtn").onclick = saveGoogleSettings;
             document.getElementById("testSyncBtn").onclick = testGoogleSync;
             document.getElementById("syncAllOrdersBtn").onclick = syncAllOrdersToGoogle;
+            document.getElementById("restoreFromCloudBtn").onclick = restoreFromCloud;
             
             document.getElementById("addServiceBtn").onclick = () => { let name = document.getElementById("newServiceName").value.trim(); let price = parseInt(document.getElementById("newServicePrice").value); if (name && price > 0) { services.push({ id: Date.now(), name, price }); saveServices(); renderServices(); renderAdmin(); } else alert("Введите название и цену"); };
             document.getElementById("addOperatorBtn").onclick = () => { let lgn = document.getElementById("newOpLogin").value.trim().toLowerCase(); let nm = document.getElementById("newOpName").value.trim(); let ps = document.getElementById("newOpPass").value.trim(); if (lgn && nm && ps) { if (operators[lgn]) alert("Логин уже есть"); else { operators[lgn] = { password: ps, name: nm, role: "operator" }; saveOperators(); renderAdmin(); } } else alert("Заполните все поля"); };
