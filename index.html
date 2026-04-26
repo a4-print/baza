@@ -204,7 +204,7 @@
                 <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 16px;">
                     <div class="panel-title" style="margin-bottom:0;">📜 ИСТОРИЯ ЗАКАЗОВ</div>
                     <div style="display: flex; gap: 10px;">
-                        <button id="exportExcelBtn" class="btn-success">📎 Excel</button>
+                        <button id="exportExcelBtn" class="btn-success">📎 Excel (полный отчёт)</button>
                         <button id="clearHistoryBtn" class="btn-danger">🗑 Очистить мои</button>
                     </div>
                 </div>
@@ -216,7 +216,7 @@
     <div id="syncStatus" class="sync-status">💾 Готово</div>
     <div id="syncProgress" class="sync-progress">🔄 Синхронизация...</div>
 
-    <!-- Модалка выбора типа отчёта -->
+    <!-- Модалки (оставлены без изменений для краткости) -->
     <div id="reportChoiceModal" class="report-choice-modal">
         <div class="modal-card">
             <h3>📄 Выберите тип отчёта</h3>
@@ -228,7 +228,6 @@
         </div>
     </div>
 
-    <!-- Модалка комментария к смене -->
     <div id="shiftCommentModal" class="shift-comment-modal">
         <div class="modal-card">
             <h3 id="shiftCommentTitle" style="margin-bottom: 12px;">📝 Комментарий к открытию смены</h3>
@@ -236,37 +235,6 @@
             <div style="display: flex; gap: 12px; justify-content: flex-end;">
                 <button id="shiftCommentCancel" class="btn-outline">Отмена</button>
                 <button id="shiftCommentConfirm" class="btn-primary">Подтвердить</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Модалка инструкции -->
-    <div id="instructionModal" class="modal-instruction">
-        <div class="modal-card" style="max-width: 650px;">
-            <div class="instruction-header"><h2>📘 Инструкция</h2><button id="closeInstructionBtn" class="close-instruction">✕</button></div>
-            <div class="instruction-tabs">
-                <button class="tab-btn active" data-tab="operator">👤 Оператор</button>
-                <button class="tab-btn" data-tab="admin">👑 Администратор</button>
-            </div>
-            <div class="instruction-content active" id="tab-operator">
-                <div class="instruction-step"><strong>1. Вход</strong><br>Логин/пароль → «Войти».</div>
-                <div class="instruction-step"><strong>2. Открыть смену</strong><br>«🚀 Открыть смену» → при необходимости комментарий.</div>
-                <div class="instruction-step"><strong>3. Поиск услуги</strong><br>Начните вводить название в поле поиска — появятся подходящие варианты.</div>
-                <div class="instruction-step"><strong>4. Приём заказа</strong><br>Выберите услугу → количество → «Добавить».</div>
-                <div class="instruction-step"><strong>5. Оформление</strong><br>Клиент, скидка, оплата, комментарий → «Оформить».</div>
-                <div class="instruction-step"><strong>6. Автосинхронизация</strong><br>Каждые 2 минуты система автоматически сохраняет заказы в Google Таблицу.</div>
-                <div class="instruction-step"><strong>7. Печать бланка</strong><br>«🖨️ Бланк заказа» — А4 с двумя экземплярами.</div>
-                <div class="instruction-step"><strong>8. Отчёт</strong><br>«📄 Отчёт» → выберите «За сегодня» или «Полный».</div>
-                <div class="instruction-step"><strong>9. Закрыть смену</strong><br>«🔒 Закрыть смену» → затем «Отчёт» для бухгалтерии.</div>
-            </div>
-            <div class="instruction-content" id="tab-admin">
-                <div class="instruction-step"><strong>Вход админа</strong><br>admin / admin123</div>
-                <div class="instruction-step"><strong>Управление услугами</strong><br>Цены, удаление, добавление.</div>
-                <div class="instruction-step"><strong>Управление операторами</strong><br>Смена пароля, добавление, удаление.</div>
-                <div class="instruction-step"><strong>Статистика за всё время</strong><br>«📊 Статистика операторов».</div>
-                <div class="instruction-step"><strong>Отчёт за любую дату</strong><br>В админ-панели выберите дату → «Показать отчёт» → PDF/Excel.</div>
-                <div class="instruction-step"><strong>Месячный отчёт</strong><br>Выберите месяц и год → экспорт в Excel.</div>
-                <div class="instruction-step"><strong>Автосинхронизация</strong><br>Система автоматически отправляет несинхронизированные заказы каждые 2 минуты.</div>
             </div>
         </div>
     </div>
@@ -279,8 +247,7 @@
                 <h2>Администрирование</h2>
                 <button id="closeAdminModal" style="background:none; font-size:28px;">✕</button>
             </div>
-            <button id="viewOperatorsStatsBtn" class="btn-primary" style="width:100%; margin: 16px 0;">📊 Статистика операторов (все время)</button>
-            
+            <button id="viewOperatorsStatsBtn" class="btn-primary" style="width:100%; margin: 16px 0;">📊 Статистика операторов</button>
             <div class="monthly-report-block">
                 <div class="monthly-report-title">📅 Отчёт за произвольную дату</div>
                 <div class="date-selector">
@@ -291,7 +258,6 @@
                 </div>
                 <div id="dateReportContent"></div>
             </div>
-            
             <div class="monthly-report-block">
                 <div class="monthly-report-title">📅 Полный отчёт за месяц</div>
                 <div class="date-selector">
@@ -302,7 +268,6 @@
                 </div>
                 <div id="monthlyReportContent"></div>
             </div>
-            
             <div class="monthly-report-block">
                 <div class="monthly-report-title">☁️ Настройки синхронизации</div>
                 <div class="date-selector">
@@ -311,9 +276,8 @@
                     <button id="testSyncBtn" class="btn-info">Тест синхронизации</button>
                     <button id="syncAllOrdersBtn" class="btn-warning">🔄 Синхронизировать все заказы</button>
                 </div>
-                <div id="syncSettingsInfo" class="instruction-note" style="margin-top: 8px;">⚙️ Автоматическая синхронизация каждые 2 минуты. Получите URL: Расширения → Apps Script → Развернуть → Веб-приложение → Скопировать URL</div>
+                <div id="syncSettingsInfo" class="instruction-note" style="margin-top: 8px;">⚙️ Автоматическая синхронизация каждые 2 минуты</div>
             </div>
-            
             <hr>
             <h3>Управление услугами</h3>
             <div id="adminServicesList"></div>
@@ -338,11 +302,38 @@
     <div id="operatorsStatsModal" class="modal">
         <div class="modal-card">
             <div style="display:flex; justify-content:space-between;">
-                <h2>Статистика операторов (все время)</h2>
+                <h2>Статистика операторов</h2>
                 <button id="closeStatsModal" style="background:none; font-size:28px;">✕</button>
             </div>
             <div id="operatorsStatsContent"></div>
             <button id="exportStatsExcelBtn" class="btn-success" style="margin-top:20px; width:100%;">📎 Экспорт в Excel</button>
+        </div>
+    </div>
+
+    <div id="instructionModal" class="modal-instruction">
+        <div class="modal-card" style="max-width: 650px;">
+            <div class="instruction-header"><h2>📘 Инструкция</h2><button id="closeInstructionBtn" class="close-instruction">✕</button></div>
+            <div class="instruction-tabs">
+                <button class="tab-btn active" data-tab="operator">👤 Оператор</button>
+                <button class="tab-btn" data-tab="admin">👑 Администратор</button>
+            </div>
+            <div class="instruction-content active" id="tab-operator">
+                <div class="instruction-step"><strong>1. Вход</strong><br>Логин/пароль → «Войти».</div>
+                <div class="instruction-step"><strong>2. Открыть смену</strong><br>«🚀 Открыть смену» → при необходимости комментарий.</div>
+                <div class="instruction-step"><strong>3. Поиск услуги</strong><br>Начните вводить название в поле поиска — появятся подходящие варианты.</div>
+                <div class="instruction-step"><strong>4. Приём заказа</strong><br>Выберите услугу → количество → «Добавить».</div>
+                <div class="instruction-step"><strong>5. Оформление</strong><br>Клиент, скидка, оплата, комментарий → «Оформить».</div>
+                <div class="instruction-step"><strong>6. Автосинхронизация</strong><br>Каждые 2 минуты система автоматически сохраняет заказы в Google Таблицу.</div>
+                <div class="instruction-step"><strong>7. Excel отчёт</strong><br>«📎 Excel» — полный отчёт с ежедневной выручкой и итогами по кассе.</div>
+                <div class="instruction-step"><strong>8. Закрыть смену</strong><br>«🔒 Закрыть смену» → затем «Отчёт» для бухгалтерии.</div>
+            </div>
+            <div class="instruction-content" id="tab-admin">
+                <div class="instruction-step"><strong>Вход админа</strong><br>admin / admin123</div>
+                <div class="instruction-step"><strong>Управление услугами</strong><br>Цены, удаление, добавление.</div>
+                <div class="instruction-step"><strong>Управление операторами</strong><br>Смена пароля, добавление, удаление.</div>
+                <div class="instruction-step"><strong>Статистика операторов</strong><br>Заказы, выручка, средний чек по каждому.</div>
+                <div class="instruction-step"><strong>Excel отчёт</strong><br>Скачивается файл с двумя листами: детали заказов и ежедневная сводка с остатками в кассе.</div>
+            </div>
         </div>
     </div>
 
@@ -384,6 +375,80 @@
         function saveShift() { localStorage.setItem(SHIFT_KEY, JSON.stringify({ open: shiftOpen, close: shiftClose, openComment: shiftOpenComment, closeComment: shiftCloseComment, operator: currentUser?.name })); }
         function saveSyncedOrders() { localStorage.setItem("syncedOrders", JSON.stringify([...syncedOrders])); }
 
+        // ========== НОВЫЙ РАСШИРЕННЫЙ EXCEL ОТЧЁТ ==========
+        function exportExcelFull() {
+            let my = getMyOrders();
+            if (!my.length) return alert("Нет данных");
+            
+            // Формируем детальный лист с заказами
+            let detailsData = [["ID", "Дата", "Клиент", "Телефон", "Услуги", "Сумма", "Скидка", "Итого", "Оплата", "Оператор", "Комментарий"]];
+            my.forEach(o => {
+                detailsData.push([
+                    o.id, o.date, o.client, o.phone || "", 
+                    o.items.map(i => `${i.name} x${i.qty}`).join("; "), 
+                    o.subtotal, o.discount, o.finalTotal, 
+                    o.paymentMethod === "cash" ? "Наличные" : "Карта", 
+                    o.operator, o.comment || ""
+                ]);
+            });
+            
+            // === ЕЖЕДНЕВНАЯ СВОДКА ===
+            // Группируем заказы по датам
+            const dailyStats = new Map();
+            my.forEach(order => {
+                const date = order.date.split(',')[0]; // берем только дату без времени
+                if (!dailyStats.has(date)) {
+                    dailyStats.set(date, { orders: 0, total: 0, cash: 0, card: 0 });
+                }
+                const stat = dailyStats.get(date);
+                stat.orders++;
+                stat.total += order.finalTotal;
+                if (order.paymentMethod === "cash") stat.cash += order.finalTotal;
+                else stat.card += order.finalTotal;
+            });
+            
+            // Сортируем даты по возрастанию
+            const sortedDates = Array.from(dailyStats.keys()).sort((a,b) => new Date(a) - new Date(b));
+            
+            // Формируем таблицу ежедневной сводки
+            let dailyData = [["Дата", "Кол-во заказов", "Выручка (₽)", "Наличные (₽)", "Карта (₽)", "Накоплено в кассе (₽)"]];
+            let cashInCashRegister = 0;
+            for (const date of sortedDates) {
+                const stat = dailyStats.get(date);
+                cashInCashRegister += stat.cash;
+                dailyData.push([
+                    date, stat.orders, stat.total, stat.cash, stat.card, cashInCashRegister
+                ]);
+            }
+            
+            // Общие итоги
+            const totalOrders = my.length;
+            const totalRevenue = my.reduce((s,o) => s + o.finalTotal, 0);
+            const totalCash = my.filter(o => o.paymentMethod === "cash").reduce((s,o) => s + o.finalTotal, 0);
+            const totalCard = my.filter(o => o.paymentMethod === "card").reduce((s,o) => s + o.finalTotal, 0);
+            
+            // Добавляем итоговую строку в ежедневную сводку
+            dailyData.push(["", "", "", "", "", ""]);
+            dailyData.push(["ИТОГО:", totalOrders, totalRevenue, totalCash, totalCard, cashInCashRegister]);
+            
+            // Создаем книгу с двумя листами
+            const wb = XLSX.utils.book_new();
+            
+            // Лист с деталями заказов
+            const wsDetails = XLSX.utils.aoa_to_sheet(detailsData);
+            wsDetails['!cols'] = [{wch:12},{wch:20},{wch:20},{wch:15},{wch:40},{wch:10},{wch:10},{wch:12},{wch:12},{wch:15},{wch:25}];
+            XLSX.utils.book_append_sheet(wb, wsDetails, "Детали заказов");
+            
+            // Лист с ежедневной сводкой
+            const wsDaily = XLSX.utils.aoa_to_sheet(dailyData);
+            wsDaily['!cols'] = [{wch:12},{wch:15},{wch:15},{wch:15},{wch:15},{wch:20}];
+            XLSX.utils.book_append_sheet(wb, wsDaily, "Ежедневная сводка");
+            
+            // Сохраняем файл
+            XLSX.writeFile(wb, `A4print_${currentUser.name}_${new Date().toISOString().slice(0,19).replace(/:/g, '-')}.xlsx`);
+            showSyncStatus("📎 Excel отчёт скачан");
+        }
+
         // ========== СИНХРОНИЗАЦИЯ С GOOGLE SHEETS ==========
         async function syncOrderToGoogle(order) {
             if (!googleScriptUrl) return false;
@@ -419,10 +484,8 @@
             }
         }
 
-        // Автоматическая синхронизация всех несинхронизированных заказов
         async function autoSyncAllOrders() {
             if (!googleScriptUrl || !currentUser) return;
-            
             const unsyncedOrders = allOrders.filter(o => !syncedOrders.has(o.id));
             if (unsyncedOrders.length === 0) return;
             
@@ -444,14 +507,13 @@
             }
         }
 
-        // Запуск автоматической синхронизации (каждые 2 минуты)
         function startAutoSync() {
             if (autoSyncInterval) clearInterval(autoSyncInterval);
             autoSyncInterval = setInterval(() => {
                 if (currentUser && googleScriptUrl) {
                     autoSyncAllOrders();
                 }
-            }, 120000); // 2 минуты = 120000 мс
+            }, 120000);
         }
 
         function testGoogleSync() {
@@ -832,7 +894,7 @@
                 <div>Итого: ${o.finalTotal} ₽ | ${o.paymentMethod === "cash" ? "Наличные" : "Карта"} ${o.comment ? " | " + o.comment : ""}</div>
             </div>`).join('');
             let html = `<div style="font-family: monospace; padding: 20px;"><div style="text-align: center;"><h2>A4-ПРИНТ</h2><p>${title}</p><p>Оператор: ${currentUser.name}</p><p>Дата формирования: ${new Date().toLocaleString()}</p></div>${shiftInfo}<hr><div><strong>ИТОГИ:</strong><br>📦 Заказов: ${orders.length}<br>💰 Выручка: ${cash + card} ₽<br>💵 Наличные: ${cash} ₽<br>💳 Карта: ${card} ₽</div><hr><div><strong>ДЕТАЛИ ЗАКАЗОВ:</strong></div>${ordersHtml || '<div>Нет заказов за выбранный период</div>'}
-            <hr><div style="text-align: center;">Подпись: _______________</div></div>`;
+            <hr><div style="text-align:center;">Подпись: _______________</div></div>`;
             let el = document.createElement('div'); el.innerHTML = html; document.body.appendChild(el);
             let filename = `A4print_${currentUser.name}_${title.replace(/\s/g, '_')}.pdf`;
             html2pdf().set({ margin: 0.5, filename: filename, html2canvas: { scale: 2 } }).from(el).save().then(() => el.remove());
@@ -852,28 +914,6 @@
             if (myOrders.length === 0) { alert("Нет заказов"); return; }
             generateReport(myOrders, "Полный отчёт (все заказы)");
             document.getElementById("reportChoiceModal").style.display = "none";
-        }
-
-        // ========== ЭКСПОРТ В EXCEL ==========
-        function exportExcel() {
-            let my = getMyOrders();
-            if (!my.length) return alert("Нет данных");
-            
-            let today = new Date().toLocaleDateString();
-            let todayOrders = my.filter(o => o.date.includes(today));
-            let todayRevenue = todayOrders.reduce((sum, o) => sum + o.finalTotal, 0);
-            
-            let data = [["ID", "Клиент", "Телефон", "Услуги", "Сумма", "Скидка", "Итого", "Оплата", "Дата", "Комментарий"]];
-            my.forEach(o => data.push([o.id, o.client, o.phone || "", o.items.map(i => `${i.name} x${i.qty}`).join("; "), o.subtotal, o.discount, o.finalTotal, o.paymentMethod === "cash" ? "Наличные" : "Карта", o.date, o.comment || ""]));
-            
-            data.push([], [`ВЫРУЧКА ЗА ${today}`, "", "", "", "", `${todayRevenue} ₽`, "", "", ""]);
-            data.push([`ВСЕГО ЗАКАЗОВ: ${my.length}`, "", "", "", "", `ОБЩАЯ ВЫРУЧКА: ${my.reduce((s,o)=>s+o.finalTotal,0)} ₽`, "", "", "", ""]);
-            
-            let ws = XLSX.utils.aoa_to_sheet(data);
-            let wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "A4_Принт");
-            XLSX.writeFile(wb, `A4print_${currentUser.name}_${new Date().toISOString().slice(0,19)}.xlsx`);
-            showSyncStatus("📎 Excel скачан");
         }
 
         // Статистика за всё время (админ)
@@ -911,8 +951,8 @@
                 data.push([st.name, st.orders, st.revenue, st.cash, st.card, avg]);
             }
             let ws = XLSX.utils.aoa_to_sheet(data), wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Статистика_все_время");
-            XLSX.writeFile(wb, `A4print_stats_alltime_${new Date().toISOString().slice(0, 19)}.xlsx`);
+            XLSX.utils.book_append_sheet(wb, ws, "Статистика_операторов");
+            XLSX.writeFile(wb, `A4print_stats_operators_${new Date().toISOString().slice(0, 19)}.xlsx`);
         }
 
         // Отчёт за произвольную дату (админ)
@@ -1114,7 +1154,7 @@
             document.getElementById("applyDiscountBtn").onclick = applyDiscount;
             document.getElementById("completeOrderBtn").onclick = completeOrder;
             document.getElementById("clearCartBtn").onclick = () => { cart = []; discountPct = 0; discountAmt = 0; renderCart(); };
-            document.getElementById("exportExcelBtn").onclick = exportExcel;
+            document.getElementById("exportExcelBtn").onclick = exportExcelFull;
             document.getElementById("clearHistoryBtn").onclick = clearMyOrders;
             document.getElementById("pdfReportBtn").onclick = showReportChoice;
             document.getElementById("printBlankBtn").onclick = printOrderBlank;
