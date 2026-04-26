@@ -7,7 +7,7 @@
     <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
-        /* (стили без изменений, оставил как в предыдущей версии) */
+        /* (стили без изменений, оставлены как в предыдущей версии) */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
             --primary-blue: #0066B3;
@@ -44,8 +44,8 @@
         .btn-warning { background: #E68A2E; }
         .btn-info { background: #3B82F6; }
         .shift-bar { background: var(--card-white); border-radius: 60px; padding: 10px 24px; margin-bottom: 24px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; font-size: 13px; font-weight: 500; border-left: 4px solid var(--primary-blue); }
-        .shift-comment-modal, .modal-instruction { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 1100; }
-        .shift-comment-modal .modal-card, .modal-instruction .modal-card { background: var(--card-white); border-radius: 32px; max-width: 650px; width: 90%; max-height: 85vh; overflow-y: auto; padding: 24px; }
+        .shift-comment-modal, .modal-instruction, .report-choice-modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 1100; }
+        .shift-comment-modal .modal-card, .modal-instruction .modal-card, .report-choice-modal .modal-card { background: var(--card-white); border-radius: 32px; max-width: 450px; width: 90%; padding: 28px; text-align: center; }
         .instruction-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid var(--primary-blue); }
         .close-instruction { background: none; font-size: 28px; padding: 0; width: 36px; height: 36px; border-radius: 50%; }
         .instruction-tabs { display: flex; gap: 8px; margin-bottom: 20px; border-bottom: 1px solid var(--border-light); flex-wrap: wrap; }
@@ -98,6 +98,8 @@
         .blank-page { width: 210mm; min-height: 297mm; padding: 15mm; background: white; color: black; font-family: monospace; }
         @media (max-width: 850px) { body { padding: 12px; } .user-bar { display: none !important; } .burger-btn { display: block; } .services-grid { grid-template-columns: repeat(4, 1fr) !important; gap: 8px; } .service-card { padding: 8px 4px; } .service-name { font-size: 10px; } .service-price { font-size: 13px; } .qty-control input { width: 55px; padding: 4px 0; font-size: 12px; } .add-btn { padding: 5px; font-size: 10px; } }
         @media (min-width: 851px) { .burger-menu { display: none !important; } }
+        .report-choice-buttons { display: flex; gap: 16px; justify-content: center; margin: 20px 0; }
+        .report-choice-buttons button { min-width: 120px; }
     </style>
 </head>
 <body>
@@ -125,7 +127,7 @@
                     <button id="themeToggleBtn" class="btn-outline">🌙 Тёмная</button>
                     <button id="adminPanelBtn" class="btn-primary">Админ</button>
                     <button id="shiftToggleBtn" class="btn-warning">🚀 Открыть смену</button>
-                    <button id="pdfReportBtn" class="btn-success">📄 Отчёт за смену</button>
+                    <button id="pdfReportBtn" class="btn-success">📄 Отчёт</button>
                     <button id="printBlankBtn" class="btn-primary">🖨️ Бланк заказа</button>
                     <button id="logoutBtn" class="btn-outline">Выйти</button>
                 </div>
@@ -199,6 +201,18 @@
         </div>
     </div>
 
+    <!-- Модалка выбора типа отчёта -->
+    <div id="reportChoiceModal" class="report-choice-modal">
+        <div class="modal-card">
+            <h3>📄 Выберите тип отчёта</h3>
+            <div class="report-choice-buttons">
+                <button id="reportTodayBtn" class="btn-primary">📅 За сегодня</button>
+                <button id="reportFullBtn" class="btn-success">📊 Полный (все заказы)</button>
+            </div>
+            <button id="cancelReportBtn" class="btn-outline" style="margin-top: 16px;">Отмена</button>
+        </div>
+    </div>
+
     <!-- Модалка комментария к смене -->
     <div id="shiftCommentModal" class="shift-comment-modal">
         <div class="modal-card">
@@ -213,7 +227,7 @@
 
     <!-- Модалка инструкции -->
     <div id="instructionModal" class="modal-instruction">
-        <div class="modal-card">
+        <div class="modal-card" style="max-width: 650px;">
             <div class="instruction-header"><h2>📘 Инструкция</h2><button id="closeInstructionBtn" class="close-instruction">✕</button></div>
             <div class="instruction-tabs">
                 <button class="tab-btn active" data-tab="operator">👤 Оператор</button>
@@ -225,16 +239,16 @@
                 <div class="instruction-step"><strong>3. Приём заказа</strong><br>Выберите услугу → количество → «Добавить».</div>
                 <div class="instruction-step"><strong>4. Оформление</strong><br>Клиент, скидка, оплата, комментарий → «Оформить».</div>
                 <div class="instruction-step"><strong>5. Печать бланка</strong><br>«🖨️ Бланк заказа» — А4 с двумя экземплярами.</div>
-                <div class="instruction-step"><strong>6. Закрыть смену</strong><br>«🔒 Закрыть смену» → «📄 Отчёт» — PDF для бухгалтерии.</div>
-                <div class="instruction-step"><strong>7. Отчёт за любую дату (админ)</strong><br>В админ-панели выберите дату → «Показать отчёт» → PDF/Excel.</div>
+                <div class="instruction-step"><strong>6. Отчёт</strong><br>«📄 Отчёт» → выберите «За сегодня» или «Полный». Сохранится PDF.</div>
+                <div class="instruction-step"><strong>7. Закрыть смену</strong><br>«🔒 Закрыть смену» → затем «Отчёт» для бухгалтерии.</div>
             </div>
             <div class="instruction-content" id="tab-admin">
                 <div class="instruction-step"><strong>Вход админа</strong><br>admin / admin123</div>
                 <div class="instruction-step"><strong>Управление услугами</strong><br>Цены, удаление, добавление.</div>
                 <div class="instruction-step"><strong>Управление операторами</strong><br>Смена пароля, добавление, удаление.</div>
                 <div class="instruction-step"><strong>Статистика за всё время</strong><br>«📊 Статистика операторов».</div>
-                <div class="instruction-step"><strong>Отчёт за любую дату</strong><br>Выберите дату → «Показать отчёт» → можно сохранить PDF или Excel.</div>
-                <div class="instruction-step"><strong>Месячный отчёт</strong><br>Выберите месяц и год → «Показать отчёт» → экспорт в Excel.</div>
+                <div class="instruction-step"><strong>Отчёт за любую дату</strong><br>В админ-панели выберите дату → «Показать отчёт» → PDF/Excel.</div>
+                <div class="instruction-step"><strong>Месячный отчёт</strong><br>Выберите месяц и год → экспорт в Excel.</div>
             </div>
         </div>
     </div>
@@ -249,7 +263,6 @@
             </div>
             <button id="viewOperatorsStatsBtn" class="btn-primary" style="width:100%; margin: 16px 0;">📊 Статистика операторов (все время)</button>
             
-            <!-- ОТЧЁТ ЗА ЛЮБУЮ ДАТУ (НОВЫЙ) -->
             <div class="monthly-report-block">
                 <div class="monthly-report-title">📅 Отчёт за произвольную дату</div>
                 <div class="date-selector">
@@ -261,16 +274,10 @@
                 <div id="dateReportContent"></div>
             </div>
             
-            <!-- МЕСЯЧНЫЙ ОТЧЁТ -->
             <div class="monthly-report-block">
                 <div class="monthly-report-title">📅 Полный отчёт за месяц</div>
                 <div class="date-selector">
-                    <select id="reportMonth">
-                        <option value="1">Январь</option><option value="2">Февраль</option><option value="3">Март</option>
-                        <option value="4">Апрель</option><option value="5">Май</option><option value="6">Июнь</option>
-                        <option value="7">Июль</option><option value="8">Август</option><option value="9">Сентябрь</option>
-                        <option value="10">Октябрь</option><option value="11">Ноябрь</option><option value="12">Декабрь</option>
-                    </select>
+                    <select id="reportMonth"><option value="1">Январь</option><option value="2">Февраль</option><option value="3">Март</option><option value="4">Апрель</option><option value="5">Май</option><option value="6">Июнь</option><option value="7">Июль</option><option value="8">Август</option><option value="9">Сентябрь</option><option value="10">Октябрь</option><option value="11">Ноябрь</option><option value="12">Декабрь</option></select>
                     <select id="reportYear"></select>
                     <button id="viewMonthlyReportBtn" class="btn-primary">Показать отчёт</button>
                     <button id="exportMonthlyReportBtn" class="btn-success">📎 Экспорт Excel</button>
@@ -531,7 +538,37 @@
             }
         }
 
-        // Статистика за всё время
+        // ========== ОТЧЁТЫ С ВЫБОРОМ ==========
+        function showReportChoice() {
+            document.getElementById("reportChoiceModal").style.display = "flex";
+        }
+
+        function generateReport(orders, title) {
+            let cash = orders.filter(o => o.paymentMethod === "cash").reduce((s, o) => s + o.finalTotal, 0);
+            let card = orders.filter(o => o.paymentMethod === "card").reduce((s, o) => s + o.finalTotal, 0);
+            let html = `<div style="font-family:monospace; padding:20px;"><div style="text-align:center;"><h2>A4-ПРИНТ</h2><p>${title}</p><p>Оператор: ${currentUser.name}</p><p>Дата формирования: ${new Date().toLocaleString()}</p></div><hr><div><strong>ИТОГИ:</strong><br>📦 Заказов: ${orders.length}<br>💰 Выручка: ${cash + card} ₽<br>💵 Наличные: ${cash} ₽<br>💳 Карта: ${card} ₽</div><hr><div><strong>ДЕТАЛИ ЗАКАЗОВ:</strong></div>${orders.map(o => `<div style="border:1px solid #aaa; margin:10px 0; padding:8px;"><div>№${o.id} | ${o.date}</div><div>${o.client} ${o.phone ? `📞 ${o.phone}` : ""}</div><div>${o.items.map(i => `${i.name} x${i.qty}`).join(", ")}</div><div>Итого: ${o.finalTotal} ₽ | ${o.paymentMethod === "cash" ? "Наличные" : "Карта"} ${o.comment ? " | " + o.comment : ""}</div></div>`).join('')}<hr><div style="text-align:center;">Подпись: _______________</div></div>`;
+            let el = document.createElement('div'); el.innerHTML = html; document.body.appendChild(el);
+            let filename = `A4print_${currentUser.name}_${title.replace(/\s/g, '_')}.pdf`;
+            html2pdf().set({ margin: 0.5, filename: filename, html2canvas: { scale: 2 } }).from(el).save().then(() => el.remove());
+        }
+
+        function reportToday() {
+            let today = new Date().toLocaleDateString();
+            let myOrders = getMyOrders();
+            let todayOrders = myOrders.filter(o => o.date.includes(today));
+            if (todayOrders.length === 0) { alert("За сегодня нет заказов"); return; }
+            generateReport(todayOrders, `Отчёт за ${today}`);
+            document.getElementById("reportChoiceModal").style.display = "none";
+        }
+
+        function reportFull() {
+            let myOrders = getMyOrders();
+            if (myOrders.length === 0) { alert("Нет заказов"); return; }
+            generateReport(myOrders, "Полный отчёт (все заказы)");
+            document.getElementById("reportChoiceModal").style.display = "none";
+        }
+
+        // Статистика за всё время (админ)
         function getOperatorsStats() {
             let stats = {};
             for (let [login, data] of Object.entries(operators)) stats[login] = { name: data.name, orders: 0, revenue: 0, cash: 0, card: 0 };
@@ -570,7 +607,7 @@
             XLSX.writeFile(wb, `A4print_stats_alltime_${new Date().toISOString().slice(0, 19)}.xlsx`);
         }
 
-        // ========== ОТЧЁТ ЗА ПРОИЗВОЛЬНУЮ ДАТУ ==========
+        // Отчёт за произвольную дату (админ)
         function getOrdersByDate(dateStr) {
             if (!dateStr) return [];
             return allOrders.filter(o => o.date.includes(dateStr));
@@ -617,7 +654,7 @@
             XLSX.writeFile(wb, `A4print_отчёт_${r.date}.xlsx`);
         }
 
-        // ========== МЕСЯЧНЫЙ ОТЧЁТ ==========
+        // Месячный отчёт
         function initYearSelect() {
             let yearSelect = document.getElementById("reportYear");
             if (!yearSelect) return;
@@ -685,16 +722,6 @@
             XLSX.writeFile(wb, `A4print_месячный_отчёт_${monthNames[month-1]}_${year}.xlsx`);
         }
 
-        // Сменный отчёт (PDF)
-        function generatePDFReport() {
-            let my = getMyOrders();
-            let cash = my.filter(o => o.paymentMethod === "cash").reduce((s, o) => s + o.finalTotal, 0);
-            let card = my.filter(o => o.paymentMethod === "card").reduce((s, o) => s + o.finalTotal, 0);
-            let html = `<div style="font-family:monospace; padding:20px;"><div style="text-align:center;"><h2>A4-ПРИНТ</h2><p>Отчёт за смену</p><p>${currentUser.name} | ${shiftOpen || "—"} → ${shiftClose || "—"}</p>${shiftOpenComment ? `<p>📝 Комментарий открытия: ${escapeHtml(shiftOpenComment)}</p>` : ""}${shiftCloseComment ? `<p>📝 Комментарий закрытия: ${escapeHtml(shiftCloseComment)}</p>` : ""}</div><hr><div><strong>ИТОГИ:</strong><br>📦 Заказов: ${my.length}<br>💰 Выручка: ${cash + card} ₽<br>💵 Наличные: ${cash} ₽<br>💳 Карта: ${card} ₽</div><hr><div><strong>ДЕТАЛИ:</strong></div>${my.map(o => `<div style="border:1px solid #aaa; margin:10px 0; padding:8px;"><div>№${o.id} | ${o.date}</div><div>${o.client} ${o.phone ? `📞 ${o.phone}` : ""}</div><div>${o.items.map(i => `${i.name} x${i.qty}`).join(", ")}</div><div>Итого: ${o.finalTotal} ₽ | ${o.paymentMethod === "cash" ? "Нал" : "Карта"} ${o.comment ? " | " + o.comment : ""}</div></div>`).join('')}<hr><div style="text-align:center;">Подпись: _______________</div></div>`;
-            let el = document.createElement('div'); el.innerHTML = html; document.body.appendChild(el);
-            html2pdf().set({ margin: 0.5, filename: `A4print_report_${currentUser.name}.pdf`, html2canvas: { scale: 2 } }).from(el).save().then(() => el.remove());
-        }
-
         function printOrderBlank() {
             if (cart.length === 0) { alert("Корзина пуста"); return; }
             let client = document.getElementById("clientName").value.trim() || "Клиент";
@@ -706,7 +733,7 @@
             let final = subtotal - discount;
             let itemsHtml = cart.map(i => `<tr><td>${escapeHtml(i.name)}</td><td style="text-align:center">${i.qty}</td><td style="text-align:center">${i.price} ₽</td><td style="text-align:right">${i.price * i.qty} ₽</td>`).join('');
             let phoneLine = phone ? `<div><strong>Телефон:</strong> ${escapeHtml(phone)}</div>` : '';
-            let html = `<div class="blank-page"><div style="text-align:center;"><h2>A4-ПРИНТ</h2><p>Копировальный центр</p></div><div><strong>№ заказа:</strong> ${Date.now()}</div><div><strong>Дата:</strong> ${new Date().toLocaleString()}</div><div><strong>Оператор:</strong> ${currentUser.name}</div><div><strong>Клиент:</strong> ${escapeHtml(client)}</div>${phoneLine}<div><strong>Оплата:</strong> ${payment === "cash" ? "Наличные" : "Карта"}</div><table border="1" cellpadding="5" cellspacing="0" style="width:100%; margin:15px 0;"><thead><tr><th>Услуга</th><th>Кол-во</th><th>Цена</th><th>Сумма</th></tr></thead><tbody>${itemsHtml}</tbody></table><div style="text-align:right;">Подытог: ${subtotal} ₽<br>${discount ? `Скидка: -${discount} ₽<br>` : ""}<strong>ИТОГО: ${final} ₽</strong></div>${comment ? `<div>Комментарий: ${escapeHtml(comment)}</div>` : ""}<div style="margin-top:30px; text-align:center;">Спасибо за заказ!</div><div class="copy-label">──────── ОСНОВНОЙ ЭКЗЕМПЛЯР ────────</div></div><div class="blank-page"><div style="text-align:center;"><h2>A4-ПРИНТ</h2><p>Копировальный центр — КОПИЯ</p></div><div><strong>№ заказа:</strong> ${Date.now()}</div><div><strong>Дата:</strong> ${new Date().toLocaleString()}</div><div><strong>Оператор:</strong> ${currentUser.name}</div><div><strong>Клиент:</strong> ${escapeHtml(client)}</div>${phoneLine}<div><strong>Оплата:</strong> ${payment === "cash" ? "Наличные" : "Карта"}</div><table border="1" cellpadding="5" cellspacing="0" style="width:100%; margin:15px 0;"><thead><tr><th>Услуга</th><th>Кол-во</th><th>Цена</th><th>Сумма</th></tr></thead><tbody>${itemsHtml}</tbody></table><div style="text-align:right;">Подытог: ${subtotal} ₽<br>${discount ? `Скидка: -${discount} ₽<br>` : ""}<strong>ИТОГО: ${final} ₽</strong></div>${comment ? `<div>Комментарий: ${escapeHtml(comment)}</div>` : ""}<div style="margin-top:30px; text-align:center;">Спасибо за заказ!</div><div class="copy-label">─────────── КОПИЯ КЛИЕНТА ───────────</div></div>`;
+            let html = `<div class="blank-page"><div style="text-align:center;"><h2>A4-ПРИНТ</h2><p>Копировальный центр</p></div><div><strong>№ заказа:</strong> ${Date.now()}</div><div><strong>Дата:</strong> ${new Date().toLocaleString()}</div><div><strong>Оператор:</strong> ${currentUser.name}</div><div><strong>Клиент:</strong> ${escapeHtml(client)}</div>${phoneLine}<div><strong>Оплата:</strong> ${payment === "cash" ? "Наличные" : "Карта"}</div><table border="1" cellpadding="5" cellspacing="0" style="width:100%; margin:15px 0;"><thead><tr><th>Услуга</th><th>Кол-во</th><th>Цена</th><th>Сумма</th></tr></thead><tbody>${itemsHtml}</tbody></table><div style="text-align:right;">Подытог: ${subtotal} ₽<br>${discount ? `Скидка: -${discount} ₽<br>` : ""}<strong>ИТОГО: ${final} ₽</strong></div>${comment ? `<div>Комментарий: ${escapeHtml(comment)}</div>` : ""}<div style="margin-top:30px; text-align:center;">Спасибо за заказ!</div><div class="copy-label">──────── ОСНОВНОЙ ЭКЗЕМПЛЯР ────────</div></div><div class="blank-page"><div style="text-align:center;"><h2>A4-ПРИНТ</h2><p>Копировальный центр — КОПИЯ</p></div><div><strong>№ заказа:</strong> ${Date.now()}</div><div><strong>Дата:</strong> ${new Date().toLocaleString()}</div><div><strong>Оператор:</strong> ${currentUser.name}</div><div><strong>Клиент:</strong> ${escapeHtml(client)}</div>${phoneLine}<div><strong>Оплата:</strong> ${payment === "cash" ? "Наличные" : "Карта"}</div><table border="1" cellpadding="5" cellspacing="0" style="width:100%; margin:15px 0;"><thead><tr><th>Услуга</th><th>Кол-во</th><th>Цена</th><th>Сумма</th></tr></thead><tbody>${itemsHtml}</tbody><td><div style="text-align:right;">Подытог: ${subtotal} ₽<br>${discount ? `Скидка: -${discount} ₽<br>` : ""}<strong>ИТОГО: ${final} ₽</strong></div>${comment ? `<div>Комментарий: ${escapeHtml(comment)}</div>` : ""}<div style="margin-top:30px; text-align:center;">Спасибо за заказ!</div><div class="copy-label">─────────── КОПИЯ КЛИЕНТА ───────────</div></div>`;
             let cont = document.getElementById("printBlankContainer"); cont.innerHTML = html;
             window.print(); setTimeout(() => cont.innerHTML = "", 1000);
         }
@@ -783,7 +810,7 @@
             document.getElementById("burgerThemeToggle").onclick = () => { toggleTheme(); if (menu) menu.classList.remove("show"); };
             document.getElementById("burgerAdminBtn").onclick = () => { if (currentUser?.role === "admin") { renderAdmin(); document.getElementById("adminModal").style.display = "flex"; } else alert("Доступно только администратору"); if (menu) menu.classList.remove("show"); };
             document.getElementById("burgerShiftBtn").onclick = () => { toggleShiftWithComment(); if (menu) menu.classList.remove("show"); };
-            document.getElementById("burgerPdfBtn").onclick = () => { generatePDFReport(); if (menu) menu.classList.remove("show"); };
+            document.getElementById("burgerPdfBtn").onclick = () => { showReportChoice(); if (menu) menu.classList.remove("show"); };
             document.getElementById("burgerPrintBtn").onclick = () => { printOrderBlank(); if (menu) menu.classList.remove("show"); };
             document.getElementById("burgerLogoutBtn").onclick = () => { logout(); if (menu) menu.classList.remove("show"); };
         }
@@ -816,12 +843,17 @@
             document.getElementById("clearCartBtn").onclick = () => { cart = []; discountPct = 0; discountAmt = 0; renderCart(); };
             document.getElementById("exportExcelBtn").onclick = exportExcel;
             document.getElementById("clearHistoryBtn").onclick = clearMyOrders;
-            document.getElementById("pdfReportBtn").onclick = generatePDFReport;
+            document.getElementById("pdfReportBtn").onclick = showReportChoice;
             document.getElementById("printBlankBtn").onclick = printOrderBlank;
             document.getElementById("addFastServiceBtn").onclick = addFastService;
             document.getElementById("shiftToggleBtn").onclick = toggleShiftWithComment;
             document.getElementById("shiftCommentConfirm").onclick = confirmShiftWithComment;
             document.getElementById("shiftCommentCancel").onclick = cancelShiftComment;
+            
+            // Кнопки выбора отчёта
+            document.getElementById("reportTodayBtn").onclick = reportToday;
+            document.getElementById("reportFullBtn").onclick = reportFull;
+            document.getElementById("cancelReportBtn").onclick = () => document.getElementById("reportChoiceModal").style.display = "none";
 
             let admModal = document.getElementById("adminModal");
             document.getElementById("adminPanelBtn").onclick = () => { renderAdmin(); admModal.style.display = "flex"; };
@@ -830,12 +862,10 @@
             document.getElementById("closeStatsModal").onclick = () => document.getElementById("operatorsStatsModal").style.display = "none";
             document.getElementById("exportStatsExcelBtn").onclick = exportStatsExcel;
             
-            // Отчёт по дате
             document.getElementById("viewDateReportBtn").onclick = showDateReport;
             document.getElementById("exportDateReportPDFBtn").onclick = exportDateReportPDF;
             document.getElementById("exportDateReportExcelBtn").onclick = exportDateReportExcel;
             
-            // Месячный отчёт
             document.getElementById("viewMonthlyReportBtn").onclick = showMonthlyReport;
             document.getElementById("exportMonthlyReportBtn").onclick = exportMonthlyReport;
             
