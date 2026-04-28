@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>A4-Принт | Услуги + Интернет-магазин</title>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary-blue: #0066B3;
+            --primary-magenta: #C6007E;
+            --primary-yellow: #FFB511;
+            --primary-black: #1A1A1A;
+            --bg-light: #F4F6F9;
+            --card-white: #FFFFFF;
+            --text-dark: #2C3E50;
+            --text-gray: #6B7A8A;
+            --border-light: #E2E8F0;
+            --danger: #c2412c;
+            --warning: #f59e0b;
+            --success: #10b981;
+        }
+        body { background: var(--bg-light); font-family: 'Segoe UI', sans-serif; padding: 20px; color: var(--text-dark); transition: background 0.2s, color 0.2s; }
+        body.dark { background: #121826; color: #E2E8F0; }
+        body.dark .card, body.dark .cart-panel, body.dark .history-section, body.dark .shift-bar, body.dark .fast-service-card, body.dark .goods-panel { background: #1E2A3A; border-color: #2D3A4A; }
+        body.dark .service-card, body.dark .goods-card, body.dark .cart-item, body.dark .history-item, body.dark .stat-card { background: #0F1722; border-color: #3D3A4C; }
+        body.dark input, body.dark select, body.dark textarea { background: #0F1722; border-color: #2D3A4A; color: #E2E8F0; }
+        .app { max-width: 1600px; margin: 0 auto; }
+        .header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; margin-bottom: 24px; padding: 16px 24px; background: var(--card-white); border-radius: 28px; border-left: 6px solid var(--primary-blue); position: relative; }
+        .logo-area { display: flex; align-items: center; gap: 14px; }
+        .logo { height: 48px; width: auto; border-radius: 12px; background: white; padding: 4px; }
+        h1 { font-size: 22px; font-weight: 700; color: var(--primary-black); }
+        .sub { font-size: 11px; color: var(--text-gray); }
+        .user-bar { display: flex; gap: 12px; align-items: center; background: var(--bg-light); padding: 6px 20px; border-radius: 60px; }
+        .burger-btn { display: none; background: none; border: none; font-size: 32px; cursor: pointer; padding: 8px 12px; color: var(--primary-black); }
+        .burger-menu { position: absolute; top: 70px; right: 20px; background: var(--card-white); border-radius: 24px; padding: 16px; min-width: 220px; display: none; flex-direction: column; gap: 12px; z-index: 200; border: 1px solid var(--border-light); }
+        .burger-menu.show { display: flex; }
+        button { background: var(--primary-black); border: none; padding: 8px 22px; border-radius: 40px; color: white; font-weight: 600; font-size: 13px; cursor: pointer; transition: 0.15s; }
+        button:hover { transform: translateY(-1px); filter: brightness(0.92); }
+        .btn-outline { background: transparent; border: 1.5px solid var(--border-light); color: var(--text-dark); }
+        .btn-primary { background: var(--primary-blue); }
+        .btn-success { background: var(--success); }
+        .btn-danger { background: var(--danger); }
+        .btn-warning { background: var(--warning); }
+        .btn-info { background: #3B82F6; }
+        .category-tabs { display: flex; gap: 8px; margin-bottom: 20px; border-bottom: 2px solid var(--border-light); flex-wrap: wrap; }
+        .category-tab { background: none; color: var(--text-gray); padding: 10px 20px; border-radius: 30px; margin-bottom: -2px; }
+        .category-tab.active { background: var(--primary-blue); color: white; border-radius: 30px; }
+        .shift-bar { background: var(--card-white); border-radius: 60px; padding: 10px 24px; margin-bottom: 24px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; font-size: 13px; font-weight: 500; border-left: 4px solid var(--primary-blue); }
+        .dashboard { display: flex; gap: 24px; flex-wrap: wrap; margin-bottom: 24px; }
+        .card { flex: 2; min-width: 300px; background: var(--card-white); border-radius: 28px; padding: 24px; border: 1px solid var(--border-light); }
+        .cart-panel { flex: 1.2; min-width: 320px; background: var(--card-white); border-radius: 28px; padding: 24px; border: 1px solid var(--border-light); }
+        .goods-panel { background: var(--card-white); border-radius: 28px; padding: 24px; margin-bottom: 24px; border: 1px solid var(--border-light); }
+        .history-section { background: var(--card-white); border-radius: 28px; padding: 24px; border: 1px solid var(--border-light); }
+        .panel-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-gray); margin-bottom: 20px; }
+        .search-input { width: 100%; padding: 14px 18px; font-size: 15px; border-radius: 30px; background: var(--bg-light); border: 1px solid var(--border-light); margin-bottom: 16px; }
+        .services-grid, .goods-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 14px; max-height: 450px; overflow-y: auto; padding-right: 6px; }
+        .service-card, .goods-card { background: var(--bg-light); border-radius: 24px; padding: 14px; text-align: center; border: 1px solid var(--border-light); cursor: pointer; transition: 0.1s; }
+        .service-card:hover, .goods-card:hover { transform: translateY(-2px); border-color: var(--primary-blue); }
+        .item-name { font-weight: 700; font-size: 13px; margin-bottom: 6px; }
+        .item-price { font-size: 17px; font-weight: 800; color: var(--primary-magenta); margin: 6px 0; }
+        .item-stock { font-size: 11px; color: var(--text-gray); margin-bottom: 8px; }
+        .item-stock.low { color: var(--danger); font-weight: bold; }
+        .qty-control { display: flex; align-items: center; justify-content: center; gap: 8px; margin: 10px 0 6px; }
+        .qty-control input { width: 80px; text-align: center; padding: 8px 0; font-size: 15px; font-weight: 600; border-radius: 30px; }
+        .add-btn { background: var(--primary-blue); width: 100%; padding: 8px; font-size: 12px; font-weight: 600; color: white; border-radius: 40px; }
+        .fast-service-card { background: var(--card-white); border-radius: 20px; padding: 12px; margin-top: 16px; border: 1px dashed var(--primary-blue); }
+        .fast-service-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+        .cart-list { display: flex; flex-direction: column; gap: 10px; max-height: 280px; overflow-y: auto; margin-bottom: 18px; }
+        .cart-item { background: var(--bg-light); border-radius: 20px; padding: 12px 14px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; border-left: 4px solid var(--primary-magenta); }
+        .cart-item-info { flex: 2; }
+        .cart-item-name { font-weight: 700; font-size: 13px; margin-bottom: 4px; }
+        .cart-item-detail { font-size: 11px; color: var(--text-gray); }
+        .cart-item-price { font-weight: 800; font-size: 15px; color: var(--primary-magenta); }
+        .remove-btn { background: #FFE4E0; color: var(--danger); padding: 6px 16px; border-radius: 40px; font-size: 11px; font-weight: 600; }
+        .total-line { display: flex; justify-content: space-between; padding: 12px 0; border-top: 1px solid var(--border-light); font-weight: 600; font-size: 14px; }
+        .grand-total { font-size: 22px; font-weight: 800; color: var(--primary-blue); }
+        .row-2 { display: flex; gap: 12px; margin: 16px 0; flex-wrap: wrap; align-items: flex-end; }
+        .discount-group { flex: 1; min-width: 100px; }
+        .discount-group label { font-size: 11px; font-weight: 600; display: block; margin-bottom: 4px; color: var(--text-gray); }
+        .history-list { display: flex; flex-direction: column; gap: 12px; max-height: 300px; overflow-y: auto; }
+        .history-item { background: var(--bg-light); border-radius: 20px; padding: 14px; border-left: 4px solid var(--primary-yellow); }
+        .modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 1000; }
+        .modal-card { background: var(--card-white); border-radius: 40px; max-width: 500px; width: 90%; padding: 28px; }
+        .instruction-tabs { display: flex; gap: 8px; margin-bottom: 20px; border-bottom: 1px solid var(--border-light); flex-wrap: wrap; }
+        .instruction-tabs .tab-btn { background: none; padding: 10px 16px; border-radius: 30px; cursor: pointer; }
+        .tab-btn.active { background: var(--primary-blue); color: white; }
+        .instruction-content { display: none; }
+        .instruction-content.active { display: block; }
+        .sync-status { position: fixed; bottom: 20px; right: 20px; background: #1a1a1a; color: white; padding: 8px 16px; border-radius: 40px; font-size: 12px; z-index: 999; }
+        .stock-warning { background: var(--danger); color: white; padding: 4px 8px; border-radius: 20px; font-size: 10px; display: inline-block; margin-top: 5px; }
+        @media (max-width: 850px) { body { padding: 12px; } .user-bar { display: none !important; } .burger-btn { display: block; } .services-grid, .goods-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 8px; } }
+        @media (min-width: 851px) { .burger-menu { display: none !important; } }
+    </style>
+</head>
+<body>
+
+    <div id="loginOverlay" class="modal" style="display: flex;">
+        <div class="modal-card" style="max-width: 380px;">
+            <h2 style="text-align:center;">A4-Принт</h2>
+            <input type="text" id="loginUsername" placeholder="Логин" style="margin: 14px 0;">
+            <input type="password" id="loginPassword" placeholder="Пароль">
+            <button id="loginBtn" style="width:100%; margin-top: 20px;">Войти</button>
+            <div id="loginError" style="color:var(--danger); margin-top: 12px; text-align:center;"></div>
+        </div>
+    </div>
+
+    <div id="mainContent" style="display: none;">
+        <div class="app">
+            <div class="header">
+                <div class="logo-area">
+                    <img src="https://github.com/a4print2026-jpg/baza/blob/dbcda72ab60f0a9f8d8984e17375f6649cf677f0/images/logo_soc2.png?raw=true" class="logo" onerror="this.style.display='none'">
+                    <div><h1>A4‑ПРИНТ</h1><div class="sub">Услуги + Интернет-магазин</div></div>
+                </div>
+                <div class="user-bar">
+                    <span id="currentOperatorName" style="font-weight:500;"></span>
+                    <button id="themeToggleBtn" class="btn-outline">🌙 Тёмная</button>
+                    <button id="adminPanelBtn" class="btn-primary">Админ</button>
+                    <button id="shiftToggleBtn" class="btn-warning">🚀 Открыть смену</button>
+                    <button id="printBlankBtn" class="btn-primary">🖨️ Бланк заказа</button>
+                    <button id="logoutBtn" class="btn-outline">Выйти</button>
+                </div>
+                <button class="burger-btn" id="burgerBtn">☰</button>
+                <div class="burger-menu" id="burgerMenu">
+                    <span id="burgerOperatorName" style="font-weight:600;"></span>
+                    <button id="burgerThemeToggle">🌙 Тёмная</button>
+                    <button id="burgerAdminBtn">Админ</button>
+                    <button id="burgerShiftBtn">🚀 Смена</button>
+                    <button id="burgerPrintBtn">🖨️ Бланк</button>
+                    <button id="burgerLogoutBtn">Выйти</button>
+                </div>
+            </div>
+
+            <div class="shift-bar">
+                <span>🕒 Смена: <strong id="shiftStatus">Закрыта</strong></span>
+                <span>🟢 Открыта: <span id="shiftOpenTime">—</span></span>
+                <span>🔴 Закрыта: <span id="shiftCloseTime">—</span></span>
+            </div>
+
+            <!-- Вкладки Услуги / Товары -->
+            <div class="goods-panel">
+                <div class="category-tabs">
+                    <button class="category-tab active" data-cat="services">📋 УСЛУГИ</button>
+                    <button class="category-tab" data-cat="goods">🛍️ ТОВАРЫ (Интернет-магазин)</button>
+                </div>
+                <div id="servicesPanel" class="instruction-content active">
+                    <input type="text" id="searchService" class="search-input" placeholder="🔍 Поиск услуги...">
+                    <div id="servicesGrid" class="services-grid"></div>
+                    <div class="fast-service-card">
+                        <div class="fast-service-row">
+                            <input type="text" id="fastServiceName" placeholder="Разовая услуга" style="flex:2;">
+                            <input type="number" id="fastServicePrice" placeholder="Цена ₽" style="flex:1;" value="0" step="10">
+                            <button id="addFastServiceBtn" class="btn-primary">➕ Добавить в корзину</button>
+                        </div>
+                    </div>
+                </div>
+                <div id="goodsPanel" class="instruction-content">
+                    <input type="text" id="searchGoods" class="search-input" placeholder="🔍 Поиск товара...">
+                    <div id="goodsGrid" class="goods-grid"></div>
+                    <div class="fast-service-card">
+                        <div class="fast-service-row">
+                            <input type="text" id="newGoodsName" placeholder="Новый товар (название)" style="flex:2;">
+                            <input type="number" id="newGoodsPrice" placeholder="Цена ₽" style="flex:1;" value="0" step="10">
+                            <input type="number" id="newGoodsStock" placeholder="Кол-во на складе" style="flex:1;" value="0" step="1">
+                            <button id="addNewGoodsBtn" class="btn-primary">➕ Добавить товар</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dashboard">
+                <div class="cart-panel">
+                    <div class="panel-title">🧾 КОРЗИНА</div>
+                    <input type="text" id="clientName" placeholder="Имя клиента (необязательно)" style="margin-bottom: 12px;">
+                    <input type="tel" id="clientPhone" placeholder="Телефон клиента (необязательно)" style="margin-bottom: 16px;">
+                    <div class="cart-list" id="cartList"></div>
+                    <div class="row-2">
+                        <div class="discount-group"><label>Скидка, %</label><input type="number" id="discountPercent" value="0" step="1"></div>
+                        <div class="discount-group"><label>Скидка, ₽</label><input type="number" id="discountAmount" value="0" step="10"></div>
+                        <button id="applyDiscountBtn" class="btn-outline">Применить</button>
+                    </div>
+                    <div class="row-2">
+                        <label><input type="radio" name="payment" value="cash" checked> 💵 Наличные</label>
+                        <label><input type="radio" name="payment" value="card"> 💳 Карта</label>
+                    </div>
+                    <textarea id="orderComment" rows="2" placeholder="Комментарий..."></textarea>
+                    <div class="total-line"><span>Подытог</span><span id="cartSubtotal">0 ₽</span></div>
+                    <div class="total-line" id="discountLine" style="display:none;"><span>Скидка</span><span id="cartDiscount">0 ₽</span></div>
+                    <div class="total-line grand-total"><span>ИТОГО</span><span id="cartTotal">0 ₽</span></div>
+                    <div class="row-2">
+                        <button id="completeOrderBtn" class="btn-primary" style="flex:2;">✅ Оформить</button>
+                        <button id="clearCartBtn" class="btn-outline" style="flex:1;">Очистить</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="history-section">
+                <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 16px;">
+                    <div class="panel-title">📜 ИСТОРИЯ ЗАКАЗОВ</div>
+                    <button id="exportExcelBtn" class="btn-success">📎 Excel</button>
+                </div>
+                <div id="historyList" class="history-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="syncStatus" class="sync-status">💾 Готово</div>
+
+    <!-- Модалка комментария к смене -->
+    <div id="shiftCommentModal" class="modal">
+        <div class="modal-card">
+            <h3 id="shiftCommentTitle">📝 Комментарий к смене</h3>
+            <textarea id="shiftCommentText" rows="3" style="margin: 16px 0;"></textarea>
+            <div style="display: flex; gap: 12px; justify-content: flex-end;">
+                <button id="shiftCommentCancel" class="btn-outline">Отмена</button>
+                <button id="shiftCommentConfirm" class="btn-primary">Подтвердить</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Админ-панель -->
+    <div id="adminModal" class="modal">
+        <div class="modal-card" style="max-width: 700px;">
+            <div style="display:flex; justify-content:space-between;">
+                <h2>Администрирование</h2>
+                <button id="closeAdminModal" style="background:none; font-size:28px;">✕</button>
+            </div>
+            <div class="instruction-tabs">
+                <button class="tab-btn active" data-tab="admin-users">👥 Пользователи</button>
+                <button class="tab-btn" data-tab="admin-services">📋 Услуги</button>
+                <button class="tab-btn" data-tab="admin-goods">🛍️ Товары</button>
+            </div>
+            <div id="admin-users" class="instruction-content active">
+                <h3>Операторы</h3>
+                <div id="operatorsList"></div>
+                <div style="display:flex; gap:12px; margin:16px 0;">
+                    <input type="text" id="newOpLogin" placeholder="Логин">
+                    <input type="text" id="newOpName" placeholder="Имя">
+                    <input type="text" id="newOpPass" placeholder="Пароль">
+                    <button id="addOperatorBtn" class="btn-primary">Добавить</button>
+                </div>
+            </div>
+            <div id="admin-services" class="instruction-content">
+                <h3>Услуги</h3>
+                <div id="adminServicesList"></div>
+                <div style="display:flex; gap:12px; margin:16px 0;">
+                    <input type="text" id="newServiceName" placeholder="Название">
+                    <input type="number" id="newServicePrice" placeholder="Цена">
+                    <button id="addServiceBtn" class="btn-primary">Добавить</button>
+                </div>
+            </div>
+            <div id="admin-goods" class="instruction-content">
+                <h3>Товары (склад)</h3>
+                <div id="adminGoodsList"></div>
+                <div style="display:flex; gap:12px; margin:16px 0; flex-wrap:wrap;">
+                    <input type="text" id="adminNewGoodsName" placeholder="Название товара" style="flex:2;">
+                    <input type="number" id="adminNewGoodsPrice" placeholder="Цена" style="flex:1;">
+                    <input type="number" id="adminNewGoodsStock" placeholder="Кол-во" style="flex:1;">
+                    <button id="adminAddGoodsBtn" class="btn-primary">Добавить</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ========== ДАННЫЕ ==========
+        let services = [
+            { id: 1, name: "Копирование ч/б A4 (1-20)", price: 25 }, { id: 2, name: "Копирование цветное A4 (1-20)", price: 35 },
+            { id: 3, name: "Сканирование A4", price: 25 }, { id: 4, name: "Ламинирование A6", price: 50 },
+            { id: 5, name: "Ламинирование A5", price: 100 }, { id: 6, name: "Ламинирование A4", price: 150 },
+            { id: 7, name: "Ламинирование A3", price: 200 }, { id: 8, name: "Брошюровка (до 50 стр)", price: 350 },
+            { id: 9, name: "Набор текста (1 стр)", price: 150 }, { id: 10, name: "Печать фото 10x15", price: 55 },
+            { id: 11, name: "Печать фото 13x18", price: 50 }, { id: 12, name: "Печать фото 15x21", price: 75 },
+            { id: 13, name: "Печать фото 21x30", price: 200 }, { id: 14, name: "Печать фото 30x40", price: 450 },
+            { id: 15, name: "ФНД", price: 350 }, { id: 16, name: "Печать на кружке", price: 1000 },
+            { id: 17, name: "Печать на футболке", price: 1500 }, { id: 18, name: "Ретушь фото", price: 200 },
+            { id: 19, name: "Кадрирование", price: 30 }, { id: 20, name: "Печать на самоклейке ЦВ", price: 75 },
+            { id: 21, name: "Печать на самоклейке ЧБ", price: 50 }, { id: 22, name: "ФНД Виза", price: 400 },
+            { id: 23, name: "Копирование ч/б A4 (20-50)", price: 20 }, { id: 24, name: "Фото в рамке А4", price: 400 },
+            { id: 25, name: "Фото в рамке 10х15", price: 200 }
+        ];
+
+        // Товары (склад)
+        let goods = [
+            { id: 1001, name: "Бумага А4 80г/м2 (500 листов)", price: 350, stock: 50, unit: "пачка" },
+            { id: 1002, name: "Тонер чёрный HP", price: 1200, stock: 8, unit: "шт" },
+            { id: 1003, name: "Плёнка для ламинации А4 (100шт)", price: 1500, stock: 15, unit: "упаковка" },
+            { id: 1004, name: "Фоторамка А4", price: 400, stock: 12, unit: "шт" },
+            { id: 1005, name: "Фоторамка 10х15", price: 200, stock: 20, unit: "шт" },
+            { id: 1006, name: "USB-флешка 16Gb", price: 450, stock: 10, unit: "шт" }
+        ];
+
+        let operators = {
+            "pavel": { password: "pavel123", name: "Павел", role: "admin" },
+            "ksenia": { password: "ksenia123", name: "Ксения", role: "operator" },
+            "natalia": { password: "natalia123", name: "Наталья", role: "operator" }
+        };
+
+        let allOrders = [], currentUser = null, cart = [], discountPct = 0, discountAmt = 0;
+        let shiftOpen = null, shiftClose = null, shiftOpenComment = "", shiftCloseComment = "";
+
+        const SERVICES_KEY = "a4print_services_v5", GOODS_KEY = "a4print_goods_v5", OPERATORS_KEY = "a4print_operators", ORDERS_KEY = "a4print_orders", SHIFT_KEY = "a4print_shift";
+
+        function saveServices() { localStorage.setItem(SERVICES_KEY, JSON.stringify(services)); }
+        function saveGoods() { localStorage.setItem(GOODS_KEY, JSON.stringify(goods)); }
+        function saveOperators() { localStorage.setItem(OPERATORS_KEY, JSON.stringify(operators)); }
+        function saveOrders() { localStorage.setItem(ORDERS_KEY, JSON.stringify(allOrders)); }
+        function saveShift() { localStorage.setItem(SHIFT_KEY, JSON.stringify({ open: shiftOpen, close: shiftClose, openComment: shiftOpenComment, closeComment: shiftCloseComment, operator: currentUser?.name })); }
+
+        function loadData() {
+            let s = localStorage.getItem(SERVICES_KEY); if (s) services = JSON.parse(s);
+            let g = localStorage.getItem(GOODS_KEY); if (g) goods = JSON.parse(g);
+            let o = localStorage.getItem(OPERATORS_KEY); if (o) operators = JSON.parse(o);
+            let ord = localStorage.getItem(ORDERS_KEY); if (ord) allOrders = JSON.parse(ord);
+            renderServices(); renderGoods(); renderCart(); renderHistory(); loadShift();
+            document.getElementById("currentOperatorName").innerHTML = `${currentUser.name} ${currentUser.role === "admin" ? "👑" : "👤"}`;
+            document.getElementById("burgerOperatorName").innerText = `${currentUser.name} ${currentUser.role === "admin" ? "👑" : "👤"}`;
+        }
+
+        // ========== РЕНДЕР УСЛУГ ==========
+        let searchTimeout;
+        function renderServices(filtered = null) {
+            const grid = document.getElementById("servicesGrid");
+            const data = filtered !== null ? filtered : services;
+            grid.innerHTML = "";
+            data.forEach(s => {
+                let card = document.createElement("div");
+                card.className = "service-card";
+                card.innerHTML = `<div class="item-name">${escapeHtml(s.name)}</div><div class="item-price">${s.price} ₽</div><div class="qty-control"><input type="number" id="qty_srv_${s.id}" value="0" min="0" step="1" placeholder="кол-во"></div><button class="add-btn" data-type="service" data-id="${s.id}">➕ Добавить</button>`;
+                grid.appendChild(card);
+            });
+            document.querySelectorAll(".add-btn").forEach(btn => btn.onclick = () => { let type = btn.getAttribute("data-type"); let id = parseInt(btn.getAttribute("data-id")); addToCart(type, id); });
+        }
+
+        // ========== РЕНДЕР ТОВАРОВ ==========
+        function renderGoods(filtered = null) {
+            const grid = document.getElementById("goodsGrid");
+            const data = filtered !== null ? filtered : goods;
+            grid.innerHTML = "";
+            data.forEach(g => {
+                let lowStock = g.stock <= (g.minStock || 3);
+                let card = document.createElement("div");
+                card.className = "goods-card";
+                card.innerHTML = `<div class="item-name">${escapeHtml(g.name)}</div><div class="item-price">${g.price} ₽</div><div class="item-stock ${lowStock ? 'low' : ''}">📦 Остаток: ${g.stock} ${g.unit || 'шт'}${lowStock ? ' <span class="stock-warning">⚠️ мало</span>' : ''}</div><div class="qty-control"><input type="number" id="qty_goods_${g.id}" value="0" min="0" max="${g.stock}" step="1" placeholder="кол-во"></div><button class="add-btn" data-type="goods" data-id="${g.id}">➕ В корзину</button>`;
+                grid.appendChild(card);
+            });
+            document.querySelectorAll(".add-btn").forEach(btn => btn.onclick = () => { let type = btn.getAttribute("data-type"); let id = parseInt(btn.getAttribute("data-id")); addToCart(type, id); });
+        }
+
+        // ========== ДОБАВЛЕНИЕ В КОРЗИНУ ==========
+        function addToCart(type, id) {
+            let qtyInput = document.getElementById(`qty_${type === 'service' ? 'srv' : 'goods'}_${id}`);
+            let qty = parseInt(qtyInput?.value) || 0;
+            if (qty <= 0) { alert("Введите количество (1 и больше)"); return; }
+            
+            if (type === 'service') {
+                let service = services.find(s => s.id === id);
+                if (!service) return;
+                let existing = cart.find(i => i.type === 'service' && i.id === id);
+                if (existing) existing.qty += qty;
+                else cart.push({ type: 'service', id: id, name: service.name, price: service.price, qty: qty });
+            } else if (type === 'goods') {
+                let good = goods.find(g => g.id === id);
+                if (!good) return;
+                if (qty > good.stock) { alert(`На складе только ${good.stock} шт.`); return; }
+                let existing = cart.find(i => i.type === 'goods' && i.id === id);
+                if (existing) existing.qty += qty;
+                else cart.push({ type: 'goods', id: id, name: good.name, price: good.price, qty: qty });
+            }
+            if (qtyInput) qtyInput.value = "0";
+            renderCart();
+        }
+
+        // ========== ДОБАВЛЕНИЕ РАЗОВОЙ УСЛУГИ ==========
+        function addFastService() {
+            let name = document.getElementById("fastServiceName").value.trim();
+            let price = parseFloat(document.getElementById("fastServicePrice").value);
+            if (!name) { alert("Введите название"); return; }
+            if (isNaN(price) || price <= 0) { alert("Введите цену"); return; }
+            let qty = 1;
+            cart.push({ type: 'service', id: Date.now(), name: name, price: price, qty: qty, isFast: true });
+            document.getElementById("fastServiceName").value = "";
+            document.getElementById("fastServicePrice").value = "";
+            renderCart();
+        }
+
+        // ========== ДОБАВЛЕНИЕ НОВОГО ТОВАРА (оператор) ==========
+        function addNewGoods() {
+            let name = document.getElementById("newGoodsName").value.trim();
+            let price = parseFloat(document.getElementById("newGoodsPrice").value);
+            let stock = parseInt(document.getElementById("newGoodsStock").value);
+            if (!name) { alert("Введите название товара"); return; }
+            if (isNaN(price) || price <= 0) { alert("Введите цену"); return; }
+            if (isNaN(stock) || stock < 0) stock = 0;
+            let newId = Date.now();
+            goods.push({ id: newId, name: name, price: price, stock: stock, unit: "шт" });
+            saveGoods();
+            renderGoods();
+            showSyncStatus(`✅ Товар "${name}" добавлен на склад`);
+            document.getElementById("newGoodsName").value = "";
+            document.getElementById("newGoodsPrice").value = "";
+            document.getElementById("newGoodsStock").value = "0";
+        }
+
+        // ========== ОФОРМЛЕНИЕ ЗАКАЗА ==========
+        async function completeOrder() {
+            if (cart.length === 0) { alert("Корзина пуста"); return; }
+            if (!shiftOpen || shiftClose) { alert("Смена не открыта!"); return; }
+            
+            // Проверка остатков и списание товаров
+            for (let item of cart) {
+                if (item.type === 'goods') {
+                    let good = goods.find(g => g.id === item.id);
+                    if (good && good.stock < item.qty) {
+                        alert(`Недостаточно товара: ${good.name}. Доступно: ${good.stock}`);
+                        return;
+                    }
+                }
+            }
+            
+            // Списание товаров со склада
+            for (let item of cart) {
+                if (item.type === 'goods') {
+                    let good = goods.find(g => g.id === item.id);
+                    if (good) {
+                        good.stock -= item.qty;
+                        if (good.stock < 0) good.stock = 0;
+                    }
+                }
+            }
+            saveGoods();
+            renderGoods();
+            
+            let client = document.getElementById("clientName").value.trim() || "Клиент";
+            let phone = document.getElementById("clientPhone").value.trim();
+            let comment = document.getElementById("orderComment").value;
+            let payment = document.querySelector('input[name="payment"]:checked').value;
+            let subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
+            let discount = 0, discPct = 0;
+            if (discountPct > 0) { discount = subtotal * discountPct / 100; discPct = discountPct; }
+            else if (discountAmt > 0) discount = Math.min(discountAmt, subtotal);
+            let order = {
+                id: Date.now(), client, phone, items: cart.map(i => ({ type: i.type, name: i.name, price: i.price, qty: i.qty })),
+                subtotal, discount, discountPercent: discPct, finalTotal: subtotal - discount,
+                paymentMethod: payment, comment, date: new Date().toLocaleString(), operator: currentUser.name
+            };
+            allOrders.push(order); saveOrders();
+            cart = []; discountPct = 0; discountAmt = 0;
+            document.getElementById("discountPercent").value = 0; document.getElementById("discountAmount").value = 0;
+            document.getElementById("clientName").value = ""; document.getElementById("clientPhone").value = ""; document.getElementById("orderComment").value = "";
+            renderCart(); renderHistory();
+            alert(`Заказ №${order.id} на ${order.finalTotal} ₽`);
+        }
+
+        function renderCart() {
+            let container = document.getElementById("cartList");
+            let subtotal = 0, html = "";
+            cart.forEach((item, idx) => {
+                let sum = item.price * item.qty;
+                subtotal += sum;
+                let typeIcon = item.type === 'service' ? '📋' : '🛍️';
+                html += `<div class="cart-item"><div class="cart-item-info"><div class="cart-item-name">${typeIcon} ${escapeHtml(item.name)}</div><div class="cart-item-detail">${item.qty} шт × ${item.price} ₽</div></div><div class="cart-item-price">${sum} ₽</div><button class="remove-btn" data-idx="${idx}">Удалить</button></div>`;
+            });
+            container.innerHTML = html || "<div style='padding:30px;text-align:center;color:var(--text-gray);'>Корзина пуста</div>";
+            document.querySelectorAll(".remove-btn").forEach(btn => btn.onclick = () => { let idx = parseInt(btn.getAttribute("data-idx")); cart.splice(idx, 1); renderCart(); });
+            let discount = 0;
+            if (discountPct > 0) discount = subtotal * discountPct / 100;
+            else if (discountAmt > 0) discount = Math.min(discountAmt, subtotal);
+            let final = subtotal - discount;
+            document.getElementById("cartSubtotal").innerHTML = subtotal + " ₽";
+            if (discount > 0) { document.getElementById("discountLine").style.display = "flex"; document.getElementById("cartDiscount").innerHTML = discount + " ₽"; }
+            else document.getElementById("discountLine").style.display = "none";
+            document.getElementById("cartTotal").innerHTML = final + " ₽";
+        }
+
+        function applyDiscount() {
+            discountPct = parseFloat(document.getElementById("discountPercent").value) || 0;
+            discountAmt = parseFloat(document.getElementById("discountAmount").value) || 0;
+            if (discountPct > 0 && discountAmt > 0) alert("Выберите один тип скидки");
+            renderCart();
+        }
+
+        function getMyOrders() { return currentUser.role === "admin" ? allOrders : allOrders.filter(o => o.operator === currentUser.name); }
+
+        function renderHistory() {
+            let my = getMyOrders();
+            let cont = document.getElementById("historyList");
+            if (!my.length) { cont.innerHTML = "<div style='padding:40px;text-align:center;'>Нет заказов</div>"; return; }
+            let html = "";
+            [...my].reverse().forEach(o => {
+                html += `<div class="history-item"><div><strong>${escapeHtml(o.client)}</strong> ${o.phone ? `📞 ${escapeHtml(o.phone)}` : ""} | ${o.date} | ${o.finalTotal} ₽</div><div style="font-size:11px;">${o.items.map(i => `${i.name} x${i.qty}`).join(", ")}</div><div style="font-size:11px;">${o.comment ? "📝 " + o.comment : ""}</div><button class="delete-order" data-id="${o.id}" style="margin-top:8px; background:var(--danger); border:none; border-radius:30px; padding:5px 14px; color:white; font-size:11px;">Удалить</button></div>`;
+            });
+            cont.innerHTML = html;
+            document.querySelectorAll(".delete-order").forEach(btn => btn.onclick = () => { let id = parseInt(btn.getAttribute("data-id")); allOrders = allOrders.filter(o => o.id !== id); saveOrders(); renderHistory(); });
+        }
+
+        function exportExcel() {
+            let my = getMyOrders();
+            if (!my.length) return alert("Нет данных");
+            let data = [["ID", "Дата", "Клиент", "Телефон", "Товары/Услуги", "Сумма", "Скидка", "Итого", "Оплата", "Оператор", "Комментарий"]];
+            my.forEach(o => { data.push([o.id, o.date, o.client, o.phone || "", o.items.map(i => `${i.name} x${i.qty}`).join("; "), o.subtotal, o.discount, o.finalTotal, o.paymentMethod === "cash" ? "Наличные" : "Карта", o.operator, o.comment || ""]); });
+            let ws = XLSX.utils.aoa_to_sheet(data), wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Заказы");
+            XLSX.writeFile(wb, `A4print_${currentUser.name}_${new Date().toISOString().slice(0,19)}.xlsx`);
+        }
+
+        // ========== СМЕНА ==========
+        function loadShift() {
+            let s = localStorage.getItem(SHIFT_KEY);
+            if (s) { let d = JSON.parse(s); if (d.operator === currentUser?.name) { shiftOpen = d.open; shiftClose = d.close; shiftOpenComment = d.openComment || ""; shiftCloseComment = d.closeComment || ""; } }
+            updateShiftUI();
+        }
+        function updateShiftUI() {
+            let st = document.getElementById("shiftStatus"), op = document.getElementById("shiftOpenTime"), cl = document.getElementById("shiftCloseTime"), btn = document.getElementById("shiftToggleBtn");
+            if (shiftOpen && !shiftClose) { st.innerText = "🟢 Открыта"; op.innerText = shiftOpen; cl.innerText = "—"; btn.innerText = "🔒 Закрыть смену"; btn.classList.add("btn-danger"); btn.classList.remove("btn-warning"); }
+            else { st.innerText = shiftOpen ? "🔴 Закрыта" : "⚫ Не открыта"; op.innerText = shiftOpen || "—"; cl.innerText = shiftClose || "—"; btn.innerText = "🚀 Открыть смену"; btn.classList.remove("btn-danger"); btn.classList.add("btn-warning"); }
+        }
+        function toggleShiftWithComment() {
+            if (!shiftOpen || shiftClose) {
+                document.getElementById("shiftCommentTitle").innerText = "📝 Комментарий к открытию смены";
+                document.getElementById("shiftCommentText").value = "";
+                document.getElementById("shiftCommentModal").style.display = "flex";
+                window._pendingShiftAction = "open";
+            } else {
+                document.getElementById("shiftCommentTitle").innerText = "📝 Комментарий к закрытию смены";
+                document.getElementById("shiftCommentText").value = "";
+                document.getElementById("shiftCommentModal").style.display = "flex";
+                window._pendingShiftAction = "close";
+            }
+        }
+        function confirmShiftWithComment() {
+            let comment = document.getElementById("shiftCommentText").value.trim();
+            if (window._pendingShiftAction === "open") { shiftOpen = new Date().toLocaleString(); shiftClose = null; shiftOpenComment = comment; shiftCloseComment = ""; saveShift(); updateShiftUI(); alert("Смена открыта: " + shiftOpen); }
+            else if (window._pendingShiftAction === "close") { if (!shiftOpen || shiftClose) { alert("Смена не открыта"); return; } shiftClose = new Date().toLocaleString(); shiftCloseComment = comment; saveShift(); updateShiftUI(); alert("Смена закрыта: " + shiftClose); }
+            document.getElementById("shiftCommentModal").style.display = "none";
+        }
+        function cancelShiftComment() { document.getElementById("shiftCommentModal").style.display = "none"; }
+
+        function printOrderBlank() {
+            if (cart.length === 0) { alert("Корзина пуста"); return; }
+            let client = document.getElementById("clientName").value.trim() || "Клиент";
+            let phone = document.getElementById("clientPhone").value.trim();
+            let comment = document.getElementById("orderComment").value;
+            let payment = document.querySelector('input[name="payment"]:checked').value;
+            let subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
+            let discount = discountPct ? subtotal * discountPct / 100 : (discountAmt ? Math.min(discountAmt, subtotal) : 0);
+            let final = subtotal - discount;
+            let itemsHtml = cart.map(i => `<tr><td style="border:1px solid #000; padding:5px;">${escapeHtml(i.name)}</td><td style="border:1px solid #000; text-align:center">${i.qty}</td><td style="border:1px solid #000; text-align:center">${i.price} ₽</td><td style="border:1px solid #000; text-align:right">${i.price * i.qty} ₽</td>`).join('');
+            let cont = document.getElementById("printBlankContainer"); 
+            cont.innerHTML = `<div class="blank-page" style="padding:20mm;"><div style="text-align:center;"><h2>A4-ПРИНТ</h2><p>Копировальный центр</p></div><div><strong>№ заказа:</strong> ${Date.now()}</div><div><strong>Дата:</strong> ${new Date().toLocaleString()}</div><div><strong>Оператор:</strong> ${currentUser.name}</div><div><strong>Клиент:</strong> ${escapeHtml(client)}</div>${phone ? `<div><strong>Телефон:</strong> ${escapeHtml(phone)}</div>` : ""}<div><strong>Оплата:</strong> ${payment === "cash" ? "Наличные" : "Карта"}</div><table border="1" cellpadding="5" cellspacing="0" style="width:100%; margin:15px 0;"><thead><tr><th>Наименование</th><th>Кол-во</th><th>Цена</th><th>Сумма</th></tr></thead><tbody>${itemsHtml}</tbody></table><div style="text-align:right;">Подытог: ${subtotal} ₽<br>${discount ? `Скидка: -${discount} ₽<br>` : ""}<strong>ИТОГО: ${final} ₽</strong></div>${comment ? `<div>Комментарий: ${escapeHtml(comment)}</div>` : ""}<div style="margin-top:30px; text-align:center;">Спасибо за заказ!</div></div><div class="blank-page"><div style="text-align:center;"><h2>A4-ПРИНТ</h2><p>Копировальный центр — КОПИЯ</p></div><div><strong>№ заказа:</strong> ${Date.now()}</div><div><strong>Дата:</strong> ${new Date().toLocaleString()}</div><div><strong>Оператор:</strong> ${currentUser.name}</div><div><strong>Клиент:</strong> ${escapeHtml(client)}</div>${phone ? `<div><strong>Телефон:</strong> ${escapeHtml(phone)}</div>` : ""}<div><strong>Оплата:</strong> ${payment === "cash" ? "Наличные" : "Карта"}</div><table border="1" cellpadding="5" cellspacing="0" style="width:100%; margin:15px 0;"><thead><tr><th>Наименование</th><th>Кол-во</th><th>Цена</th><th>Сумма</th></tr></thead><tbody>${itemsHtml}</tbody></table><div style="text-align:right;">Подытог: ${subtotal} ₽<br>${discount ? `Скидка: -${discount} ₽<br>` : ""}<strong>ИТОГО: ${final} ₽</strong></div>${comment ? `<div>Комментарий: ${escapeHtml(comment)}</div>` : ""}<div style="margin-top:30px; text-align:center;">Спасибо за заказ!</div></div>`;
+            window.print(); setTimeout(() => cont.innerHTML = "", 1000);
+        }
+
+        // ========== АДМИН-ПАНЕЛЬ ==========
+        function renderAdmin() {
+            if (currentUser.role !== "admin") { alert("Доступно только администратору"); return; }
+            let opDiv = document.getElementById("operatorsList");
+            opDiv.innerHTML = "";
+            for (let [login, data] of Object.entries(operators)) { if (login === "admin") continue;
+                opDiv.innerHTML += `<div style="display:flex; gap:12px; margin-bottom:12px; flex-wrap:wrap;"><span>${data.name} (${login})</span><input type="password" id="pass_${login}" placeholder="Новый пароль"><button class="changePass" data-login="${login}" style="background:var(--primary-yellow); color:black;">🔑</button><button class="deleteOp" data-login="${login}" style="background:var(--danger);">🗑</button></div>`;
+            }
+            document.querySelectorAll(".changePass").forEach(btn => btn.onclick = () => { let log = btn.getAttribute("data-login"); let p = document.getElementById(`pass_${log}`).value; if (p) { operators[log].password = p; saveOperators(); alert("Пароль изменён"); } });
+            document.querySelectorAll(".deleteOp").forEach(btn => btn.onclick = () => { let log = btn.getAttribute("data-login"); if (confirm("Удалить оператора?")) { delete operators[log]; saveOperators(); renderAdmin(); } });
+            
+            let servDiv = document.getElementById("adminServicesList");
+            servDiv.innerHTML = "";
+            services.forEach(s => { servDiv.innerHTML += `<div style="display:flex; gap:12px; margin-bottom:12px;"><span style="flex:2;">${s.name}</span><input type="number" id="price_${s.id}" value="${s.price}" style="width:90px;"><button class="updateService" data-id="${s.id}" style="background:var(--primary-blue);">💾</button><button class="deleteService" data-id="${s.id}" style="background:var(--danger);">🗑</button></div>`; });
+            document.querySelectorAll(".updateService").forEach(btn => btn.onclick = () => { let id = parseInt(btn.getAttribute("data-id")); let s = services.find(x => x.id === id); if (s) { s.price = parseInt(document.getElementById(`price_${id}`).value); saveServices(); renderServices(); renderAdmin(); } });
+            document.querySelectorAll(".deleteService").forEach(btn => btn.onclick = () => { let id = parseInt(btn.getAttribute("data-id")); if (services.length <= 1) return alert("Нельзя удалить последнюю услугу"); services = services.filter(x => x.id !== id); saveServices(); renderServices(); renderAdmin(); });
+            
+            let goodsDiv = document.getElementById("adminGoodsList");
+            goodsDiv.innerHTML = "";
+            goods.forEach(g => { goodsDiv.innerHTML += `<div style="display:flex; gap:12px; margin-bottom:12px; flex-wrap:wrap;"><span style="flex:2;">${g.name}</span><span style="width:80px;">💰 ${g.price} ₽</span><input type="number" id="stock_${g.id}" value="${g.stock}" style="width:80px;"><button class="updateGoodsStock" data-id="${g.id}" style="background:var(--primary-blue);">📦</button><button class="updateGoodsPrice" data-id="${g.id}" style="background:var(--primary-yellow); color:black;">💰</button><button class="deleteGoods" data-id="${g.id}" style="background:var(--danger);">🗑</button></div>`;
+            });
+            document.querySelectorAll(".updateGoodsStock").forEach(btn => btn.onclick = () => { let id = parseInt(btn.getAttribute("data-id")); let g = goods.find(x => x.id === id); if (g) { g.stock = parseInt(document.getElementById(`stock_${id}`).value); if (g.stock < 0) g.stock = 0; saveGoods(); renderGoods(); renderAdmin(); showSyncStatus("✅ Склад обновлён"); } });
+            document.querySelectorAll(".updateGoodsPrice").forEach(btn => btn.onclick = () => { let id = parseInt(btn.getAttribute("data-id")); let newPrice = prompt("Новая цена:"); if (newPrice && !isNaN(newPrice)) { let g = goods.find(x => x.id === id); if (g) { g.price = parseInt(newPrice); saveGoods(); renderGoods(); renderAdmin(); showSyncStatus("✅ Цена обновлена"); } } });
+            document.querySelectorAll(".deleteGoods").forEach(btn => btn.onclick = () => { let id = parseInt(btn.getAttribute("data-id")); if (confirm("Удалить товар?")) { goods = goods.filter(x => x.id !== id); saveGoods(); renderGoods(); renderAdmin(); } });
+        }
+
+        function initTabs() {
+            const tabs = document.querySelectorAll('.category-tab');
+            const panels = { services: document.getElementById('servicesPanel'), goods: document.getElementById('goodsPanel') };
+            tabs.forEach(tab => {
+                tab.onclick = () => {
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    Object.values(panels).forEach(p => p.classList.remove('active'));
+                    panels[tab.getAttribute('data-cat')].classList.add('active');
+                };
+            });
+        }
+
+        function initAdminTabs() {
+            const tabs = document.querySelectorAll('#adminModal .tab-btn');
+            const contents = { 'admin-users': document.getElementById('admin-users'), 'admin-services': document.getElementById('admin-services'), 'admin-goods': document.getElementById('admin-goods') };
+            tabs.forEach(tab => {
+                tab.onclick = () => {
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    Object.values(contents).forEach(c => c.classList.remove('active'));
+                    contents[tab.getAttribute('data-tab')].classList.add('active');
+                };
+            });
+        }
+
+        function initSearch() {
+            let searchService = document.getElementById('searchService');
+            let searchGoods = document.getElementById('searchGoods');
+            if (searchService) {
+                searchService.oninput = () => { let q = searchService.value.toLowerCase(); renderServices(services.filter(s => s.name.toLowerCase().includes(q))); };
+            }
+            if (searchGoods) {
+                searchGoods.oninput = () => { let q = searchGoods.value.toLowerCase(); renderGoods(goods.filter(g => g.name.toLowerCase().includes(q))); };
+            }
+        }
+
+        function showSyncStatus(msg) { let d = document.getElementById("syncStatus"); if (d) { d.textContent = msg; setTimeout(() => { if (d.textContent === msg) d.textContent = "💾 Готово"; }, 2000); } }
+        function toggleTheme() { document.body.classList.toggle("dark"); localStorage.setItem("a4print_theme", document.body.classList.contains("dark") ? "dark" : "light"); }
+        function login(login, pwd) { let u = operators[login.toLowerCase()]; if (u && u.password === pwd) { currentUser = { ...u, username: login.toLowerCase() }; localStorage.setItem("a4print_current_user", JSON.stringify(currentUser)); document.getElementById("loginOverlay").style.display = "none"; document.getElementById("mainContent").style.display = "block"; loadData(); initTabs(); initSearch(); initAdminTabs(); return true; } document.getElementById("loginError").innerText = "Неверный логин или пароль"; return false; }
+        function logout() { currentUser = null; localStorage.removeItem("a4print_current_user"); location.reload(); }
+        function escapeHtml(str) { return str ? String(str).replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m])) : ""; }
+
+        function initBurger() {
+            let btn = document.getElementById("burgerBtn"), menu = document.getElementById("burgerMenu");
+            if (btn && menu) {
+                btn.onclick = (e) => { e.stopPropagation(); menu.classList.toggle("show"); };
+                document.addEventListener("click", (e) => { if (!menu.contains(e.target) && !btn.contains(e.target)) menu.classList.remove("show"); });
+            }
+            document.getElementById("burgerThemeToggle").onclick = () => { toggleTheme(); if (menu) menu.classList.remove("show"); };
+            document.getElementById("burgerAdminBtn").onclick = () => { if (currentUser?.role === "admin") { renderAdmin(); document.getElementById("adminModal").style.display = "flex"; } else alert("Доступно только администратору"); if (menu) menu.classList.remove("show"); };
+            document.getElementById("burgerShiftBtn").onclick = () => { toggleShiftWithComment(); if (menu) menu.classList.remove("show"); };
+            document.getElementById("burgerPrintBtn").onclick = () => { printOrderBlank(); if (menu) menu.classList.remove("show"); };
+            document.getElementById("burgerLogoutBtn").onclick = () => { logout(); if (menu) menu.classList.remove("show"); };
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            let saved = localStorage.getItem("a4print_current_user");
+            let theme = localStorage.getItem("a4print_theme");
+            if (theme === "dark") document.body.classList.add("dark");
+            if (saved) {
+                try {
+                    currentUser = JSON.parse(saved);
+                    if (operators[currentUser.username]) {
+                        document.getElementById("loginOverlay").style.display = "none";
+                        document.getElementById("mainContent").style.display = "block";
+                        loadData(); initBurger(); initTabs(); initSearch(); initAdminTabs();
+                    } else logout();
+                } catch(e) { logout(); }
+            } else { initBurger(); initTabs(); initSearch(); initAdminTabs(); }
+            document.getElementById("themeToggleBtn").onclick = toggleTheme;
+            document.getElementById("loginBtn").onclick = () => login(document.getElementById("loginUsername").value, document.getElementById("loginPassword").value);
+            document.getElementById("logoutBtn").onclick = logout;
+            document.getElementById("applyDiscountBtn").onclick = applyDiscount;
+            document.getElementById("completeOrderBtn").onclick = completeOrder;
+            document.getElementById("clearCartBtn").onclick = () => { cart = []; discountPct = 0; discountAmt = 0; renderCart(); };
+            document.getElementById("exportExcelBtn").onclick = exportExcel;
+            document.getElementById("printBlankBtn").onclick = printOrderBlank;
+            document.getElementById("addFastServiceBtn").onclick = addFastService;
+            document.getElementById("addNewGoodsBtn").onclick = addNewGoods;
+            document.getElementById("shiftToggleBtn").onclick = toggleShiftWithComment;
+            document.getElementById("shiftCommentConfirm").onclick = confirmShiftWithComment;
+            document.getElementById("shiftCommentCancel").onclick = cancelShiftComment;
+            let admModal = document.getElementById("adminModal");
+            document.getElementById("adminPanelBtn").onclick = () => { renderAdmin(); admModal.style.display = "flex"; };
+            document.getElementById("closeAdminModal").onclick = () => admModal.style.display = "none";
+            document.getElementById("addOperatorBtn").onclick = () => { let lgn = document.getElementById("newOpLogin").value.trim().toLowerCase(); let nm = document.getElementById("newOpName").value.trim(); let ps = document.getElementById("newOpPass").value.trim(); if (lgn && nm && ps) { if (operators[lgn]) alert("Логин уже есть"); else { operators[lgn] = { password: ps, name: nm, role: "operator" }; saveOperators(); renderAdmin(); } } else alert("Заполните все поля"); };
+            document.getElementById("addServiceBtn").onclick = () => { let name = document.getElementById("newServiceName").value.trim(); let price = parseInt(document.getElementById("newServicePrice").value); if (name && price > 0) { services.push({ id: Date.now(), name, price }); saveServices(); renderServices(); renderAdmin(); } else alert("Введите название и цену"); };
+            document.getElementById("adminAddGoodsBtn").onclick = () => { let name = document.getElementById("adminNewGoodsName").value.trim(); let price = parseFloat(document.getElementById("adminNewGoodsPrice").value); let stock = parseInt(document.getElementById("adminNewGoodsStock").value); if (name && price > 0 && !isNaN(stock)) { goods.push({ id: Date.now(), name: name, price: price, stock: stock, unit: "шт" }); saveGoods(); renderGoods(); renderAdmin(); showSyncStatus("✅ Товар добавлен"); document.getElementById("adminNewGoodsName").value = ""; document.getElementById("adminNewGoodsPrice").value = ""; document.getElementById("adminNewGoodsStock").value = ""; } else alert("Заполните все поля"); };
+            window.onclick = (e) => { if (e.target === admModal) admModal.style.display = "none"; };
+        });
+    </script>
+    <div id="printBlankContainer" style="display: none;"></div>
+</body>
+</html>
