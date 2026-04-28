@@ -249,7 +249,14 @@
         .discount-group label { font-size: 11px; font-weight: 500; display: block; margin-bottom: 4px; color: var(--gray-500); }
         
         .history-list { display: flex; flex-direction: column; gap: 12px; max-height: 320px; overflow-y: auto; }
-        .history-item { background: var(--gray-50); border-radius: 10px; padding: 14px; border-left: 3px solid var(--orange); }
+        .history-item {
+            background: var(--gray-50);
+            border-radius: 10px;
+            padding: 14px;
+            border-left: 3px solid var(--orange);
+            transition: all 0.15s;
+        }
+        .history-item:hover { background: var(--gray-100); }
         
         .modal {
             position: fixed;
@@ -328,6 +335,23 @@
         .salary-table { width: 100%; border-collapse: collapse; margin-top: 16px; }
         .salary-table th, .salary-table td { border: 1px solid var(--gray-200); padding: 10px; text-align: left; }
         .salary-table th { background: var(--gray-100); font-weight: 600; }
+        
+        /* Стили для редактирования заказа */
+        .edit-order-items {
+            max-height: 300px;
+            overflow-y: auto;
+            margin: 16px 0;
+            border: 1px solid var(--gray-200);
+            border-radius: 12px;
+            padding: 12px;
+        }
+        .edit-item-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px;
+            border-bottom: 1px solid var(--gray-200);
+        }
         
         @media (max-width: 850px) {
             body { padding: 16px; }
@@ -502,6 +526,63 @@
         </div>
     </div>
 
+    <!-- Модалка редактирования заказа -->
+    <div id="editOrderModal" class="modal">
+        <div class="modal-card" style="max-width: 700px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
+                <h2>✏️ Редактирование заказа №<span id="editOrderId"></span></h2>
+                <button id="closeEditModal" style="background:none; font-size: 24px; padding: 0;">✕</button>
+            </div>
+            <div class="field">
+                <label>Клиент</label>
+                <input type="text" id="editClientName">
+            </div>
+            <div class="field">
+                <label>Телефон</label>
+                <input type="text" id="editClientPhone">
+            </div>
+            <div class="field">
+                <label>Комментарий</label>
+                <textarea id="editComment" rows="2"></textarea>
+            </div>
+            <div class="row-2">
+                <div class="discount-group"><label>Скидка, %</label><input type="number" id="editDiscountPercent" value="0" step="1"></div>
+                <div class="discount-group"><label>Скидка, ₽</label><input type="number" id="editDiscountAmount" value="0" step="10"></div>
+            </div>
+            <div class="row-2">
+                <label><input type="radio" name="editPayment" value="cash"> 💵 Наличные</label>
+                <label><input type="radio" name="editPayment" value="card"> 💳 Карта</label>
+            </div>
+            <div class="field">
+                <label>Состав заказа</label>
+                <div id="editItemsList" class="edit-order-items"></div>
+                <div class="fast-service-row" style="margin-top: 12px;">
+                    <select id="editAddItemSelect" style="flex:2;">
+                        <option value="">— Выберите услугу/товар —</option>
+                    </select>
+                    <input type="number" id="editAddItemQty" placeholder="Кол-во" style="flex:1;" value="1" min="1">
+                    <button id="editAddItemBtn" class="btn-primary">➕</button>
+                </div>
+            </div>
+            <div class="total-line">
+                <span>Подытог</span>
+                <span id="editSubtotal">0 ₽</span>
+            </div>
+            <div class="total-line" id="editDiscountLine" style="display:none;">
+                <span>Скидка</span>
+                <span id="editDiscount">0 ₽</span>
+            </div>
+            <div class="total-line grand-total">
+                <span>ИТОГО</span>
+                <span id="editTotal">0 ₽</span>
+            </div>
+            <div class="row-2">
+                <button id="saveEditedOrderBtn" class="btn-success" style="flex:2;">💾 Сохранить изменения</button>
+                <button id="cancelEditBtn" class="btn-outline" style="flex:1;">Отмена</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Админ-панель -->
     <div id="adminModal" class="modal">
         <div class="modal-card">
@@ -516,14 +597,12 @@
                 <button class="tab-btn" data-tab="admin-goods">🛍️ Товары</button>
             </div>
             
-            <!-- Вкладка статистики -->
             <div id="admin-stats" class="instruction-content active">
                 <h3 style="margin-bottom: 16px;">Статистика операторов</h3>
                 <div id="operatorsStatsContent"></div>
                 <button id="exportStatsExcelBtn" class="btn-success" style="margin-top: 20px;">📎 Экспорт статистики в Excel</button>
             </div>
             
-            <!-- Вкладка зарплаты -->
             <div id="admin-salary" class="instruction-content">
                 <h3 style="margin-bottom: 16px;">Расчёт заработной платы</h3>
                 <div class="row-2" style="margin-bottom: 16px;">
@@ -544,7 +623,6 @@
                 </div>
             </div>
             
-            <!-- Вкладка услуг -->
             <div id="admin-services" class="instruction-content">
                 <h3 style="margin: 16px 0;">Управление услугами</h3>
                 <div id="adminServicesList"></div>
@@ -555,7 +633,6 @@
                 </div>
             </div>
             
-            <!-- Вкладка товаров -->
             <div id="admin-goods" class="instruction-content">
                 <h3 style="margin: 16px 0;">Товары (склад)</h3>
                 <div id="adminGoodsList"></div>
@@ -608,7 +685,8 @@
 
         let allOrders = [], currentUser = null, cart = [], discountPct = 0, discountAmt = 0;
         let shiftOpen = null, shiftClose = null, shiftOpenComment = "", shiftCloseComment = "";
-        let allShifts = []; // массив для хранения всех смен
+        let allShifts = [];
+        let editOrderId = null; // для хранения ID редактируемого заказа
 
         const SERVICES_KEY = "a4print_services_v5", GOODS_KEY = "a4print_goods_v5", OPERATORS_KEY = "a4print_operators", ORDERS_KEY = "a4print_orders", SHIFT_KEY = "a4print_shift", SHIFTS_LIST_KEY = "a4print_shifts_list";
 
@@ -672,99 +750,30 @@
             let salaryMap = calculateSalaryForMonth(month, year);
             let monthNames = ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"];
             
-            let html = `<table class="salary-table">
-                        <thead>
-                            <tr>
-                                <th>Оператор</th><th>Роль</th><th>Кол-во смен</th><th>Отработано часов</th><th>Ставка за смену</th><th>Итого к выплате (₽)</th>
-                            </tr>
-                        </thead>
-                        <tbody>`;
+            let html = `<table class="salary-table"><thead><tr><th>Оператор</th><th>Роль</th><th>Кол-во смен</th><th>Отработано часов</th><th>Ставка</th><th>Итого</th></tr></thead><tbody>`;
             let totalSalary = 0;
             for (let [login, data] of salaryMap) {
                 let rate = data.role === "admin" ? 2500 : 2000;
-                html += `<tr>
-                            <td><strong>${escapeHtml(data.name)}</strong></td>
-                            <td>${data.role === "admin" ? "Администратор" : "Оператор"}</td>
-                            <td>${data.count}</td>
-                            <td>${data.hours}</td>
-                            <td>${rate} ₽</td>
-                            <td style="font-weight:bold;">${data.total.toLocaleString()} ₽</td>
-                         </tr>`;
+                html += `<tr><td><strong>${escapeHtml(data.name)}</strong></td><td>${data.role === "admin" ? "Администратор" : "Оператор"}</td><td>${data.count}</td><td>${data.hours}</td><td>${rate} ₽</td><td style="font-weight:bold;">${data.total.toLocaleString()} ₽</td></tr>`;
                 totalSalary += data.total;
             }
-            html += `<tr style="background: var(--blue); color: white;">
-                        <td colspan="5"><strong>ИТОГО:</strong></td>
-                        <td><strong>${totalSalary.toLocaleString()} ₽</strong></td>
-                     </tr>`;
-            html += `</tbody></table>`;
+            html += `<tr style="background: var(--blue); color: white;"><td colspan="5"><strong>ИТОГО:</strong></td><td><strong>${totalSalary.toLocaleString()} ₽</strong></td></tr></tbody></table>`;
             document.getElementById("salaryReportContent").innerHTML = html;
             window._currentSalaryData = { month, year, salaryMap, totalSalary };
         }
         
         function exportSalaryPayslip() {
-            if (!window._currentSalaryData) {
-                alert("Сначала рассчитайте зарплату за месяц");
-                return;
-            }
+            if (!window._currentSalaryData) { alert("Сначала рассчитайте зарплату"); return; }
             let { month, year, salaryMap, totalSalary } = window._currentSalaryData;
             let monthNames = ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"];
             let date = new Date().toLocaleString();
-            
             let tableRows = "";
             for (let [login, data] of salaryMap) {
                 let rate = data.role === "admin" ? 2500 : 2000;
-                tableRows += `<tr>
-                                <td style="border:1px solid #000; padding:8px;">${escapeHtml(data.name)}</td>
-                                <td style="border:1px solid #000; padding:8px;">${data.role === "admin" ? "Администратор" : "Оператор"}</td>
-                                <td style="border:1px solid #000; padding:8px;">${data.count}</td>
-                                <td style="border:1px solid #000; padding:8px;">${rate} ₽</td>
-                                <td style="border:1px solid #000; padding:8px;">${data.total.toLocaleString()} ₽</td>
-                                <td style="border:1px solid #000; padding:8px;">_________________</td>
-                              </tr>`;
+                tableRows += `<tr><td style="border:1px solid #000; padding:8px;">${escapeHtml(data.name)}</td><td style="border:1px solid #000; padding:8px;">${data.role === "admin" ? "Администратор" : "Оператор"}</td><td style="border:1px solid #000; padding:8px;">${data.count}</td><td style="border:1px solid #000; padding:8px;">${rate} ₽</td><td style="border:1px solid #000; padding:8px;">${data.total.toLocaleString()} ₽</td><td style="border:1px solid #000; padding:8px;">_________________</td></tr>`;
             }
-            
-            let html = `<div style="font-family: monospace; padding: 20px; max-width: 800px; margin: 0 auto;">
-                <div style="text-align: center; margin-bottom: 30px;">
-                    <h2>A4-ПРИНТ</h2>
-                    <p>Копировальный центр</p>
-                    <h3>ВЕДОМОСТЬ НА ВЫПЛАТУ ЗАРАБОТНОЙ ПЛАТЫ</h3>
-                    <p>за ${monthNames[month-1]} ${year} года</p>
-                    <p>Дата формирования: ${date}</p>
-                </div>
-                <table style="width:100%; border-collapse: collapse;">
-                    <thead>
-                        <tr style="background: #f0f0f0;">
-                            <th style="border:1px solid #000; padding:8px;">ФИО</th>
-                            <th style="border:1px solid #000; padding:8px;">Должность</th>
-                            <th style="border:1px solid #000; padding:8px;">Смен</th>
-                            <th style="border:1px solid #000; padding:8px;">Ставка</th>
-                            <th style="border:1px solid #000; padding:8px;">Сумма (₽)</th>
-                            <th style="border:1px solid #000; padding:8px;">Подпись</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${tableRows}
-                        <tr style="background: #e8f0fe;">
-                            <td colspan="4" style="border:1px solid #000; padding:8px;"><strong>ИТОГО К ВЫПЛАТЕ:</strong></td>
-                            <td colspan="2" style="border:1px solid #000; padding:8px;"><strong>${totalSalary.toLocaleString()} ₽</strong></td>
-                        </tr>
-                    </tbody>
-                </table>
-                <div style="margin-top: 40px;">
-                    <div style="display: flex; justify-content: space-between;">
-                        <div>Главный бухгалтер: _______________</div>
-                        <div>Руководитель: _______________</div>
-                    </div>
-                    <div style="margin-top: 20px;">
-                        <div>Деньги получил(а):</div>
-                        <div style="margin-top: 20px;">_________________ / _________________ /</div>
-                    </div>
-                </div>
-            </div>`;
-            
-            let el = document.createElement('div');
-            el.innerHTML = html;
-            document.body.appendChild(el);
+            let html = `<div style="font-family: monospace; padding: 20px; max-width: 800px; margin: 0 auto;"><div style="text-align: center;"><h2>A4-ПРИНТ</h2><p>ВЕДОМОСТЬ НА ВЫПЛАТУ ЗАРПЛАТЫ</p><p>за ${monthNames[month-1]} ${year} года</p><p>${date}</p></div><table style="width:100%; border-collapse: collapse;"><thead><tr style="background:#f0f0f0;"><th>ФИО</th><th>Должность</th><th>Смен</th><th>Ставка</th><th>Сумма</th><th>Подпись</th></tr></thead><tbody>${tableRows}<tr style="background:#e8f0fe;"><td colspan="4"><strong>ИТОГО:</strong></td><td><strong>${totalSalary.toLocaleString()} ₽</strong></td><td></td></tr></tbody></table><div style="margin-top: 40px;"><div>Главный бухгалтер: _______________</div><div>Руководитель: _______________</div><div style="margin-top: 20px;">Деньги получил(а): _________________ / _________________ /</div></div></div>`;
+            let el = document.createElement('div'); el.innerHTML = html; document.body.appendChild(el);
             html2pdf().set({ margin: 0.5, filename: `A4print_зарплата_${monthNames[month-1]}_${year}.pdf`, html2canvas: { scale: 2 } }).from(el).save().then(() => el.remove());
         }
 
@@ -826,26 +835,10 @@
         
         function renderOperatorsStats() {
             let stats = getOperatorsStats();
-            let html = `<div style="margin-bottom: 20px;">
-                            <div class="stats-row stats-header">
-                                <span style="width: 120px;">Оператор</span>
-                                <span style="width: 80px;">Заказов</span>
-                                <span style="width: 120px;">Выручка (₽)</span>
-                                <span style="width: 120px;">Наличные (₽)</span>
-                                <span style="width: 120px;">Карта (₽)</span>
-                                <span style="width: 80px;">Ср. чек</span>
-                            </div>
-                        </div>`;
+            let html = `<div style="margin-bottom: 20px;"><div class="stats-row stats-header"><span style="width: 120px;">Оператор</span><span style="width: 80px;">Заказов</span><span style="width: 120px;">Выручка</span><span style="width: 120px;">Наличные</span><span style="width: 120px;">Карта</span><span style="width: 80px;">Ср. чек</span></div></div>`;
             for (let [login, st] of Object.entries(stats)) {
                 let avg = st.orders > 0 ? Math.round(st.revenue / st.orders) : 0;
-                html += `<div class="stats-row">
-                            <span style="width: 120px;"><strong>${escapeHtml(st.name)}</strong> ${login === "pavel" ? "👑" : "👤"}</span>
-                            <span style="width: 80px;">${st.orders}</span>
-                            <span style="width: 120px;">${st.revenue.toLocaleString()}</span>
-                            <span style="width: 120px;">${st.cash.toLocaleString()}</span>
-                            <span style="width: 120px;">${st.card.toLocaleString()}</span>
-                            <span style="width: 80px;">${avg.toLocaleString()}</span>
-                        </div>`;
+                html += `<div class="stats-row"><span style="width: 120px;"><strong>${escapeHtml(st.name)}</strong> ${login === "pavel" ? "👑" : "👤"}</span><span style="width: 80px;">${st.orders}</span><span style="width: 120px;">${st.revenue.toLocaleString()}</span><span style="width: 120px;">${st.cash.toLocaleString()}</span><span style="width: 120px;">${st.card.toLocaleString()}</span><span style="width: 80px;">${avg.toLocaleString()}</span></div>`;
             }
             document.getElementById("operatorsStatsContent").innerHTML = html;
         }
@@ -858,10 +851,149 @@
                 let avg = st.orders > 0 ? Math.round(st.revenue / st.orders) : 0;
                 data.push([st.name, st.orders, st.revenue, st.cash, st.card, avg]);
             }
-            let ws = XLSX.utils.aoa_to_sheet(data);
-            let wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Статистика операторов");
-            XLSX.writeFile(wb, `A4print_stats_operators_${new Date().toISOString().slice(0, 10)}.xlsx`);
+            let ws = XLSX.utils.aoa_to_sheet(data); let wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Статистика");
+            XLSX.writeFile(wb, `A4print_stats_operators.xlsx`);
+        }
+
+        // ========== РЕДАКТИРОВАНИЕ ЗАКАЗА ==========
+        let tempEditOrder = null;
+        
+        function openEditOrder(order) {
+            editOrderId = order.id;
+            tempEditOrder = JSON.parse(JSON.stringify(order)); // копия для редактирования
+            document.getElementById("editOrderId").innerText = order.id;
+            document.getElementById("editClientName").value = order.client;
+            document.getElementById("editClientPhone").value = order.phone || "";
+            document.getElementById("editComment").value = order.comment || "";
+            document.getElementById("editDiscountPercent").value = order.discountPercent || 0;
+            document.getElementById("editDiscountAmount").value = 0;
+            document.querySelector(`input[name="editPayment"][value="${order.paymentMethod}"]`).checked = true;
+            
+            // Заполняем выпадающий список для добавления позиций
+            const select = document.getElementById("editAddItemSelect");
+            select.innerHTML = '<option value="">— Выберите услугу/товар —</option>';
+            [...services, ...goods].forEach(item => {
+                let type = item.id >= 1000 ? 'goods' : 'service';
+                let option = document.createElement("option");
+                option.value = JSON.stringify({ type: type, id: item.id, name: item.name, price: item.price });
+                option.textContent = `${item.name} — ${item.price} ₽`;
+                select.appendChild(option);
+            });
+            
+            renderEditItems();
+            document.getElementById("editOrderModal").style.display = "flex";
+        }
+        
+        function renderEditItems() {
+            const container = document.getElementById("editItemsList");
+            let subtotal = 0;
+            let html = "";
+            tempEditOrder.items.forEach((item, idx) => {
+                let sum = item.price * item.qty;
+                subtotal += sum;
+                html += `<div class="edit-item-row">
+                            <span style="flex:2;"><strong>${escapeHtml(item.name)}</strong></span>
+                            <span style="width:80px;"><input type="number" class="edit-item-qty" data-idx="${idx}" value="${item.qty}" min="0" step="1" style="width:70px;"></span>
+                            <span style="width:80px;">${item.price} ₽</span>
+                            <span style="width:80px;">${sum} ₽</span>
+                            <button class="edit-remove-item" data-idx="${idx}" style="background:var(--red); padding:4px 12px;">🗑</button>
+                        </div>`;
+            });
+            container.innerHTML = html || "<div style='padding:20px;text-align:center;'>Нет позиций</div>";
+            
+            document.querySelectorAll(".edit-item-qty").forEach(input => {
+                input.onchange = () => {
+                    let idx = parseInt(input.getAttribute("data-idx"));
+                    let newQty = parseInt(input.value);
+                    if (newQty <= 0) {
+                        tempEditOrder.items.splice(idx, 1);
+                    } else {
+                        tempEditOrder.items[idx].qty = newQty;
+                    }
+                    renderEditItems();
+                    updateEditTotals();
+                };
+            });
+            
+            document.querySelectorAll(".edit-remove-item").forEach(btn => {
+                btn.onclick = () => {
+                    let idx = parseInt(btn.getAttribute("data-idx"));
+                    tempEditOrder.items.splice(idx, 1);
+                    renderEditItems();
+                    updateEditTotals();
+                };
+            });
+            
+            updateEditTotals();
+        }
+        
+        function updateEditTotals() {
+            let subtotal = tempEditOrder.items.reduce((s, i) => s + i.price * i.qty, 0);
+            let discountPct = parseFloat(document.getElementById("editDiscountPercent").value) || 0;
+            let discountAmt = parseFloat(document.getElementById("editDiscountAmount").value) || 0;
+            let discount = 0;
+            if (discountPct > 0) discount = subtotal * discountPct / 100;
+            else if (discountAmt > 0) discount = Math.min(discountAmt, subtotal);
+            let finalTotal = subtotal - discount;
+            document.getElementById("editSubtotal").innerHTML = subtotal + " ₽";
+            if (discount > 0) {
+                document.getElementById("editDiscountLine").style.display = "flex";
+                document.getElementById("editDiscount").innerHTML = discount + " ₽";
+            } else document.getElementById("editDiscountLine").style.display = "none";
+            document.getElementById("editTotal").innerHTML = finalTotal + " ₽";
+            tempEditOrder.subtotal = subtotal;
+            tempEditOrder.discount = discount;
+            tempEditOrder.discountPercent = discountPct;
+            tempEditOrder.finalTotal = finalTotal;
+        }
+        
+        function addItemToEdit() {
+            const select = document.getElementById("editAddItemSelect");
+            const selectedValue = select.value;
+            if (!selectedValue) { alert("Выберите позицию"); return; }
+            const itemData = JSON.parse(selectedValue);
+            const qty = parseInt(document.getElementById("editAddItemQty").value) || 1;
+            if (qty <= 0) { alert("Введите количество"); return; }
+            const existing = tempEditOrder.items.find(i => i.name === itemData.name);
+            if (existing) existing.qty += qty;
+            else tempEditOrder.items.push({ type: itemData.type, name: itemData.name, price: itemData.price, qty: qty });
+            renderEditItems();
+            updateEditTotals();
+            select.value = "";
+            document.getElementById("editAddItemQty").value = "1";
+        }
+        
+        function saveEditedOrder() {
+            if (tempEditOrder.items.length === 0) { alert("Заказ не может быть пустым"); return; }
+            let updatedOrder = {
+                ...tempEditOrder,
+                client: document.getElementById("editClientName").value.trim() || "Клиент",
+                phone: document.getElementById("editClientPhone").value.trim(),
+                comment: document.getElementById("editComment").value,
+                paymentMethod: document.querySelector('input[name="editPayment"]:checked').value,
+                discountPercent: parseFloat(document.getElementById("editDiscountPercent").value) || 0,
+                discount: 0,
+                subtotal: tempEditOrder.subtotal,
+                finalTotal: tempEditOrder.finalTotal
+            };
+            // Пересчитываем скидку
+            let discount = 0;
+            if (updatedOrder.discountPercent > 0) discount = updatedOrder.subtotal * updatedOrder.discountPercent / 100;
+            updatedOrder.discount = discount;
+            updatedOrder.finalTotal = updatedOrder.subtotal - discount;
+            // Заменяем заказ в массиве
+            const index = allOrders.findIndex(o => o.id === editOrderId);
+            if (index !== -1) {
+                allOrders[index] = updatedOrder;
+                saveOrders();
+                renderHistory();
+                updateShiftFinanceDisplay();
+                alert("Заказ успешно обновлён!");
+            }
+            document.getElementById("editOrderModal").style.display = "none";
+            editOrderId = null;
+            tempEditOrder = null;
         }
 
         // ========== ОСТАЛЬНЫЕ ФУНКЦИИ ==========
@@ -1012,10 +1144,19 @@
             if (!my.length) { cont.innerHTML = "<div style='padding:40px;text-align:center;color:var(--gray-500);'>Нет заказов</div>"; return; }
             let html = "";
             [...my].reverse().forEach(o => {
-                html += `<div class="history-item"><div><strong>${escapeHtml(o.client)}</strong> ${o.phone ? `📞 ${escapeHtml(o.phone)}` : ""} | ${o.date} | <strong>${o.finalTotal} ₽</strong></div><div style="font-size:12px; margin-top:6px;">${o.items.map(i => `${i.name} x${i.qty}`).join(", ")}</div><div style="font-size:11px; margin-top:4px; color:var(--gray-500);">${o.comment ? "📝 " + o.comment : ""}</div><button class="delete-order" data-id="${o.id}" style="margin-top:10px; background:var(--red); border:none; border-radius:8px; padding:5px 14px; color:white; font-size:11px;">Удалить</button></div>`;
+                html += `<div class="history-item">
+                            <div><strong>${escapeHtml(o.client)}</strong> ${o.phone ? `📞 ${escapeHtml(o.phone)}` : ""} | ${o.date} | <strong>${o.finalTotal} ₽</strong></div>
+                            <div style="font-size:12px; margin-top:6px;">${o.items.map(i => `${i.name} x${i.qty}`).join(", ")}</div>
+                            <div style="font-size:11px; margin-top:4px; color:var(--gray-500);">${o.comment ? "📝 " + o.comment : ""}</div>
+                            <div style="margin-top:8px; display:flex; gap:8px;">
+                                <button class="edit-order" data-id="${o.id}" style="background:var(--orange); border:none; border-radius:8px; padding:5px 14px; color:white; font-size:11px;">✏️ Редактировать</button>
+                                <button class="delete-order" data-id="${o.id}" style="background:var(--red); border:none; border-radius:8px; padding:5px 14px; color:white; font-size:11px;">🗑 Удалить</button>
+                            </div>
+                        </div>`;
             });
             cont.innerHTML = html;
             document.querySelectorAll(".delete-order").forEach(btn => btn.onclick = () => { let id = parseInt(btn.getAttribute("data-id")); allOrders = allOrders.filter(o => o.id !== id); saveOrders(); renderHistory(); updateShiftFinanceDisplay(); });
+            document.querySelectorAll(".edit-order").forEach(btn => btn.onclick = () => { let id = parseInt(btn.getAttribute("data-id")); let order = allOrders.find(o => o.id === id); if (order) openEditOrder(order); });
         }
 
         function exportExcel() {
@@ -1086,16 +1227,7 @@
                 shiftClose = new Date().toLocaleString(); 
                 shiftCloseComment = comment; 
                 saveShift();
-                // Сохраняем смену в историю для расчёта зарплаты
-                let shiftRecord = {
-                    login: currentUser.username,
-                    name: currentUser.name,
-                    role: currentUser.role,
-                    open: shiftOpen,
-                    close: shiftClose,
-                    openComment: shiftOpenComment,
-                    closeComment: shiftCloseComment
-                };
+                let shiftRecord = { login: currentUser.username, name: currentUser.name, role: currentUser.role, open: shiftOpen, close: shiftClose, openComment: shiftOpenComment, closeComment: shiftCloseComment };
                 addShiftToHistory(shiftRecord);
                 updateShiftUI(); 
                 alert(`Смена закрыта: ${shiftClose}\nВыручка за смену: ${finance.revenue} ₽\nНаличные в кассе: ${finance.cash} ₽\nКарта: ${finance.card} ₽`); 
@@ -1105,15 +1237,14 @@
         
         function cancelShiftComment() { document.getElementById("shiftCommentModal").style.display = "none"; }
 
-        // ========== ОТЧЁТ ОПЕРАТОРА ==========
+        // ========== ОТЧЁТ ==========
         function generateReport(orders, title) {
             let cash = orders.filter(o => o.paymentMethod === "cash").reduce((s, o) => s + o.finalTotal, 0);
             let card = orders.filter(o => o.paymentMethod === "card").reduce((s, o) => s + o.finalTotal, 0);
             let totalRevenue = cash + card;
             let shiftInfo = '';
             if (shiftOpen || shiftClose) {
-                let shiftOrders = allOrders.filter(o => o.operator === currentUser.name && 
-                    ((shiftOpen && o.date >= shiftOpen) && (!shiftClose || o.date <= shiftClose)));
+                let shiftOrders = allOrders.filter(o => o.operator === currentUser.name && ((shiftOpen && o.date >= shiftOpen) && (!shiftClose || o.date <= shiftClose)));
                 let shiftCash = shiftOrders.filter(o => o.paymentMethod === "cash").reduce((s, o) => s + o.finalTotal, 0);
                 let shiftCard = shiftOrders.filter(o => o.paymentMethod === "card").reduce((s, o) => s + o.finalTotal, 0);
                 let shiftTotal = shiftCash + shiftCard;
@@ -1125,32 +1256,8 @@
                                 💳 Оплата картой: ${shiftCard} ₽
                             </div>`;
             }
-            let ordersHtml = orders.map(o => `<div style="border:1px solid #d1d5db; margin:10px 0; padding:12px; border-radius:8px;">
-                <div><strong>№${o.id}</strong> | ${o.date}</div>
-                <div>${o.client} ${o.phone ? `📞 ${o.phone}` : ""}</div>
-                <div>${o.items.map(i => `${i.name} x${i.qty}`).join(", ")}</div>
-                <div>Итого: ${o.finalTotal} ₽ | ${o.paymentMethod === "cash" ? "Наличные" : "Карта"} ${o.comment ? " | " + o.comment : ""}</div>
-            </div>`).join('');
-            let html = `<div style="font-family: monospace; padding: 20px; max-width: 800px; margin: 0 auto;">
-                <div style="text-align: center;">
-                    <h2>A4-ПРИНТ</h2>
-                    <p>${title}</p>
-                    <p>Оператор: ${currentUser.name}</p>
-                    <p>Дата формирования: ${new Date().toLocaleString()}</p>
-                </div>
-                ${shiftInfo}
-                <hr>
-                <div><strong>ИТОГИ ОТЧЁТА:</strong><br>
-                📦 Заказов: ${orders.length}<br>
-                💰 Выручка: ${totalRevenue} ₽<br>
-                💵 Наличные: ${cash} ₽<br>
-                💳 Карта: ${card} ₽</div>
-                <hr>
-                <div><strong>ДЕТАЛИ ЗАКАЗОВ:</strong></div>
-                ${ordersHtml || '<div>Нет заказов за выбранный период</div>'}
-                <hr>
-                <div style="text-align:center;">Подпись: _______________</div>
-            </div>`;
+            let ordersHtml = orders.map(o => `<div style="border:1px solid #d1d5db; margin:10px 0; padding:12px; border-radius:8px;"><div><strong>№${o.id}</strong> | ${o.date}</div><div>${o.client} ${o.phone ? `📞 ${o.phone}` : ""}</div><div>${o.items.map(i => `${i.name} x${i.qty}`).join(", ")}</div><div>Итого: ${o.finalTotal} ₽ | ${o.paymentMethod === "cash" ? "Наличные" : "Карта"} ${o.comment ? " | " + o.comment : ""}</div></div>`).join('');
+            let html = `<div style="font-family: monospace; padding: 20px; max-width: 800px; margin: 0 auto;"><div style="text-align: center;"><h2>A4-ПРИНТ</h2><p>${title}</p><p>Оператор: ${currentUser.name}</p><p>Дата: ${new Date().toLocaleString()}</p></div>${shiftInfo}<hr><div><strong>ИТОГИ:</strong><br>📦 Заказов: ${orders.length}<br>💰 Выручка: ${totalRevenue} ₽<br>💵 Наличные: ${cash} ₽<br>💳 Карта: ${card} ₽</div><hr><div><strong>ДЕТАЛИ:</strong></div>${ordersHtml}<hr><div style="text-align:center;">Подпись: _______________</div></div>`;
             let el = document.createElement('div'); el.innerHTML = html; document.body.appendChild(el);
             let filename = `A4print_${currentUser.name}_${title.replace(/\s/g, '_')}.pdf`;
             html2pdf().set({ margin: 0.5, filename: filename, html2canvas: { scale: 2 } }).from(el).save().then(() => el.remove());
@@ -1158,10 +1265,7 @@
 
         function showReportChoice() { 
             let myOrders = getMyOrders();
-            if (myOrders.length === 0 && (!shiftOpen || shiftClose)) {
-                alert("Нет заказов для отчёта");
-                return;
-            }
+            if (myOrders.length === 0 && (!shiftOpen || shiftClose)) { alert("Нет заказов для отчёта"); return; }
             document.getElementById("reportChoiceModal").style.display = "flex"; 
         }
         
@@ -1192,7 +1296,7 @@
             let final = subtotal - discount;
             let itemsHtml = cart.map(i => `<tr><td style="border:1px solid #d1d5db; padding:8px;">${escapeHtml(i.name)}</td><td style="border:1px solid #d1d5db; text-align:center">${i.qty}</td><td style="border:1px solid #d1d5db; text-align:center">${i.price} ₽</td><td style="border:1px solid #d1d5db; text-align:right">${i.price * i.qty} ₽</td>`).join('');
             let cont = document.getElementById("printBlankContainer"); 
-            cont.innerHTML = `<div class="blank-page" style="padding:20mm; background:white; color:black; font-family:monospace;"><div style="text-align:center;"><h2>A4-ПРИНТ</h2><p>Копировальный центр</p></div><div><strong>№ заказа:</strong> ${Date.now()}</div><div><strong>Дата:</strong> ${new Date().toLocaleString()}</div><div><strong>Оператор:</strong> ${currentUser.name}</div><div><strong>Клиент:</strong> ${escapeHtml(client)}</div>${phone ? `<div><strong>Телефон:</strong> ${escapeHtml(phone)}</div>` : ""}<div><strong>Оплата:</strong> ${payment === "cash" ? "Наличные" : "Карта"}</div><table border="1" cellpadding="5" cellspacing="0" style="width:100%; margin:15px 0; border-color:#d1d5db;"><thead><tr><th>Наименование</th><th>Кол-во</th><th>Цена</th><th>Сумма</th></tr></thead><tbody>${itemsHtml}</tbody></table><div style="text-align:right;">Подытог: ${subtotal} ₽<br>${discount ? `Скидка: -${discount} ₽<br>` : ""}<strong>ИТОГО: ${final} ₽</strong></div>${comment ? `<div>Комментарий: ${escapeHtml(comment)}</div>` : ""}<div style="margin-top:30px; text-align:center;">Спасибо за заказ!</div></div><div class="blank-page" style="padding:20mm; background:white; color:black; font-family:monospace;"><div style="text-align:center;"><h2>A4-ПРИНТ</h2><p>Копировальный центр — КОПИЯ</p></div><div><strong>№ заказа:</strong> ${Date.now()}</div><div><strong>Дата:</strong> ${new Date().toLocaleString()}</div><div><strong>Оператор:</strong> ${currentUser.name}</div><div><strong>Клиент:</strong> ${escapeHtml(client)}</div>${phone ? `<div><strong>Телефон:</strong> ${escapeHtml(phone)}</div>` : ""}<div><strong>Оплата:</strong> ${payment === "cash" ? "Наличные" : "Карта"}</div><table border="1" cellpadding="5" cellspacing="0" style="width:100%; margin:15px 0; border-color:#d1d5db;"><thead><tr><th>Наименование</th><th>Кол-во</th><th>Цена</th><th>Сумма</th></tr></thead><tbody>${itemsHtml}</tbody></table><div style="text-align:right;">Подытог: ${subtotal} ₽<br>${discount ? `Скидка: -${discount} ₽<br>` : ""}<strong>ИТОГО: ${final} ₽</strong></div>${comment ? `<div>Комментарий: ${escapeHtml(comment)}</div>` : ""}<div style="margin-top:30px; text-align:center;">Спасибо за заказ!</div></div>`;
+            cont.innerHTML = `<div class="blank-page" style="padding:20mm; background:white; color:black; font-family:monospace;"><div style="text-align:center;"><h2>A4-ПРИНТ</h2><p>Копировальный центр</p></div><div><strong>№ заказа:</strong> ${Date.now()}</div><div><strong>Дата:</strong> ${new Date().toLocaleString()}</div><div><strong>Оператор:</strong> ${currentUser.name}</div><div><strong>Клиент:</strong> ${escapeHtml(client)}</div>${phone ? `<div><strong>Телефон:</strong> ${escapeHtml(phone)}</div>` : ""}<div><strong>Оплата:</strong> ${payment === "cash" ? "Наличные" : "Карта"}</div><table border="1" cellpadding="5" cellspacing="0" style="width:100%; margin:15px 0; border-color:#d1d5db;"><thead><tr><th>Наименование</th><th>Кол-во</th><th>Цена</th><th>Сумма</th></tr></thead><tbody>${itemsHtml}</tbody></table><div style="text-align:right;">Подытог: ${subtotal} ₽<br>${discount ? `Скидка: -${discount} ₽<br>` : ""}<strong>ИТОГО: ${final} ₽</strong></div>${comment ? `<div>Комментарий: ${escapeHtml(comment)}</div>` : ""}<div style="margin-top:30px; text-align:center;">Спасибо за заказ!</div></div><div class="blank-page" style="padding:20mm; background:white; color:black; font-family:monospace;"><div style="text-align:center;"><h2>A4-ПРИНТ</h2><p>Копировальный центр — КОПИЯ</p></div><div><strong>№ заказа:</strong> ${Date.now()}</div><div><strong>Дата:</strong> ${new Date().toLocaleString()}</div><div><strong>Оператор:</strong> ${currentUser.name}</div><div><strong>Клиент:</strong> ${escapeHtml(client)}</div>${phone ? `<div><strong>Телефон:</strong> ${escapeHtml(phone)}</div>` : ""}<div><strong>Оплата:</strong> ${payment === "cash" ? "Наличные" : "Карта"}</div><table border="1" cellpadding="5" cellspacing="0" style="width:100%; margin:15px 0; border-color:#d1d5db;"><thead><tr><th>Наименование</th><th>Кол-во</th><th>Цена</th><th>Сумма</th></tr></thead><tbody>${itemsHtml}</tbody><tr><div style="text-align:right;">Подытог: ${subtotal} ₽<br>${discount ? `Скидка: -${discount} ₽<br>` : ""}<strong>ИТОГО: ${final} ₽</strong></div>${comment ? `<div>Комментарий: ${escapeHtml(comment)}</div>` : ""}<div style="margin-top:30px; text-align:center;">Спасибо за заказ!</div></div>`;
             window.print(); setTimeout(() => cont.innerHTML = "", 1000);
         }
 
@@ -1200,17 +1304,14 @@
         function renderAdmin() {
             if (currentUser.role !== "admin") { alert("Доступно только администратору"); return; }
             renderOperatorsStats();
-            
             let servDiv = document.getElementById("adminServicesList");
             servDiv.innerHTML = "";
-            services.forEach(s => { servDiv.innerHTML += `<div style="display:flex; gap:12px; margin-bottom:12px; align-items:center;"><span style="flex:2;">${s.name}</span><input type="number" id="price_${s.id}" value="${s.price}" style="width:90px;"><button class="updateService" data-id="${s.id}" class="btn-primary">💾</button><button class="deleteService" data-id="${s.id}" class="btn-danger">🗑</button></div>`; });
+            services.forEach(s => { servDiv.innerHTML += `<div style="display:flex; gap:12px; margin-bottom:12px;"><span style="flex:2;">${s.name}</span><input type="number" id="price_${s.id}" value="${s.price}" style="width:90px;"><button class="updateService" data-id="${s.id}" class="btn-primary">💾</button><button class="deleteService" data-id="${s.id}" class="btn-danger">🗑</button></div>`; });
             document.querySelectorAll(".updateService").forEach(btn => btn.onclick = () => { let id = parseInt(btn.getAttribute("data-id")); let s = services.find(x => x.id === id); if (s) { s.price = parseInt(document.getElementById(`price_${id}`).value); saveServices(); renderServices(); renderAdmin(); } });
             document.querySelectorAll(".deleteService").forEach(btn => btn.onclick = () => { let id = parseInt(btn.getAttribute("data-id")); if (services.length <= 1) return alert("Нельзя удалить последнюю услугу"); services = services.filter(x => x.id !== id); saveServices(); renderServices(); renderAdmin(); });
-            
             let goodsDiv = document.getElementById("adminGoodsList");
             goodsDiv.innerHTML = "";
-            goods.forEach(g => { goodsDiv.innerHTML += `<div style="display:flex; gap:12px; margin-bottom:12px; flex-wrap:wrap; align-items:center;"><span style="flex:2;">${g.name}</span><span style="width:80px;">💰 ${g.price} ₽</span><input type="number" id="stock_${g.id}" value="${g.stock}" style="width:80px;"><button class="updateGoodsStock" data-id="${g.id}" class="btn-primary">📦</button><button class="updateGoodsPrice" data-id="${g.id}" class="btn-primary" style="background:var(--orange); color:black;">💰</button><button class="deleteGoods" data-id="${g.id}" class="btn-danger">🗑</button></div>`;
-            });
+            goods.forEach(g => { goodsDiv.innerHTML += `<div style="display:flex; gap:12px; margin-bottom:12px; flex-wrap:wrap;"><span style="flex:2;">${g.name}</span><span>${g.price} ₽</span><input type="number" id="stock_${g.id}" value="${g.stock}" style="width:80px;"><button class="updateGoodsStock" data-id="${g.id}" class="btn-primary">📦</button><button class="updateGoodsPrice" data-id="${g.id}" class="btn-primary" style="background:var(--orange); color:black;">💰</button><button class="deleteGoods" data-id="${g.id}" class="btn-danger">🗑</button></div>`; });
             document.querySelectorAll(".updateGoodsStock").forEach(btn => btn.onclick = () => { let id = parseInt(btn.getAttribute("data-id")); let g = goods.find(x => x.id === id); if (g) { g.stock = parseInt(document.getElementById(`stock_${id}`).value); if (g.stock < 0) g.stock = 0; saveGoods(); renderGoods(); renderAdmin(); showSyncStatus("✅ Склад обновлён"); } });
             document.querySelectorAll(".updateGoodsPrice").forEach(btn => btn.onclick = () => { let id = parseInt(btn.getAttribute("data-id")); let newPrice = prompt("Новая цена:"); if (newPrice && !isNaN(newPrice)) { let g = goods.find(x => x.id === id); if (g) { g.price = parseInt(newPrice); saveGoods(); renderGoods(); renderAdmin(); showSyncStatus("✅ Цена обновлена"); } } });
             document.querySelectorAll(".deleteGoods").forEach(btn => btn.onclick = () => { let id = parseInt(btn.getAttribute("data-id")); if (confirm("Удалить товар?")) { goods = goods.filter(x => x.id !== id); saveGoods(); renderGoods(); renderAdmin(); } });
@@ -1224,13 +1325,7 @@
             if (!yearSelect) return;
             let currentYear = new Date().getFullYear();
             yearSelect.innerHTML = "";
-            for (let y = 2023; y <= currentYear + 1; y++) {
-                let opt = document.createElement("option");
-                opt.value = y;
-                opt.textContent = y;
-                if (y === currentYear) opt.selected = true;
-                yearSelect.appendChild(opt);
-            }
+            for (let y = 2023; y <= currentYear + 1; y++) { let opt = document.createElement("option"); opt.value = y; opt.textContent = y; if (y === currentYear) opt.selected = true; yearSelect.appendChild(opt); }
         }
         function showSyncStatus(msg) { let d = document.getElementById("syncStatus"); if (d) { d.textContent = msg; setTimeout(() => { if (d.textContent === msg) d.textContent = "💾 Готово"; }, 2000); } }
         function toggleTheme() { document.body.classList.toggle("dark"); localStorage.setItem("a4print_theme", document.body.classList.contains("dark") ? "dark" : "light"); }
@@ -1238,10 +1333,7 @@
         function login() {
             let selectedLogin = document.getElementById("loginSelect").value;
             let password = document.getElementById("loginPassword").value;
-            if (!selectedLogin) {
-                document.getElementById("loginError").innerText = "Выберите оператора";
-                return false;
-            }
+            if (!selectedLogin) { document.getElementById("loginError").innerText = "Выберите оператора"; return false; }
             let u = operators[selectedLogin];
             if (u && u.password === password) {
                 currentUser = { ...u, username: selectedLogin };
@@ -1316,6 +1408,14 @@
             document.getElementById("reportFullBtn").onclick = reportFull;
             document.getElementById("cancelReportBtn").onclick = () => document.getElementById("reportChoiceModal").style.display = "none";
             
+            // Редактирование заказа
+            document.getElementById("closeEditModal").onclick = () => document.getElementById("editOrderModal").style.display = "none";
+            document.getElementById("cancelEditBtn").onclick = () => document.getElementById("editOrderModal").style.display = "none";
+            document.getElementById("editAddItemBtn").onclick = addItemToEdit;
+            document.getElementById("saveEditedOrderBtn").onclick = saveEditedOrder;
+            document.getElementById("editDiscountPercent").onchange = updateEditTotals;
+            document.getElementById("editDiscountAmount").onchange = updateEditTotals;
+            
             let admModal = document.getElementById("adminModal");
             document.getElementById("adminPanelBtn").onclick = () => { renderAdmin(); admModal.style.display = "flex"; };
             document.getElementById("closeAdminModal").onclick = () => admModal.style.display = "none";
@@ -1324,7 +1424,7 @@
             document.getElementById("exportSalaryBtn").onclick = exportSalaryPayslip;
             document.getElementById("addServiceBtn").onclick = () => { let name = document.getElementById("newServiceName").value.trim(); let price = parseInt(document.getElementById("newServicePrice").value); if (name && price > 0) { services.push({ id: Date.now(), name, price }); saveServices(); renderServices(); renderAdmin(); } else alert("Введите название и цену"); };
             document.getElementById("adminAddGoodsBtn").onclick = () => { let name = document.getElementById("adminNewGoodsName").value.trim(); let price = parseFloat(document.getElementById("adminNewGoodsPrice").value); let stock = parseInt(document.getElementById("adminNewGoodsStock").value); if (name && price > 0 && !isNaN(stock)) { goods.push({ id: Date.now(), name: name, price: price, stock: stock, unit: "шт" }); saveGoods(); renderGoods(); renderAdmin(); showSyncStatus("✅ Товар добавлен"); document.getElementById("adminNewGoodsName").value = ""; document.getElementById("adminNewGoodsPrice").value = ""; document.getElementById("adminNewGoodsStock").value = ""; } else alert("Заполните все поля"); };
-            window.onclick = (e) => { if (e.target === admModal) admModal.style.display = "none"; if (e.target === document.getElementById("reportChoiceModal")) document.getElementById("reportChoiceModal").style.display = "none"; };
+            window.onclick = (e) => { if (e.target === admModal) admModal.style.display = "none"; if (e.target === document.getElementById("reportChoiceModal")) document.getElementById("reportChoiceModal").style.display = "none"; if (e.target === document.getElementById("editOrderModal")) document.getElementById("editOrderModal").style.display = "none"; };
         });
     </script>
 </body>
