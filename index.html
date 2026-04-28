@@ -336,7 +336,6 @@
         .salary-table th, .salary-table td { border: 1px solid var(--gray-200); padding: 10px; text-align: left; }
         .salary-table th { background: var(--gray-100); font-weight: 600; }
         
-        /* Стили для редактирования заказа */
         .edit-order-items {
             max-height: 300px;
             overflow-y: auto;
@@ -411,8 +410,7 @@
                 </div>
             </div>
 
-            <!-- Полоса смены -->
-            <div class="shift-bar">
+            <div class="shift-bar" id="shiftBar">
                 <div>
                     <span>🕒 Смена: <strong id="shiftStatus">Закрыта</strong></span>
                     <span style="margin-left: 16px;">🟢 Открыта: <span id="shiftOpenTime">—</span></span>
@@ -533,18 +531,9 @@
                 <h2>✏️ Редактирование заказа №<span id="editOrderId"></span></h2>
                 <button id="closeEditModal" style="background:none; font-size: 24px; padding: 0;">✕</button>
             </div>
-            <div class="field">
-                <label>Клиент</label>
-                <input type="text" id="editClientName">
-            </div>
-            <div class="field">
-                <label>Телефон</label>
-                <input type="text" id="editClientPhone">
-            </div>
-            <div class="field">
-                <label>Комментарий</label>
-                <textarea id="editComment" rows="2"></textarea>
-            </div>
+            <div class="field"><label>Клиент</label><input type="text" id="editClientName"></div>
+            <div class="field"><label>Телефон</label><input type="text" id="editClientPhone"></div>
+            <div class="field"><label>Комментарий</label><textarea id="editComment" rows="2"></textarea></div>
             <div class="row-2">
                 <div class="discount-group"><label>Скидка, %</label><input type="number" id="editDiscountPercent" value="0" step="1"></div>
                 <div class="discount-group"><label>Скидка, ₽</label><input type="number" id="editDiscountAmount" value="0" step="10"></div>
@@ -553,33 +542,17 @@
                 <label><input type="radio" name="editPayment" value="cash"> 💵 Наличные</label>
                 <label><input type="radio" name="editPayment" value="card"> 💳 Карта</label>
             </div>
-            <div class="field">
-                <label>Состав заказа</label>
-                <div id="editItemsList" class="edit-order-items"></div>
+            <div class="field"><label>Состав заказа</label><div id="editItemsList" class="edit-order-items"></div>
                 <div class="fast-service-row" style="margin-top: 12px;">
-                    <select id="editAddItemSelect" style="flex:2;">
-                        <option value="">— Выберите услугу/товар —</option>
-                    </select>
+                    <select id="editAddItemSelect" style="flex:2;"><option value="">— Выберите услугу/товар —</option></select>
                     <input type="number" id="editAddItemQty" placeholder="Кол-во" style="flex:1;" value="1" min="1">
                     <button id="editAddItemBtn" class="btn-primary">➕</button>
                 </div>
             </div>
-            <div class="total-line">
-                <span>Подытог</span>
-                <span id="editSubtotal">0 ₽</span>
-            </div>
-            <div class="total-line" id="editDiscountLine" style="display:none;">
-                <span>Скидка</span>
-                <span id="editDiscount">0 ₽</span>
-            </div>
-            <div class="total-line grand-total">
-                <span>ИТОГО</span>
-                <span id="editTotal">0 ₽</span>
-            </div>
-            <div class="row-2">
-                <button id="saveEditedOrderBtn" class="btn-success" style="flex:2;">💾 Сохранить изменения</button>
-                <button id="cancelEditBtn" class="btn-outline" style="flex:1;">Отмена</button>
-            </div>
+            <div class="total-line"><span>Подытог</span><span id="editSubtotal">0 ₽</span></div>
+            <div class="total-line" id="editDiscountLine" style="display:none;"><span>Скидка</span><span id="editDiscount">0 ₽</span></div>
+            <div class="total-line grand-total"><span>ИТОГО</span><span id="editTotal">0 ₽</span></div>
+            <div class="row-2"><button id="saveEditedOrderBtn" class="btn-success" style="flex:2;">💾 Сохранить</button><button id="cancelEditBtn" class="btn-outline" style="flex:1;">Отмена</button></div>
         </div>
     </div>
 
@@ -596,53 +569,10 @@
                 <button class="tab-btn" data-tab="admin-services">📋 Услуги</button>
                 <button class="tab-btn" data-tab="admin-goods">🛍️ Товары</button>
             </div>
-            
-            <div id="admin-stats" class="instruction-content active">
-                <h3 style="margin-bottom: 16px;">Статистика операторов</h3>
-                <div id="operatorsStatsContent"></div>
-                <button id="exportStatsExcelBtn" class="btn-success" style="margin-top: 20px;">📎 Экспорт статистики в Excel</button>
-            </div>
-            
-            <div id="admin-salary" class="instruction-content">
-                <h3 style="margin-bottom: 16px;">Расчёт заработной платы</h3>
-                <div class="row-2" style="margin-bottom: 16px;">
-                    <select id="salaryMonth" style="flex:1;">
-                        <option value="1">Январь</option><option value="2">Февраль</option><option value="3">Март</option>
-                        <option value="4">Апрель</option><option value="5">Май</option><option value="6">Июнь</option>
-                        <option value="7">Июль</option><option value="8">Август</option><option value="9">Сентябрь</option>
-                        <option value="10">Октябрь</option><option value="11">Ноябрь</option><option value="12">Декабрь</option>
-                    </select>
-                    <select id="salaryYear" style="flex:1;"></select>
-                    <button id="calculateSalaryBtn" class="btn-primary">Рассчитать зарплату</button>
-                    <button id="exportSalaryBtn" class="btn-success">📎 Ведомость на выплату</button>
-                </div>
-                <div id="salaryReportContent"></div>
-                <div class="instruction-note" style="margin-top: 16px; background: var(--gray-100); padding: 12px; border-radius: 8px;">
-                    💰 Ставки: Оператор — 2000 ₽/смена (8 часов), Администратор — 2500 ₽/смена.<br>
-                    При неполной смене зарплата рассчитывается пропорционально отработанному времени.
-                </div>
-            </div>
-            
-            <div id="admin-services" class="instruction-content">
-                <h3 style="margin: 16px 0;">Управление услугами</h3>
-                <div id="adminServicesList"></div>
-                <div style="display:flex; gap:12px; margin:20px 0; flex-wrap:wrap;">
-                    <input type="text" id="newServiceName" placeholder="Название" style="flex:2;">
-                    <input type="number" id="newServicePrice" placeholder="Цена" style="flex:1;">
-                    <button id="addServiceBtn" class="btn-primary">Добавить</button>
-                </div>
-            </div>
-            
-            <div id="admin-goods" class="instruction-content">
-                <h3 style="margin: 16px 0;">Товары (склад)</h3>
-                <div id="adminGoodsList"></div>
-                <div style="display:flex; gap:12px; margin:20px 0; flex-wrap:wrap;">
-                    <input type="text" id="adminNewGoodsName" placeholder="Название" style="flex:2;">
-                    <input type="number" id="adminNewGoodsPrice" placeholder="Цена" style="flex:1;">
-                    <input type="number" id="adminNewGoodsStock" placeholder="Кол-во" style="flex:1;">
-                    <button id="adminAddGoodsBtn" class="btn-primary">Добавить</button>
-                </div>
-            </div>
+            <div id="admin-stats" class="instruction-content active"><h3>Статистика операторов</h3><div id="operatorsStatsContent"></div><button id="exportStatsExcelBtn" class="btn-success">📎 Экспорт статистики в Excel</button></div>
+            <div id="admin-salary" class="instruction-content"><h3>Расчёт заработной платы</h3><div class="row-2"><select id="salaryMonth" style="flex:1;"><option value="1">Январь</option><option value="2">Февраль</option><option value="3">Март</option><option value="4">Апрель</option><option value="5">Май</option><option value="6">Июнь</option><option value="7">Июль</option><option value="8">Август</option><option value="9">Сентябрь</option><option value="10">Октябрь</option><option value="11">Ноябрь</option><option value="12">Декабрь</option></select><select id="salaryYear" style="flex:1;"></select><button id="calculateSalaryBtn" class="btn-primary">Рассчитать</button><button id="exportSalaryBtn" class="btn-success">📎 Ведомость</button></div><div id="salaryReportContent"></div><div class="instruction-note">💰 Оператор — 2000 ₽/смена (8ч), Администратор — 2500 ₽/смена</div></div>
+            <div id="admin-services" class="instruction-content"><h3>Управление услугами</h3><div id="adminServicesList"></div><div style="display:flex; gap:12px;"><input type="text" id="newServiceName" placeholder="Название"><input type="number" id="newServicePrice" placeholder="Цена"><button id="addServiceBtn" class="btn-primary">Добавить</button></div></div>
+            <div id="admin-goods" class="instruction-content"><h3>Товары (склад)</h3><div id="adminGoodsList"></div><div style="display:flex; gap:12px;"><input type="text" id="adminNewGoodsName" placeholder="Название"><input type="number" id="adminNewGoodsPrice" placeholder="Цена"><input type="number" id="adminNewGoodsStock" placeholder="Кол-во"><button id="adminAddGoodsBtn" class="btn-primary">Добавить</button></div></div>
         </div>
     </div>
 
@@ -656,7 +586,7 @@
             "natalia": { password: "natalia123", name: "Наталья", role: "operator", rate: 2000 } 
         };
         
-        // ========== УСЛУГИ ==========
+        // ========== УСЛУГИ И ТОВАРЫ ==========
         let services = [
             { id: 1, name: "Копирование ч/б A4 (1-20)", price: 25 }, { id: 2, name: "Копирование цветное A4 (1-20)", price: 35 },
             { id: 3, name: "Сканирование A4", price: 25 }, { id: 4, name: "Ламинирование A6", price: 50 },
@@ -672,8 +602,6 @@
             { id: 23, name: "Копирование ч/б A4 (20-50)", price: 20 }, { id: 24, name: "Фото в рамке А4", price: 400 },
             { id: 25, name: "Фото в рамке 10х15", price: 200 }
         ];
-
-        // ========== ТОВАРЫ ==========
         let goods = [
             { id: 1001, name: "Бумага А4 80г/м2 (500 листов)", price: 350, stock: 50, unit: "пачка" },
             { id: 1002, name: "Тонер чёрный HP", price: 1200, stock: 8, unit: "шт" },
@@ -686,7 +614,8 @@
         let allOrders = [], currentUser = null, cart = [], discountPct = 0, discountAmt = 0;
         let shiftOpen = null, shiftClose = null, shiftOpenComment = "", shiftCloseComment = "";
         let allShifts = [];
-        let editOrderId = null; // для хранения ID редактируемого заказа
+        let editOrderId = null;
+        let tempEditOrder = null;
 
         const SERVICES_KEY = "a4print_services_v5", GOODS_KEY = "a4print_goods_v5", OPERATORS_KEY = "a4print_operators", ORDERS_KEY = "a4print_orders", SHIFT_KEY = "a4print_shift", SHIFTS_LIST_KEY = "a4print_shifts_list";
 
@@ -695,87 +624,9 @@
         function saveOperators() { localStorage.setItem(OPERATORS_KEY, JSON.stringify(operators)); }
         function saveOrders() { localStorage.setItem(ORDERS_KEY, JSON.stringify(allOrders)); }
         function saveShift() { localStorage.setItem(SHIFT_KEY, JSON.stringify({ open: shiftOpen, close: shiftClose, openComment: shiftOpenComment, closeComment: shiftCloseComment, operator: currentUser?.name })); }
-        
-        function loadAllShifts() {
-            let saved = localStorage.getItem(SHIFTS_LIST_KEY);
-            if (saved) allShifts = JSON.parse(saved);
-        }
-        
-        function saveAllShifts() {
-            localStorage.setItem(SHIFTS_LIST_KEY, JSON.stringify(allShifts));
-        }
-        
-        function addShiftToHistory(shiftData) {
-            allShifts.push(shiftData);
-            saveAllShifts();
-        }
-
-        // ========== РАСЧЁТ ЗАРПЛАТЫ ==========
-        function calculateSalaryForShift(shift) {
-            if (!shift.open || !shift.close) return 0;
-            const FULL_SHIFT_HOURS = 8;
-            const openDate = new Date(shift.open);
-            const closeDate = new Date(shift.close);
-            let hoursWorked = (closeDate - openDate) / (1000 * 60 * 60);
-            hoursWorked = Math.min(hoursWorked, FULL_SHIFT_HOURS);
-            if (hoursWorked < 0) hoursWorked = 0;
-            let rate = shift.role === "admin" ? 2500 : 2000;
-            let salary = (rate / FULL_SHIFT_HOURS) * hoursWorked;
-            return Math.round(salary);
-        }
-        
-        function calculateSalaryForMonth(month, year) {
-            let salaryMap = new Map();
-            for (let shift of allShifts) {
-                if (!shift.open || !shift.close) continue;
-                let openDate = new Date(shift.open);
-                if (openDate.getMonth() + 1 === month && openDate.getFullYear() === year) {
-                    let salary = calculateSalaryForShift(shift);
-                    let key = shift.login;
-                    let current = salaryMap.get(key) || { name: shift.name, total: 0, count: 0, role: shift.role, hours: 0 };
-                    current.total += salary;
-                    current.count++;
-                    let hours = (new Date(shift.close) - new Date(shift.open)) / (1000 * 60 * 60);
-                    hours = Math.min(hours, 8);
-                    current.hours += Math.round(hours * 10) / 10;
-                    salaryMap.set(key, current);
-                }
-            }
-            return salaryMap;
-        }
-        
-        function showSalaryReport() {
-            let month = parseInt(document.getElementById("salaryMonth").value);
-            let year = parseInt(document.getElementById("salaryYear").value);
-            let salaryMap = calculateSalaryForMonth(month, year);
-            let monthNames = ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"];
-            
-            let html = `<table class="salary-table"><thead><tr><th>Оператор</th><th>Роль</th><th>Кол-во смен</th><th>Отработано часов</th><th>Ставка</th><th>Итого</th></tr></thead><tbody>`;
-            let totalSalary = 0;
-            for (let [login, data] of salaryMap) {
-                let rate = data.role === "admin" ? 2500 : 2000;
-                html += `<tr><td><strong>${escapeHtml(data.name)}</strong></td><td>${data.role === "admin" ? "Администратор" : "Оператор"}</td><td>${data.count}</td><td>${data.hours}</td><td>${rate} ₽</td><td style="font-weight:bold;">${data.total.toLocaleString()} ₽</td></tr>`;
-                totalSalary += data.total;
-            }
-            html += `<tr style="background: var(--blue); color: white;"><td colspan="5"><strong>ИТОГО:</strong></td><td><strong>${totalSalary.toLocaleString()} ₽</strong></td></tr></tbody></table>`;
-            document.getElementById("salaryReportContent").innerHTML = html;
-            window._currentSalaryData = { month, year, salaryMap, totalSalary };
-        }
-        
-        function exportSalaryPayslip() {
-            if (!window._currentSalaryData) { alert("Сначала рассчитайте зарплату"); return; }
-            let { month, year, salaryMap, totalSalary } = window._currentSalaryData;
-            let monthNames = ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"];
-            let date = new Date().toLocaleString();
-            let tableRows = "";
-            for (let [login, data] of salaryMap) {
-                let rate = data.role === "admin" ? 2500 : 2000;
-                tableRows += `<tr><td style="border:1px solid #000; padding:8px;">${escapeHtml(data.name)}</td><td style="border:1px solid #000; padding:8px;">${data.role === "admin" ? "Администратор" : "Оператор"}</td><td style="border:1px solid #000; padding:8px;">${data.count}</td><td style="border:1px solid #000; padding:8px;">${rate} ₽</td><td style="border:1px solid #000; padding:8px;">${data.total.toLocaleString()} ₽</td><td style="border:1px solid #000; padding:8px;">_________________</td></tr>`;
-            }
-            let html = `<div style="font-family: monospace; padding: 20px; max-width: 800px; margin: 0 auto;"><div style="text-align: center;"><h2>A4-ПРИНТ</h2><p>ВЕДОМОСТЬ НА ВЫПЛАТУ ЗАРПЛАТЫ</p><p>за ${monthNames[month-1]} ${year} года</p><p>${date}</p></div><table style="width:100%; border-collapse: collapse;"><thead><tr style="background:#f0f0f0;"><th>ФИО</th><th>Должность</th><th>Смен</th><th>Ставка</th><th>Сумма</th><th>Подпись</th></tr></thead><tbody>${tableRows}<tr style="background:#e8f0fe;"><td colspan="4"><strong>ИТОГО:</strong></td><td><strong>${totalSalary.toLocaleString()} ₽</strong></td><td></td></tr></tbody></table><div style="margin-top: 40px;"><div>Главный бухгалтер: _______________</div><div>Руководитель: _______________</div><div style="margin-top: 20px;">Деньги получил(а): _________________ / _________________ /</div></div></div>`;
-            let el = document.createElement('div'); el.innerHTML = html; document.body.appendChild(el);
-            html2pdf().set({ margin: 0.5, filename: `A4print_зарплата_${monthNames[month-1]}_${year}.pdf`, html2canvas: { scale: 2 } }).from(el).save().then(() => el.remove());
-        }
+        function loadAllShifts() { let s = localStorage.getItem(SHIFTS_LIST_KEY); if (s) allShifts = JSON.parse(s); }
+        function saveAllShifts() { localStorage.setItem(SHIFTS_LIST_KEY, JSON.stringify(allShifts)); }
+        function addShiftToHistory(shiftData) { allShifts.push(shiftData); saveAllShifts(); }
 
         // ========== ФИНАНСЫ ЗА СМЕНУ ==========
         function getShiftFinance() {
@@ -809,59 +660,78 @@
             document.getElementById("burgerOperatorName").innerText = `${currentUser.name} ${currentUser.role === "admin" ? "👑" : "👤"}`;
         }
 
-        // ========== СТАТИСТИКА ОПЕРАТОРОВ ==========
-        function getOperatorsStats() {
-            let stats = {};
-            for (let [login, data] of Object.entries(operators)) {
-                stats[login] = { name: data.name, login: login, orders: 0, revenue: 0, cash: 0, card: 0 };
-            }
-            for (let order of allOrders) {
-                let opLogin = null;
-                for (let [login, data] of Object.entries(operators)) {
-                    if (data.name === order.operator) {
-                        opLogin = login;
-                        break;
-                    }
-                }
-                if (opLogin && stats[opLogin]) {
-                    stats[opLogin].orders++;
-                    stats[opLogin].revenue += order.finalTotal;
-                    if (order.paymentMethod === "cash") stats[opLogin].cash += order.finalTotal;
-                    else stats[opLogin].card += order.finalTotal;
-                }
-            }
-            return stats;
+        // ========== СМЕНА (ИСПРАВЛЕННАЯ) ==========
+        function loadShift() { 
+            let s = localStorage.getItem(SHIFT_KEY); 
+            if (s) { let d = JSON.parse(s); if (d.operator === currentUser?.name) { shiftOpen = d.open; shiftClose = d.close; shiftOpenComment = d.openComment || ""; shiftCloseComment = d.closeComment || ""; } } 
+            updateShiftUI(); 
+            updateShiftFinanceDisplay();
         }
         
-        function renderOperatorsStats() {
-            let stats = getOperatorsStats();
-            let html = `<div style="margin-bottom: 20px;"><div class="stats-row stats-header"><span style="width: 120px;">Оператор</span><span style="width: 80px;">Заказов</span><span style="width: 120px;">Выручка</span><span style="width: 120px;">Наличные</span><span style="width: 120px;">Карта</span><span style="width: 80px;">Ср. чек</span></div></div>`;
-            for (let [login, st] of Object.entries(stats)) {
-                let avg = st.orders > 0 ? Math.round(st.revenue / st.orders) : 0;
-                html += `<div class="stats-row"><span style="width: 120px;"><strong>${escapeHtml(st.name)}</strong> ${login === "pavel" ? "👑" : "👤"}</span><span style="width: 80px;">${st.orders}</span><span style="width: 120px;">${st.revenue.toLocaleString()}</span><span style="width: 120px;">${st.cash.toLocaleString()}</span><span style="width: 120px;">${st.card.toLocaleString()}</span><span style="width: 80px;">${avg.toLocaleString()}</span></div>`;
-            }
-            document.getElementById("operatorsStatsContent").innerHTML = html;
+        function updateShiftUI() { 
+            let st = document.getElementById("shiftStatus"), op = document.getElementById("shiftOpenTime"), cl = document.getElementById("shiftCloseTime"), btn = document.getElementById("shiftToggleBtn"); 
+            if (shiftOpen && !shiftClose) { 
+                st.innerText = "🟢 Открыта"; 
+                op.innerText = shiftOpen + (shiftOpenComment ? " 📝" : ""); 
+                cl.innerText = "—"; 
+                btn.innerText = "🔒 Закрыть смену"; 
+                btn.classList.add("btn-danger"); 
+                btn.classList.remove("btn-warning"); 
+            } else { 
+                st.innerText = shiftOpen ? "🔴 Закрыта" : "⚫ Не открыта"; 
+                op.innerText = shiftOpen || "—"; 
+                cl.innerText = (shiftClose || "—") + (shiftCloseComment ? " 📝" : ""); 
+                btn.innerText = "🚀 Открыть смену"; 
+                btn.classList.remove("btn-danger"); 
+                btn.classList.add("btn-warning"); 
+            } 
         }
         
-        function exportStatsExcel() {
-            if (currentUser.role !== "admin") { alert("Доступно только администратору"); return; }
-            let stats = getOperatorsStats();
-            let data = [["Оператор", "Заказов", "Выручка (₽)", "Наличные (₽)", "Карта (₽)", "Средний чек (₽)"]];
-            for (let [login, st] of Object.entries(stats)) {
-                let avg = st.orders > 0 ? Math.round(st.revenue / st.orders) : 0;
-                data.push([st.name, st.orders, st.revenue, st.cash, st.card, avg]);
-            }
-            let ws = XLSX.utils.aoa_to_sheet(data); let wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Статистика");
-            XLSX.writeFile(wb, `A4print_stats_operators.xlsx`);
+        function toggleShiftWithComment() { 
+            if (!shiftOpen || shiftClose) { 
+                document.getElementById("shiftCommentTitle").innerText = "📝 Комментарий к открытию смены"; 
+                document.getElementById("shiftCommentText").value = ""; 
+                document.getElementById("shiftCommentModal").style.display = "flex"; 
+                window._pendingShiftAction = "open"; 
+            } else { 
+                document.getElementById("shiftCommentTitle").innerText = "📝 Комментарий к закрытию смены"; 
+                document.getElementById("shiftCommentText").value = ""; 
+                document.getElementById("shiftCommentModal").style.display = "flex"; 
+                window._pendingShiftAction = "close"; 
+            } 
         }
+        
+        function confirmShiftWithComment() { 
+            let comment = document.getElementById("shiftCommentText").value.trim(); 
+            if (window._pendingShiftAction === "open") { 
+                shiftOpen = new Date().toLocaleString(); 
+                shiftClose = null; 
+                shiftOpenComment = comment; 
+                shiftCloseComment = ""; 
+                saveShift(); 
+                updateShiftUI(); 
+                updateShiftFinanceDisplay();
+                alert("Смена открыта: " + shiftOpen); 
+            } else if (window._pendingShiftAction === "close") { 
+                if (!shiftOpen || shiftClose) { alert("Смена не открыта"); return; } 
+                let finance = getShiftFinance();
+                shiftClose = new Date().toLocaleString(); 
+                shiftCloseComment = comment; 
+                saveShift();
+                let shiftRecord = { login: currentUser.username, name: currentUser.name, role: currentUser.role, open: shiftOpen, close: shiftClose, openComment: shiftOpenComment, closeComment: shiftCloseComment };
+                addShiftToHistory(shiftRecord);
+                updateShiftUI(); 
+                alert(`Смена закрыта: ${shiftClose}\nВыручка за смену: ${finance.revenue} ₽\nНаличные в кассе: ${finance.cash} ₽\nКарта: ${finance.card} ₽`); 
+            } 
+            document.getElementById("shiftCommentModal").style.display = "none"; 
+        }
+        
+        function cancelShiftComment() { document.getElementById("shiftCommentModal").style.display = "none"; }
 
         // ========== РЕДАКТИРОВАНИЕ ЗАКАЗА ==========
-        let tempEditOrder = null;
-        
         function openEditOrder(order) {
             editOrderId = order.id;
-            tempEditOrder = JSON.parse(JSON.stringify(order)); // копия для редактирования
+            tempEditOrder = JSON.parse(JSON.stringify(order));
             document.getElementById("editOrderId").innerText = order.id;
             document.getElementById("editClientName").value = order.client;
             document.getElementById("editClientPhone").value = order.phone || "";
@@ -869,8 +739,6 @@
             document.getElementById("editDiscountPercent").value = order.discountPercent || 0;
             document.getElementById("editDiscountAmount").value = 0;
             document.querySelector(`input[name="editPayment"][value="${order.paymentMethod}"]`).checked = true;
-            
-            // Заполняем выпадающий список для добавления позиций
             const select = document.getElementById("editAddItemSelect");
             select.innerHTML = '<option value="">— Выберите услугу/товар —</option>';
             [...services, ...goods].forEach(item => {
@@ -880,7 +748,6 @@
                 option.textContent = `${item.name} — ${item.price} ₽`;
                 select.appendChild(option);
             });
-            
             renderEditItems();
             document.getElementById("editOrderModal").style.display = "flex";
         }
@@ -892,30 +759,19 @@
             tempEditOrder.items.forEach((item, idx) => {
                 let sum = item.price * item.qty;
                 subtotal += sum;
-                html += `<div class="edit-item-row">
-                            <span style="flex:2;"><strong>${escapeHtml(item.name)}</strong></span>
-                            <span style="width:80px;"><input type="number" class="edit-item-qty" data-idx="${idx}" value="${item.qty}" min="0" step="1" style="width:70px;"></span>
-                            <span style="width:80px;">${item.price} ₽</span>
-                            <span style="width:80px;">${sum} ₽</span>
-                            <button class="edit-remove-item" data-idx="${idx}" style="background:var(--red); padding:4px 12px;">🗑</button>
-                        </div>`;
+                html += `<div class="edit-item-row"><span style="flex:2;"><strong>${escapeHtml(item.name)}</strong></span><span style="width:80px;"><input type="number" class="edit-item-qty" data-idx="${idx}" value="${item.qty}" min="0" step="1" style="width:70px;"></span><span style="width:80px;">${item.price} ₽</span><span style="width:80px;">${sum} ₽</span><button class="edit-remove-item" data-idx="${idx}" style="background:var(--red); padding:4px 12px;">🗑</button></div>`;
             });
             container.innerHTML = html || "<div style='padding:20px;text-align:center;'>Нет позиций</div>";
-            
             document.querySelectorAll(".edit-item-qty").forEach(input => {
                 input.onchange = () => {
                     let idx = parseInt(input.getAttribute("data-idx"));
                     let newQty = parseInt(input.value);
-                    if (newQty <= 0) {
-                        tempEditOrder.items.splice(idx, 1);
-                    } else {
-                        tempEditOrder.items[idx].qty = newQty;
-                    }
+                    if (newQty <= 0) tempEditOrder.items.splice(idx, 1);
+                    else tempEditOrder.items[idx].qty = newQty;
                     renderEditItems();
                     updateEditTotals();
                 };
             });
-            
             document.querySelectorAll(".edit-remove-item").forEach(btn => {
                 btn.onclick = () => {
                     let idx = parseInt(btn.getAttribute("data-idx"));
@@ -924,7 +780,6 @@
                     updateEditTotals();
                 };
             });
-            
             updateEditTotals();
         }
         
@@ -937,10 +792,8 @@
             else if (discountAmt > 0) discount = Math.min(discountAmt, subtotal);
             let finalTotal = subtotal - discount;
             document.getElementById("editSubtotal").innerHTML = subtotal + " ₽";
-            if (discount > 0) {
-                document.getElementById("editDiscountLine").style.display = "flex";
-                document.getElementById("editDiscount").innerHTML = discount + " ₽";
-            } else document.getElementById("editDiscountLine").style.display = "none";
+            if (discount > 0) { document.getElementById("editDiscountLine").style.display = "flex"; document.getElementById("editDiscount").innerHTML = discount + " ₽"; }
+            else document.getElementById("editDiscountLine").style.display = "none";
             document.getElementById("editTotal").innerHTML = finalTotal + " ₽";
             tempEditOrder.subtotal = subtotal;
             tempEditOrder.discount = discount;
@@ -972,32 +825,20 @@
                 phone: document.getElementById("editClientPhone").value.trim(),
                 comment: document.getElementById("editComment").value,
                 paymentMethod: document.querySelector('input[name="editPayment"]:checked').value,
-                discountPercent: parseFloat(document.getElementById("editDiscountPercent").value) || 0,
-                discount: 0,
-                subtotal: tempEditOrder.subtotal,
-                finalTotal: tempEditOrder.finalTotal
+                discountPercent: parseFloat(document.getElementById("editDiscountPercent").value) || 0
             };
-            // Пересчитываем скидку
             let discount = 0;
             if (updatedOrder.discountPercent > 0) discount = updatedOrder.subtotal * updatedOrder.discountPercent / 100;
             updatedOrder.discount = discount;
             updatedOrder.finalTotal = updatedOrder.subtotal - discount;
-            // Заменяем заказ в массиве
             const index = allOrders.findIndex(o => o.id === editOrderId);
-            if (index !== -1) {
-                allOrders[index] = updatedOrder;
-                saveOrders();
-                renderHistory();
-                updateShiftFinanceDisplay();
-                alert("Заказ успешно обновлён!");
-            }
+            if (index !== -1) { allOrders[index] = updatedOrder; saveOrders(); renderHistory(); updateShiftFinanceDisplay(); alert("Заказ обновлён!"); }
             document.getElementById("editOrderModal").style.display = "none";
             editOrderId = null;
             tempEditOrder = null;
         }
 
         // ========== ОСТАЛЬНЫЕ ФУНКЦИИ ==========
-        
         function renderServices(filtered = null) {
             const grid = document.getElementById("servicesGrid");
             const data = filtered !== null ? filtered : services;
@@ -1144,15 +985,7 @@
             if (!my.length) { cont.innerHTML = "<div style='padding:40px;text-align:center;color:var(--gray-500);'>Нет заказов</div>"; return; }
             let html = "";
             [...my].reverse().forEach(o => {
-                html += `<div class="history-item">
-                            <div><strong>${escapeHtml(o.client)}</strong> ${o.phone ? `📞 ${escapeHtml(o.phone)}` : ""} | ${o.date} | <strong>${o.finalTotal} ₽</strong></div>
-                            <div style="font-size:12px; margin-top:6px;">${o.items.map(i => `${i.name} x${i.qty}`).join(", ")}</div>
-                            <div style="font-size:11px; margin-top:4px; color:var(--gray-500);">${o.comment ? "📝 " + o.comment : ""}</div>
-                            <div style="margin-top:8px; display:flex; gap:8px;">
-                                <button class="edit-order" data-id="${o.id}" style="background:var(--orange); border:none; border-radius:8px; padding:5px 14px; color:white; font-size:11px;">✏️ Редактировать</button>
-                                <button class="delete-order" data-id="${o.id}" style="background:var(--red); border:none; border-radius:8px; padding:5px 14px; color:white; font-size:11px;">🗑 Удалить</button>
-                            </div>
-                        </div>`;
+                html += `<div class="history-item"><div><strong>${escapeHtml(o.client)}</strong> ${o.phone ? `📞 ${escapeHtml(o.phone)}` : ""} | ${o.date} | <strong>${o.finalTotal} ₽</strong></div><div style="font-size:12px; margin-top:6px;">${o.items.map(i => `${i.name} x${i.qty}`).join(", ")}</div><div style="font-size:11px; margin-top:4px;">${o.comment ? "📝 " + o.comment : ""}</div><div style="margin-top:8px; display:flex; gap:8px;"><button class="edit-order" data-id="${o.id}" style="background:var(--orange); border:none; border-radius:8px; padding:5px 14px; color:white; font-size:11px;">✏️ Редактировать</button><button class="delete-order" data-id="${o.id}" style="background:var(--red); border:none; border-radius:8px; padding:5px 14px; color:white; font-size:11px;">🗑 Удалить</button></div></div>`;
             });
             cont.innerHTML = html;
             document.querySelectorAll(".delete-order").forEach(btn => btn.onclick = () => { let id = parseInt(btn.getAttribute("data-id")); allOrders = allOrders.filter(o => o.id !== id); saveOrders(); renderHistory(); updateShiftFinanceDisplay(); });
@@ -1169,74 +1002,6 @@
             XLSX.writeFile(wb, `A4print_${currentUser.name}_${new Date().toISOString().slice(0,19)}.xlsx`);
         }
 
-        // ========== СМЕНА ==========
-        function loadShift() { 
-            let s = localStorage.getItem(SHIFT_KEY); 
-            if (s) { let d = JSON.parse(s); if (d.operator === currentUser?.name) { shiftOpen = d.open; shiftClose = d.close; shiftOpenComment = d.openComment || ""; shiftCloseComment = d.closeComment || ""; } } 
-            updateShiftUI(); 
-            updateShiftFinanceDisplay();
-        }
-        
-        function updateShiftUI() { 
-            let st = document.getElementById("shiftStatus"), op = document.getElementById("shiftOpenTime"), cl = document.getElementById("shiftCloseTime"), btn = document.getElementById("shiftToggleBtn"); 
-            if (shiftOpen && !shiftClose) { 
-                st.innerText = "🟢 Открыта"; 
-                op.innerText = shiftOpen + (shiftOpenComment ? " 📝" : ""); 
-                cl.innerText = "—"; 
-                btn.innerText = "🔒 Закрыть смену"; 
-                btn.classList.add("btn-danger"); 
-                btn.classList.remove("btn-warning"); 
-            } else { 
-                st.innerText = shiftOpen ? "🔴 Закрыта" : "⚫ Не открыта"; 
-                op.innerText = shiftOpen || "—"; 
-                cl.innerText = (shiftClose || "—") + (shiftCloseComment ? " 📝" : ""); 
-                btn.innerText = "🚀 Открыть смену"; 
-                btn.classList.remove("btn-danger"); 
-                btn.classList.add("btn-warning"); 
-            } 
-        }
-        
-        function toggleShiftWithComment() { 
-            if (!shiftOpen || shiftClose) { 
-                document.getElementById("shiftCommentTitle").innerText = "📝 Комментарий к открытию смены"; 
-                document.getElementById("shiftCommentText").value = ""; 
-                document.getElementById("shiftCommentModal").style.display = "flex"; 
-                window._pendingShiftAction = "open"; 
-            } else { 
-                document.getElementById("shiftCommentTitle").innerText = "📝 Комментарий к закрытию смены"; 
-                document.getElementById("shiftCommentText").value = ""; 
-                document.getElementById("shiftCommentModal").style.display = "flex"; 
-                window._pendingShiftAction = "close"; 
-            } 
-        }
-        
-        function confirmShiftWithComment() { 
-            let comment = document.getElementById("shiftCommentText").value.trim(); 
-            if (window._pendingShiftAction === "open") { 
-                shiftOpen = new Date().toLocaleString(); 
-                shiftClose = null; 
-                shiftOpenComment = comment; 
-                shiftCloseComment = ""; 
-                saveShift(); 
-                updateShiftUI(); 
-                updateShiftFinanceDisplay();
-                alert("Смена открыта: " + shiftOpen); 
-            } else if (window._pendingShiftAction === "close") { 
-                if (!shiftOpen || shiftClose) { alert("Смена не открыта"); return; } 
-                let finance = getShiftFinance();
-                shiftClose = new Date().toLocaleString(); 
-                shiftCloseComment = comment; 
-                saveShift();
-                let shiftRecord = { login: currentUser.username, name: currentUser.name, role: currentUser.role, open: shiftOpen, close: shiftClose, openComment: shiftOpenComment, closeComment: shiftCloseComment };
-                addShiftToHistory(shiftRecord);
-                updateShiftUI(); 
-                alert(`Смена закрыта: ${shiftClose}\nВыручка за смену: ${finance.revenue} ₽\nНаличные в кассе: ${finance.cash} ₽\nКарта: ${finance.card} ₽`); 
-            } 
-            document.getElementById("shiftCommentModal").style.display = "none"; 
-        }
-        
-        function cancelShiftComment() { document.getElementById("shiftCommentModal").style.display = "none"; }
-
         // ========== ОТЧЁТ ==========
         function generateReport(orders, title) {
             let cash = orders.filter(o => o.paymentMethod === "cash").reduce((s, o) => s + o.finalTotal, 0);
@@ -1248,13 +1013,7 @@
                 let shiftCash = shiftOrders.filter(o => o.paymentMethod === "cash").reduce((s, o) => s + o.finalTotal, 0);
                 let shiftCard = shiftOrders.filter(o => o.paymentMethod === "card").reduce((s, o) => s + o.finalTotal, 0);
                 let shiftTotal = shiftCash + shiftCard;
-                shiftInfo = `<div style="margin: 15px 0; padding: 12px; background: var(--gray-100); border-radius: 8px;">
-                                <strong>📊 ФИНАНСЫ ЗА ${shiftOpen && !shiftClose ? 'ТЕКУЩУЮ' : 'ПРОШЛУЮ'} СМЕНУ:</strong><br>
-                                🕐 Смена: ${shiftOpen || '—'} → ${shiftClose || '—'}<br>
-                                💰 Выручка: ${shiftTotal} ₽<br>
-                                💵 Наличные в кассе: ${shiftCash} ₽<br>
-                                💳 Оплата картой: ${shiftCard} ₽
-                            </div>`;
+                shiftInfo = `<div style="margin: 15px 0; padding: 12px; background: var(--gray-100); border-radius: 8px;"><strong>📊 ФИНАНСЫ ЗА ${shiftOpen && !shiftClose ? 'ТЕКУЩУЮ' : 'ПРОШЛУЮ'} СМЕНУ:</strong><br>🕐 Смена: ${shiftOpen || '—'} → ${shiftClose || '—'}<br>💰 Выручка: ${shiftTotal} ₽<br>💵 Наличные: ${shiftCash} ₽<br>💳 Карта: ${shiftCard} ₽</div>`;
             }
             let ordersHtml = orders.map(o => `<div style="border:1px solid #d1d5db; margin:10px 0; padding:12px; border-radius:8px;"><div><strong>№${o.id}</strong> | ${o.date}</div><div>${o.client} ${o.phone ? `📞 ${o.phone}` : ""}</div><div>${o.items.map(i => `${i.name} x${i.qty}`).join(", ")}</div><div>Итого: ${o.finalTotal} ₽ | ${o.paymentMethod === "cash" ? "Наличные" : "Карта"} ${o.comment ? " | " + o.comment : ""}</div></div>`).join('');
             let html = `<div style="font-family: monospace; padding: 20px; max-width: 800px; margin: 0 auto;"><div style="text-align: center;"><h2>A4-ПРИНТ</h2><p>${title}</p><p>Оператор: ${currentUser.name}</p><p>Дата: ${new Date().toLocaleString()}</p></div>${shiftInfo}<hr><div><strong>ИТОГИ:</strong><br>📦 Заказов: ${orders.length}<br>💰 Выручка: ${totalRevenue} ₽<br>💵 Наличные: ${cash} ₽<br>💳 Карта: ${card} ₽</div><hr><div><strong>ДЕТАЛИ:</strong></div>${ordersHtml}<hr><div style="text-align:center;">Подпись: _______________</div></div>`;
@@ -1296,11 +1055,115 @@
             let final = subtotal - discount;
             let itemsHtml = cart.map(i => `<tr><td style="border:1px solid #d1d5db; padding:8px;">${escapeHtml(i.name)}</td><td style="border:1px solid #d1d5db; text-align:center">${i.qty}</td><td style="border:1px solid #d1d5db; text-align:center">${i.price} ₽</td><td style="border:1px solid #d1d5db; text-align:right">${i.price * i.qty} ₽</td>`).join('');
             let cont = document.getElementById("printBlankContainer"); 
-            cont.innerHTML = `<div class="blank-page" style="padding:20mm; background:white; color:black; font-family:monospace;"><div style="text-align:center;"><h2>A4-ПРИНТ</h2><p>Копировальный центр</p></div><div><strong>№ заказа:</strong> ${Date.now()}</div><div><strong>Дата:</strong> ${new Date().toLocaleString()}</div><div><strong>Оператор:</strong> ${currentUser.name}</div><div><strong>Клиент:</strong> ${escapeHtml(client)}</div>${phone ? `<div><strong>Телефон:</strong> ${escapeHtml(phone)}</div>` : ""}<div><strong>Оплата:</strong> ${payment === "cash" ? "Наличные" : "Карта"}</div><table border="1" cellpadding="5" cellspacing="0" style="width:100%; margin:15px 0; border-color:#d1d5db;"><thead><tr><th>Наименование</th><th>Кол-во</th><th>Цена</th><th>Сумма</th></tr></thead><tbody>${itemsHtml}</tbody></table><div style="text-align:right;">Подытог: ${subtotal} ₽<br>${discount ? `Скидка: -${discount} ₽<br>` : ""}<strong>ИТОГО: ${final} ₽</strong></div>${comment ? `<div>Комментарий: ${escapeHtml(comment)}</div>` : ""}<div style="margin-top:30px; text-align:center;">Спасибо за заказ!</div></div><div class="blank-page" style="padding:20mm; background:white; color:black; font-family:monospace;"><div style="text-align:center;"><h2>A4-ПРИНТ</h2><p>Копировальный центр — КОПИЯ</p></div><div><strong>№ заказа:</strong> ${Date.now()}</div><div><strong>Дата:</strong> ${new Date().toLocaleString()}</div><div><strong>Оператор:</strong> ${currentUser.name}</div><div><strong>Клиент:</strong> ${escapeHtml(client)}</div>${phone ? `<div><strong>Телефон:</strong> ${escapeHtml(phone)}</div>` : ""}<div><strong>Оплата:</strong> ${payment === "cash" ? "Наличные" : "Карта"}</div><table border="1" cellpadding="5" cellspacing="0" style="width:100%; margin:15px 0; border-color:#d1d5db;"><thead><tr><th>Наименование</th><th>Кол-во</th><th>Цена</th><th>Сумма</th></tr></thead><tbody>${itemsHtml}</tbody><tr><div style="text-align:right;">Подытог: ${subtotal} ₽<br>${discount ? `Скидка: -${discount} ₽<br>` : ""}<strong>ИТОГО: ${final} ₽</strong></div>${comment ? `<div>Комментарий: ${escapeHtml(comment)}</div>` : ""}<div style="margin-top:30px; text-align:center;">Спасибо за заказ!</div></div>`;
+            cont.innerHTML = `<div class="blank-page" style="padding:20mm; background:white; color:black; font-family:monospace;"><div style="text-align:center;"><h2>A4-ПРИНТ</h2><p>Копировальный центр</p></div><div><strong>№ заказа:</strong> ${Date.now()}</div><div><strong>Дата:</strong> ${new Date().toLocaleString()}</div><div><strong>Оператор:</strong> ${currentUser.name}</div><div><strong>Клиент:</strong> ${escapeHtml(client)}</div>${phone ? `<div><strong>Телефон:</strong> ${escapeHtml(phone)}</div>` : ""}<div><strong>Оплата:</strong> ${payment === "cash" ? "Наличные" : "Карта"}</div><table border="1" cellpadding="5" cellspacing="0" style="width:100%; margin:15px 0; border-color:#d1d5db;"><thead><tr><th>Наименование</th><th>Кол-во</th><th>Цена</th><th>Сумма</th></td></thead><tbody>${itemsHtml}</tbody></table><div style="text-align:right;">Подытог: ${subtotal} ₽<br>${discount ? `Скидка: -${discount} ₽<br>` : ""}<strong>ИТОГО: ${final} ₽</strong></div>${comment ? `<div>Комментарий: ${escapeHtml(comment)}</div>` : ""}<div style="margin-top:30px; text-align:center;">Спасибо за заказ!</div></div><div class="blank-page" style="padding:20mm; background:white; color:black; font-family:monospace;"><div style="text-align:center;"><h2>A4-ПРИНТ</h2><p>Копировальный центр — КОПИЯ</p></div><div><strong>№ заказа:</strong> ${Date.now()}</div><div><strong>Дата:</strong> ${new Date().toLocaleString()}</div><div><strong>Оператор:</strong> ${currentUser.name}</div><div><strong>Клиент:</strong> ${escapeHtml(client)}</div>${phone ? `<div><strong>Телефон:</strong> ${escapeHtml(phone)}</div>` : ""}<div><strong>Оплата:</strong> ${payment === "cash" ? "Наличные" : "Карта"}</div><table border="1" cellpadding="5" cellspacing="0" style="width:100%; margin:15px 0; border-color:#d1d5db;"><thead></tr><th>Наименование</th><th>Кол-во</th><th>Цена</th><th>Сумма</th></tr></thead><tbody>${itemsHtml}</tbody></table><div style="text-align:right;">Подытог: ${subtotal} ₽<br>${discount ? `Скидка: -${discount} ₽<br>` : ""}<strong>ИТОГО: ${final} ₽</strong></div>${comment ? `<div>Комментарий: ${escapeHtml(comment)}</div>` : ""}<div style="margin-top:30px; text-align:center;">Спасибо за заказ!</div></div>`;
             window.print(); setTimeout(() => cont.innerHTML = "", 1000);
         }
 
-        // Админ
+        // ========== СТАТИСТИКА ОПЕРАТОРОВ ==========
+        function getOperatorsStats() {
+            let stats = {};
+            for (let [login, data] of Object.entries(operators)) { stats[login] = { name: data.name, login: login, orders: 0, revenue: 0, cash: 0, card: 0 }; }
+            for (let order of allOrders) {
+                let opLogin = null;
+                for (let [login, data] of Object.entries(operators)) { if (data.name === order.operator) { opLogin = login; break; } }
+                if (opLogin && stats[opLogin]) {
+                    stats[opLogin].orders++; stats[opLogin].revenue += order.finalTotal;
+                    if (order.paymentMethod === "cash") stats[opLogin].cash += order.finalTotal;
+                    else stats[opLogin].card += order.finalTotal;
+                }
+            }
+            return stats;
+        }
+        
+        function renderOperatorsStats() {
+            let stats = getOperatorsStats();
+            let html = `<div><div class="stats-row stats-header"><span style="width:120px;">Оператор</span><span style="width:80px;">Заказов</span><span style="width:120px;">Выручка</span><span style="width:120px;">Наличные</span><span style="width:120px;">Карта</span><span style="width:80px;">Ср. чек</span></div></div>`;
+            for (let [login, st] of Object.entries(stats)) {
+                let avg = st.orders > 0 ? Math.round(st.revenue / st.orders) : 0;
+                html += `<div class="stats-row"><span style="width:120px;"><strong>${escapeHtml(st.name)}</strong> ${login === "pavel" ? "👑" : "👤"}</span><span style="width:80px;">${st.orders}</span><span style="width:120px;">${st.revenue.toLocaleString()}</span><span style="width:120px;">${st.cash.toLocaleString()}</span><span style="width:120px;">${st.card.toLocaleString()}</span><span style="width:80px;">${avg.toLocaleString()}</span></div>`;
+            }
+            document.getElementById("operatorsStatsContent").innerHTML = html;
+        }
+        
+        function exportStatsExcel() {
+            if (currentUser.role !== "admin") { alert("Доступно только администратору"); return; }
+            let stats = getOperatorsStats();
+            let data = [["Оператор", "Заказов", "Выручка (₽)", "Наличные (₽)", "Карта (₽)", "Средний чек (₽)"]];
+            for (let [login, st] of Object.entries(stats)) {
+                let avg = st.orders > 0 ? Math.round(st.revenue / st.orders) : 0;
+                data.push([st.name, st.orders, st.revenue, st.cash, st.card, avg]);
+            }
+            let ws = XLSX.utils.aoa_to_sheet(data); let wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Статистика");
+            XLSX.writeFile(wb, `A4print_stats_operators.xlsx`);
+        }
+
+        // ========== ЗАРПЛАТА ==========
+        function calculateSalaryForShift(shift) {
+            if (!shift.open || !shift.close) return 0;
+            const FULL_SHIFT_HOURS = 8;
+            const openDate = new Date(shift.open);
+            const closeDate = new Date(shift.close);
+            let hoursWorked = (closeDate - openDate) / (1000 * 60 * 60);
+            hoursWorked = Math.min(hoursWorked, FULL_SHIFT_HOURS);
+            if (hoursWorked < 0) hoursWorked = 0;
+            let rate = shift.role === "admin" ? 2500 : 2000;
+            return Math.round((rate / FULL_SHIFT_HOURS) * hoursWorked);
+        }
+        
+        function calculateSalaryForMonth(month, year) {
+            let salaryMap = new Map();
+            for (let shift of allShifts) {
+                if (!shift.open || !shift.close) continue;
+                let openDate = new Date(shift.open);
+                if (openDate.getMonth() + 1 === month && openDate.getFullYear() === year) {
+                    let salary = calculateSalaryForShift(shift);
+                    let key = shift.login;
+                    let current = salaryMap.get(key) || { name: shift.name, total: 0, count: 0, role: shift.role, hours: 0 };
+                    current.total += salary;
+                    current.count++;
+                    let hours = (new Date(shift.close) - new Date(shift.open)) / (1000 * 60 * 60);
+                    hours = Math.min(hours, 8);
+                    current.hours += Math.round(hours * 10) / 10;
+                    salaryMap.set(key, current);
+                }
+            }
+            return salaryMap;
+        }
+        
+        function showSalaryReport() {
+            let month = parseInt(document.getElementById("salaryMonth").value);
+            let year = parseInt(document.getElementById("salaryYear").value);
+            let salaryMap = calculateSalaryForMonth(month, year);
+            let monthNames = ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"];
+            let html = `<table class="salary-table"><thead><tr><th>Оператор</th><th>Роль</th><th>Смен</th><th>Часов</th><th>Ставка</th><th>Итого</th></tr></thead><tbody>`;
+            let totalSalary = 0;
+            for (let [login, data] of salaryMap) {
+                let rate = data.role === "admin" ? 2500 : 2000;
+                html += `<tr><td><strong>${escapeHtml(data.name)}</strong></td><td>${data.role === "admin" ? "Администратор" : "Оператор"}</td><td>${data.count}</td><td>${data.hours}</td><td>${rate} ₽</td><td style="font-weight:bold;">${data.total.toLocaleString()} ₽</td></tr>`;
+                totalSalary += data.total;
+            }
+            html += `<tr style="background: var(--blue); color: white;"><td colspan="5"><strong>ИТОГО:</strong></td><td><strong>${totalSalary.toLocaleString()} ₽</strong></td></tr></tbody></table>`;
+            document.getElementById("salaryReportContent").innerHTML = html;
+            window._currentSalaryData = { month, year, salaryMap, totalSalary };
+        }
+        
+        function exportSalaryPayslip() {
+            if (!window._currentSalaryData) { alert("Сначала рассчитайте зарплату"); return; }
+            let { month, year, salaryMap, totalSalary } = window._currentSalaryData;
+            let monthNames = ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"];
+            let date = new Date().toLocaleString();
+            let tableRows = "";
+            for (let [login, data] of salaryMap) {
+                let rate = data.role === "admin" ? 2500 : 2000;
+                tableRows += `<tr><td style="border:1px solid #000; padding:8px;">${escapeHtml(data.name)}</td><td style="border:1px solid #000; padding:8px;">${data.role === "admin" ? "Администратор" : "Оператор"}</td><td style="border:1px solid #000; padding:8px;">${data.count}</td><td style="border:1px solid #000; padding:8px;">${rate} ₽</td><td style="border:1px solid #000; padding:8px;">${data.total.toLocaleString()} ₽</td><td style="border:1px solid #000; padding:8px;">_________________</td></tr>`;
+            }
+            let html = `<div style="font-family: monospace; padding: 20px; max-width: 800px;"><div style="text-align:center;"><h2>A4-ПРИНТ</h2><p>ВЕДОМОСТЬ НА ВЫПЛАТУ ЗАРПЛАТЫ</p><p>за ${monthNames[month-1]} ${year} года</p><p>${date}</p></div><table style="width:100%; border-collapse: collapse;"><thead><tr style="background:#f0f0f0;"><th>ФИО</th><th>Должность</th><th>Смен</th><th>Ставка</th><th>Сумма</th><th>Подпись</th></tr></thead><tbody>${tableRows}<tr style="background:#e8f0fe;"><td colspan="4"><strong>ИТОГО:</strong></td><td><strong>${totalSalary.toLocaleString()} ₽</strong></td><td></td></tr></tbody></table><div style="margin-top:40px;"><div>Главный бухгалтер: _______________</div><div>Руководитель: _______________</div><div style="margin-top:20px;">Деньги получил(а): _________________ / _________________ /</div></div></div>`;
+            let el = document.createElement('div'); el.innerHTML = html; document.body.appendChild(el);
+            html2pdf().set({ margin: 0.5, filename: `A4print_зарплата_${monthNames[month-1]}_${year}.pdf`, html2canvas: { scale: 2 } }).from(el).save().then(() => el.remove());
+        }
+
+        // ========== АДМИН ==========
         function renderAdmin() {
             if (currentUser.role !== "admin") { alert("Доступно только администратору"); return; }
             renderOperatorsStats();
@@ -1311,22 +1174,17 @@
             document.querySelectorAll(".deleteService").forEach(btn => btn.onclick = () => { let id = parseInt(btn.getAttribute("data-id")); if (services.length <= 1) return alert("Нельзя удалить последнюю услугу"); services = services.filter(x => x.id !== id); saveServices(); renderServices(); renderAdmin(); });
             let goodsDiv = document.getElementById("adminGoodsList");
             goodsDiv.innerHTML = "";
-            goods.forEach(g => { goodsDiv.innerHTML += `<div style="display:flex; gap:12px; margin-bottom:12px; flex-wrap:wrap;"><span style="flex:2;">${g.name}</span><span>${g.price} ₽</span><input type="number" id="stock_${g.id}" value="${g.stock}" style="width:80px;"><button class="updateGoodsStock" data-id="${g.id}" class="btn-primary">📦</button><button class="updateGoodsPrice" data-id="${g.id}" class="btn-primary" style="background:var(--orange); color:black;">💰</button><button class="deleteGoods" data-id="${g.id}" class="btn-danger">🗑</button></div>`; });
+            goods.forEach(g => { goodsDiv.innerHTML += `<div style="display:flex; gap:12px; margin-bottom:12px;"><span style="flex:2;">${g.name}</span><span>${g.price} ₽</span><input type="number" id="stock_${g.id}" value="${g.stock}" style="width:80px;"><button class="updateGoodsStock" data-id="${g.id}" class="btn-primary">📦</button><button class="updateGoodsPrice" data-id="${g.id}" class="btn-primary" style="background:var(--orange); color:black;">💰</button><button class="deleteGoods" data-id="${g.id}" class="btn-danger">🗑</button></div>`; });
             document.querySelectorAll(".updateGoodsStock").forEach(btn => btn.onclick = () => { let id = parseInt(btn.getAttribute("data-id")); let g = goods.find(x => x.id === id); if (g) { g.stock = parseInt(document.getElementById(`stock_${id}`).value); if (g.stock < 0) g.stock = 0; saveGoods(); renderGoods(); renderAdmin(); showSyncStatus("✅ Склад обновлён"); } });
             document.querySelectorAll(".updateGoodsPrice").forEach(btn => btn.onclick = () => { let id = parseInt(btn.getAttribute("data-id")); let newPrice = prompt("Новая цена:"); if (newPrice && !isNaN(newPrice)) { let g = goods.find(x => x.id === id); if (g) { g.price = parseInt(newPrice); saveGoods(); renderGoods(); renderAdmin(); showSyncStatus("✅ Цена обновлена"); } } });
             document.querySelectorAll(".deleteGoods").forEach(btn => btn.onclick = () => { let id = parseInt(btn.getAttribute("data-id")); if (confirm("Удалить товар?")) { goods = goods.filter(x => x.id !== id); saveGoods(); renderGoods(); renderAdmin(); } });
         }
 
+        // ========== ИНИЦИАЛИЗАЦИЯ ==========
         function initTabs() { const tabs = document.querySelectorAll('.category-tab'); const panels = { services: document.getElementById('servicesPanel'), goods: document.getElementById('goodsPanel') }; tabs.forEach(tab => { tab.onclick = () => { tabs.forEach(t => t.classList.remove('active')); tab.classList.add('active'); Object.values(panels).forEach(p => p.classList.remove('active')); panels[tab.getAttribute('data-cat')].classList.add('active'); }; }); }
         function initAdminTabs() { const tabs = document.querySelectorAll('#adminModal .tab-btn'); const contents = { 'admin-stats': document.getElementById('admin-stats'), 'admin-salary': document.getElementById('admin-salary'), 'admin-services': document.getElementById('admin-services'), 'admin-goods': document.getElementById('admin-goods') }; tabs.forEach(tab => { tab.onclick = () => { tabs.forEach(t => t.classList.remove('active')); tab.classList.add('active'); Object.values(contents).forEach(c => c.classList.remove('active')); contents[tab.getAttribute('data-tab')].classList.add('active'); }; }); }
         function initSearch() { let searchService = document.getElementById('searchService'); let searchGoods = document.getElementById('searchGoods'); if (searchService) { searchService.oninput = () => { let q = searchService.value.toLowerCase(); renderServices(services.filter(s => s.name.toLowerCase().includes(q))); }; } if (searchGoods) { searchGoods.oninput = () => { let q = searchGoods.value.toLowerCase(); renderGoods(goods.filter(g => g.name.toLowerCase().includes(q))); }; } }
-        function initYearSelect() {
-            let yearSelect = document.getElementById("salaryYear");
-            if (!yearSelect) return;
-            let currentYear = new Date().getFullYear();
-            yearSelect.innerHTML = "";
-            for (let y = 2023; y <= currentYear + 1; y++) { let opt = document.createElement("option"); opt.value = y; opt.textContent = y; if (y === currentYear) opt.selected = true; yearSelect.appendChild(opt); }
-        }
+        function initYearSelect() { let yearSelect = document.getElementById("salaryYear"); if (!yearSelect) return; let currentYear = new Date().getFullYear(); yearSelect.innerHTML = ""; for (let y = 2023; y <= currentYear + 1; y++) { let opt = document.createElement("option"); opt.value = y; opt.textContent = y; if (y === currentYear) opt.selected = true; yearSelect.appendChild(opt); } }
         function showSyncStatus(msg) { let d = document.getElementById("syncStatus"); if (d) { d.textContent = msg; setTimeout(() => { if (d.textContent === msg) d.textContent = "💾 Готово"; }, 2000); } }
         function toggleTheme() { document.body.classList.toggle("dark"); localStorage.setItem("a4print_theme", document.body.classList.contains("dark") ? "dark" : "light"); }
         
@@ -1408,7 +1266,6 @@
             document.getElementById("reportFullBtn").onclick = reportFull;
             document.getElementById("cancelReportBtn").onclick = () => document.getElementById("reportChoiceModal").style.display = "none";
             
-            // Редактирование заказа
             document.getElementById("closeEditModal").onclick = () => document.getElementById("editOrderModal").style.display = "none";
             document.getElementById("cancelEditBtn").onclick = () => document.getElementById("editOrderModal").style.display = "none";
             document.getElementById("editAddItemBtn").onclick = addItemToEdit;
