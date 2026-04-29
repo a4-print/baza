@@ -392,7 +392,6 @@
             border-bottom: 1px solid var(--gray-200);
         }
         
-        /* Кнопка перехода в сервисный центр */
         .service-link {
             display: flex;
             align-items: center;
@@ -563,7 +562,7 @@
     <!-- Модалка комментария к смене -->
     <div id="shiftCommentModal" class="modal">
         <div class="modal-card">
-            <h3 style="margin-bottom: 16px;">📝 Комментарий к смене</h3>
+            <h3 id="shiftCommentTitle" style="margin-bottom: 16px;">📝 Комментарий к смене</h3>
             <textarea id="shiftCommentText" rows="3" style="margin: 16px 0;"></textarea>
             <div style="display: flex; gap: 12px; justify-content: flex-end;">
                 <button id="shiftCommentCancel" class="btn-outline">Отмена</button>
@@ -683,7 +682,15 @@
         function saveGoods() { localStorage.setItem(GOODS_KEY, JSON.stringify(goods)); }
         function saveOperators() { localStorage.setItem(OPERATORS_KEY, JSON.stringify(operators)); }
         function saveOrders() { localStorage.setItem(ORDERS_KEY, JSON.stringify(allOrders)); }
-        function saveShift() { localStorage.setItem(SHIFT_KEY, JSON.stringify({ open: shiftOpen, close: shiftClose, openComment: shiftOpenComment, closeComment: shiftCloseComment, operator: currentUser?.name })); }
+        function saveShift() { 
+            localStorage.setItem(SHIFT_KEY, JSON.stringify({ 
+                open: shiftOpen, 
+                close: shiftClose, 
+                openComment: shiftOpenComment, 
+                closeComment: shiftCloseComment, 
+                operator: currentUser?.name 
+            })); 
+        }
         function loadAllShifts() { let s = localStorage.getItem(SHIFTS_LIST_KEY); if (s) allShifts = JSON.parse(s); }
         function saveAllShifts() { localStorage.setItem(SHIFTS_LIST_KEY, JSON.stringify(allShifts)); }
         function addShiftToHistory(shiftData) { allShifts.push(shiftData); saveAllShifts(); }
@@ -723,7 +730,15 @@
         // ========== СМЕНА ==========
         function loadShift() { 
             let s = localStorage.getItem(SHIFT_KEY); 
-            if (s) { let d = JSON.parse(s); if (d.operator === currentUser?.name) { shiftOpen = d.open; shiftClose = d.close; shiftOpenComment = d.openComment || ""; shiftCloseComment = d.closeComment || ""; } } 
+            if (s) { 
+                let d = JSON.parse(s); 
+                if (d.operator === currentUser?.name) { 
+                    shiftOpen = d.open; 
+                    shiftClose = d.close; 
+                    shiftOpenComment = d.openComment || ""; 
+                    shiftCloseComment = d.closeComment || ""; 
+                } 
+            } 
             updateShiftUI(); 
             updateShiftFinanceDisplay();
         }
@@ -764,6 +779,25 @@
         function confirmShiftWithComment() { 
             let comment = document.getElementById("shiftCommentText").value.trim(); 
             if (window._pendingShiftAction === "open") { 
+                // Закрываем предыдущую смену, если она была открыта (но не закрыта)
+                if (shiftOpen && !shiftClose) {
+                    // Если есть незакрытая смена, сначала закрываем её с комментарием
+                    let finance = getShiftFinance();
+                    shiftClose = new Date().toLocaleString(); 
+                    shiftCloseComment = comment || "Принудительное закрытие при открытии новой смены";
+                    saveShift();
+                    let shiftRecord = { 
+                        login: currentUser.username, 
+                        name: currentUser.name, 
+                        role: currentUser.role, 
+                        open: shiftOpen, 
+                        close: shiftClose, 
+                        openComment: shiftOpenComment, 
+                        closeComment: shiftCloseComment 
+                    };
+                    addShiftToHistory(shiftRecord);
+                }
+                // Открываем новую смену
                 shiftOpen = new Date().toLocaleString(); 
                 shiftClose = null; 
                 shiftOpenComment = comment; 
@@ -771,20 +805,36 @@
                 saveShift(); 
                 updateShiftUI(); 
                 updateShiftFinanceDisplay();
-                alert("✅ Смена открыта: " + shiftOpen); 
+                alert("✅ Новая смена открыта: " + shiftOpen); 
             } else if (window._pendingShiftAction === "close") { 
-                if (!shiftOpen || shiftClose) { 
-                    alert("Смена не открыта"); 
+                if (!shiftOpen) { 
+                    alert("Нет открытой смены для закрытия"); 
                     document.getElementById("shiftCommentModal").style.display = "none"; 
+                    window._pendingShiftAction = null;
                     return; 
                 } 
+                if (shiftClose) {
+                    alert("Смена уже закрыта");
+                    document.getElementById("shiftCommentModal").style.display = "none"; 
+                    window._pendingShiftAction = null;
+                    return;
+                }
                 let finance = getShiftFinance();
                 shiftClose = new Date().toLocaleString(); 
                 shiftCloseComment = comment; 
                 saveShift();
-                let shiftRecord = { login: currentUser.username, name: currentUser.name, role: currentUser.role, open: shiftOpen, close: shiftClose, openComment: shiftOpenComment, closeComment: shiftCloseComment };
+                let shiftRecord = { 
+                    login: currentUser.username, 
+                    name: currentUser.name, 
+                    role: currentUser.role, 
+                    open: shiftOpen, 
+                    close: shiftClose, 
+                    openComment: shiftOpenComment, 
+                    closeComment: shiftCloseComment 
+                };
                 addShiftToHistory(shiftRecord);
                 updateShiftUI(); 
+                updateShiftFinanceDisplay();
                 alert(`✅ Смена закрыта: ${shiftClose}\n💰 Выручка: ${finance.revenue} ₽\n💵 Наличные: ${finance.cash} ₽\n💳 Карта: ${finance.card} ₽`); 
             } 
             document.getElementById("shiftCommentModal").style.display = "none"; 
