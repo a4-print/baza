@@ -337,23 +337,54 @@
         .burger-menu.show { display: flex; }
         .burger-menu button { width: 100%; text-align: center; }
         
-        /* Стили для цен ремонта */
-        .repair-prices-panel {
+        /* АККОРДЕОН ДЛЯ ЦЕН */
+        .accordion {
             background: var(--gray-100);
             border-radius: 12px;
-            padding: 12px;
-            margin-top: 16px;
+            margin-bottom: 12px;
+            overflow: hidden;
         }
+        .accordion-header {
+            padding: 12px 16px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            font-size: 13px;
+            background: var(--gray-100);
+            transition: all 0.15s;
+        }
+        .accordion-header:hover { background: var(--gray-200); }
+        .accordion-icon { font-size: 12px; transition: transform 0.2s; }
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+            background: var(--gray-50);
+        }
+        .accordion-content.open { max-height: 300px; }
         .price-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 8px 0;
+            padding: 10px 16px;
             border-bottom: 1px solid var(--gray-200);
+            cursor: pointer;
+            transition: all 0.1s;
         }
+        .price-item:hover { background: var(--gray-200); }
         .price-item:last-child { border-bottom: none; }
-        .price-name { font-size: 12px; font-weight: 500; }
-        .price-value { font-size: 13px; font-weight: 600; color: var(--blue); }
+        .price-name { font-size: 13px; font-weight: 500; }
+        .price-value { font-size: 14px; font-weight: 700; color: var(--blue); }
+        .price-calc-badge { font-size: 10px; color: var(--green); margin-left: 8px; }
+        
+        .repair-prices-panel {
+            background: var(--gray-100);
+            border-radius: 12px;
+            padding: 8px;
+            margin-top: 16px;
+        }
         
         @media (max-width: 850px) {
             body { padding: 16px; }
@@ -439,11 +470,11 @@
                         <div id="modelsList" class="models-list"></div>
                     </div>
                     
-                    <!-- Примерные цены ремонта -->
+                    <!-- АККОРДЕОН С ПРИМЕРНЫМИ ЦЕНАМИ -->
                     <div class="repair-prices-panel" id="pricesPanel" style="display:none;">
-                        <div class="quick-add-title">💰 Примерные цены (рыночные)</div>
-                        <div id="repairPricesList"></div>
-                        <div style="font-size:10px; color:var(--gray-500); margin-top:8px;">* Цены можно изменить в админ-панели</div>
+                        <div class="quick-add-title" style="margin-bottom: 8px;">💰 Примерные цены (рыночные)</div>
+                        <div id="pricesAccordion"></div>
+                        <div style="font-size:10px; color:var(--gray-500); margin-top:8px;">* Нажмите на цену для быстрой вставки в стоимость</div>
                     </div>
                     
                     <div class="form-row">
@@ -574,7 +605,6 @@
                 <input type="number" id="newPriceValue" placeholder="Цена (₽)" style="flex:1;">
                 <button id="addPriceBtn" class="btn-primary">Добавить</button>
             </div>
-            <div class="instruction-note" style="margin-top: 12px; font-size: 12px; color: var(--gray-500);">📌 Цены подставляются автоматически при выборе устройства</div>
         </div>
     </div>
 
@@ -596,75 +626,48 @@
             { id: 10, name: "📺 Телевизор" }, { id: 11, name: "🎧 Наушники/Колонки" }, { id: 12, name: "🖨️ МФУ/Принтер" }
         ];
         
-        // ========== БРЕНДЫ (с добавлением китайских) ==========
+        // ========== БРЕНДЫ ==========
         let brands = [
-            // Телефоны (категория 1)
             { id: 1, categoryId: 1, name: "Apple" }, { id: 2, categoryId: 1, name: "Samsung" }, { id: 3, categoryId: 1, name: "Xiaomi" },
             { id: 4, categoryId: 1, name: "OPPO" }, { id: 5, categoryId: 1, name: "vivo" }, { id: 6, categoryId: 1, name: "Google Pixel" },
             { id: 7, categoryId: 1, name: "OnePlus" }, { id: 8, categoryId: 1, name: "Huawei" }, { id: 9, categoryId: 1, name: "Honor" },
-            { id: 10, categoryId: 1, name: "Realme" }, { id: 11, categoryId: 1, name: "Motorola" }, { id: 12, categoryId: 1, name: "Nokia" },
-            { id: 13, categoryId: 1, name: "Tecno" }, { id: 14, categoryId: 1, name: "Infinix" }, { id: 15, categoryId: 1, name: "Itel" },
-            // Планшеты (категория 2)
+            { id: 10, categoryId: 1, name: "Realme" }, { id: 11, categoryId: 1, name: "Motorola" }, { id: 12, categoryId: 1, name: "Tecno" },
             { id: 20, categoryId: 2, name: "Apple iPad" }, { id: 21, categoryId: 2, name: "Samsung" }, { id: 22, categoryId: 2, name: "Lenovo" },
             { id: 23, categoryId: 2, name: "Huawei" }, { id: 24, categoryId: 2, name: "Xiaomi" }, { id: 25, categoryId: 2, name: "Teclast" },
-            { id: 26, categoryId: 2, name: "Amazon Fire" }, { id: 27, categoryId: 2, name: "Microsoft Surface" }, { id: 28, categoryId: 2, name: "Google Pixel" },
-            // Ноутбуки (категория 3)
             { id: 30, categoryId: 3, name: "Apple MacBook" }, { id: 31, categoryId: 3, name: "Lenovo" }, { id: 32, categoryId: 3, name: "HP" },
             { id: 33, categoryId: 3, name: "Dell" }, { id: 34, categoryId: 3, name: "Asus" }, { id: 35, categoryId: 3, name: "Acer" },
-            { id: 36, categoryId: 3, name: "MSI" }, { id: 37, categoryId: 3, name: "Huawei" }, { id: 38, categoryId: 3, name: "Xiaomi" },
-            // Робот-пылесосы (категория 5)
             { id: 50, categoryId: 5, name: "Xiaomi" }, { id: 51, categoryId: 5, name: "Roborock" }, { id: 52, categoryId: 5, name: "iRobot" },
-            { id: 53, categoryId: 5, name: "Panda" }, { id: 54, categoryId: 5, name: "Dreame" }, { id: 55, categoryId: 5, name: "Ecovacs" },
-            { id: 56, categoryId: 5, name: "3i" }, { id: 57, categoryId: 5, name: "Neatsvor" },
-            // Бытовая техника
             { id: 60, categoryId: 6, name: "LG" }, { id: 61, categoryId: 6, name: "Samsung" }, { id: 62, categoryId: 6, name: "Bosch" },
-            { id: 63, categoryId: 6, name: "Indesit" }, { id: 64, categoryId: 6, name: "Whirlpool" }, { id: 65, categoryId: 6, name: "Haier" },
-            { id: 66, categoryId: 6, name: "Midea" }, { id: 67, categoryId: 6, name: "Beko" },
-            { id: 70, categoryId: 7, name: "Samsung" }, { id: 71, categoryId: 7, name: "LG" }, { id: 72, categoryId: 7, name: "Panasonic" },
-            { id: 73, categoryId: 7, name: "Midea" },
-            { id: 80, categoryId: 8, name: "LG" }, { id: 81, categoryId: 8, name: "Samsung" }, { id: 82, categoryId: 8, name: "Bosch" },
-            { id: 83, categoryId: 8, name: "Haier" }, { id: 84, categoryId: 8, name: "Atlant" }, { id: 85, categoryId: 8, name: "Midea" },
-            { id: 90, categoryId: 9, name: "De'Longhi" }, { id: 91, categoryId: 9, name: "Saeco" }, { id: 92, categoryId: 9, name: "Philips" },
-            { id: 93, categoryId: 9, name: "Nivona" }, { id: 94, categoryId: 9, name: "Krups" },
+            { id: 70, categoryId: 7, name: "Samsung" }, { id: 71, categoryId: 7, name: "LG" }, { id: 80, categoryId: 8, name: "LG" },
+            { id: 81, categoryId: 8, name: "Samsung" }, { id: 82, categoryId: 8, name: "Bosch" }, { id: 90, categoryId: 9, name: "De'Longhi" },
             { id: 100, categoryId: 10, name: "LG" }, { id: 101, categoryId: 10, name: "Samsung" }, { id: 102, categoryId: 10, name: "Sony" },
-            { id: 103, categoryId: 10, name: "Xiaomi" }, { id: 104, categoryId: 10, name: "TCL" },
             { id: 110, categoryId: 11, name: "Apple" }, { id: 111, categoryId: 11, name: "Sony" }, { id: 112, categoryId: 11, name: "JBL" },
-            { id: 113, categoryId: 11, name: "Samsung" }, { id: 114, categoryId: 11, name: "Xiaomi" }, { id: 115, categoryId: 11, name: "Huawei" },
-            { id: 120, categoryId: 12, name: "HP" }, { id: 121, categoryId: 12, name: "Canon" }, { id: 122, categoryId: 12, name: "Epson" },
-            { id: 123, categoryId: 12, name: "Brother" }, { id: 124, categoryId: 12, name: "Xerox" }, { id: 125, categoryId: 12, name: "Kyocera" }
+            { id: 120, categoryId: 12, name: "HP" }, { id: 121, categoryId: 12, name: "Canon" }, { id: 122, categoryId: 12, name: "Epson" }
         ];
         
-        // ========== МОДЕЛИ (самые ходовые) ==========
+        // ========== МОДЕЛИ ==========
         let models = [
             { id: 1, brandId: 1, name: "iPhone 16 Pro Max" }, { id: 2, brandId: 1, name: "iPhone 16 Pro" }, { id: 3, brandId: 1, name: "iPhone 16" },
-            { id: 4, brandId: 1, name: "iPhone 15 Pro Max" }, { id: 5, brandId: 1, name: "iPhone 15 Pro" }, { id: 6, brandId: 1, name: "iPhone 15" },
-            { id: 7, brandId: 1, name: "iPhone 14" }, { id: 8, brandId: 1, name: "iPhone 13" }, { id: 9, brandId: 1, name: "iPhone SE" },
-            { id: 10, brandId: 2, name: "Galaxy S24 Ultra" }, { id: 11, brandId: 2, name: "Galaxy S24+" }, { id: 12, brandId: 2, name: "Galaxy S24" },
-            { id: 13, brandId: 2, name: "Galaxy A55" }, { id: 14, brandId: 2, name: "Galaxy A35" }, { id: 15, brandId: 2, name: "Galaxy Z Fold 6" },
-            { id: 16, brandId: 3, name: "Xiaomi 14" }, { id: 17, brandId: 3, name: "Xiaomi 14 Ultra" }, { id: 18, brandId: 3, name: "Redmi Note 13" },
-            { id: 19, brandId: 3, name: "POCO F6" }, { id: 20, brandId: 4, name: "OPPO Find X8" }, { id: 21, brandId: 5, name: "vivo X100 Pro" },
-            { id: 22, brandId: 6, name: "Pixel 9 Pro XL" }, { id: 23, brandId: 7, name: "OnePlus 12" }, { id: 24, brandId: 8, name: "Huawei P60 Pro" },
-            { id: 25, brandId: 9, name: "Honor Magic 6 Pro" }, { id: 26, brandId: 10, name: "Realme GT 5" },
-            { id: 30, brandId: 20, name: "iPad Pro 13" }, { id: 31, brandId: 20, name: "iPad Air" }, { id: 32, brandId: 20, name: "iPad 10" },
-            { id: 33, brandId: 21, name: "Galaxy Tab S11 Ultra" }, { id: 34, brandId: 22, name: "Lenovo Tab P12" }, { id: 35, brandId: 23, name: "Huawei MatePad Pro" },
-            { id: 36, brandId: 24, name: "Xiaomi Pad 8" }, { id: 37, brandId: 25, name: "Teclast T50" },
-            { id: 40, brandId: 30, name: "MacBook Pro 16" }, { id: 41, brandId: 30, name: "MacBook Air 15" }, { id: 42, brandId: 31, name: "ThinkPad X1 Carbon" },
-            { id: 43, brandId: 32, name: "HP Spectre x360" }, { id: 44, brandId: 33, name: "XPS 15" }, { id: 45, brandId: 34, name: "ROG Zephyrus" }
+            { id: 4, brandId: 1, name: "iPhone 15 Pro Max" }, { id: 5, brandId: 1, name: "iPhone 15" }, { id: 6, brandId: 1, name: "iPhone 14" },
+            { id: 7, brandId: 2, name: "Galaxy S24 Ultra" }, { id: 8, brandId: 2, name: "Galaxy S24" }, { id: 9, brandId: 2, name: "Galaxy A55" },
+            { id: 10, brandId: 3, name: "Xiaomi 14" }, { id: 11, brandId: 3, name: "Redmi Note 13" }, { id: 12, brandId: 3, name: "POCO F6" },
+            { id: 13, brandId: 20, name: "iPad Pro 13" }, { id: 14, brandId: 20, name: "iPad Air" }, { id: 15, brandId: 21, name: "Galaxy Tab S11" },
+            { id: 16, brandId: 22, name: "Lenovo Tab P12" }, { id: 17, brandId: 23, name: "MatePad Pro" }, { id: 18, brandId: 30, name: "MacBook Pro 16" },
+            { id: 19, brandId: 30, name: "MacBook Air 15" }, { id: 20, brandId: 31, name: "ThinkPad X1" }, { id: 21, brandId: 32, name: "HP Spectre" }
         ];
         
-        // ========== ЦЕНЫ НА РЕМОНТ (рыночные, но можно править) ==========
+        // ========== ЦЕНЫ НА РЕМОНТ ==========
         let repairPrices = [
-            { id: 1, name: "Замена экрана", price: 3500 },
-            { id: 2, name: "Замена аккумулятора", price: 1800 },
-            { id: 3, name: "Замена разъёма", price: 1200 },
-            { id: 4, name: "Ремонт материнской платы", price: 4500 },
-            { id: 5, name: "Чистка/профилактика", price: 800 },
-            { id: 6, name: "Перепрошивка", price: 1500 },
-            { id: 7, name: "Замена динамика/микрофона", price: 1300 },
-            { id: 8, name: "Замена кнопок", price: 900 },
-            { id: 9, name: "Ремонт блока питания", price: 2000 },
-            { id: 10, name: "Замена помпы (стиралка)", price: 3500 },
-            { id: 11, name: "Диагностика", price: 500 }
+            { id: 1, name: "🔧 Замена экрана", price: 3500 },
+            { id: 2, name: "🔋 Замена аккумулятора", price: 1800 },
+            { id: 3, name: "🔌 Замена разъёма", price: 1200 },
+            { id: 4, name: "💻 Ремонт материнской платы", price: 4500 },
+            { id: 5, name: "🧹 Чистка/профилактика", price: 800 },
+            { id: 6, name: "📲 Перепрошивка", price: 1500 },
+            { id: 7, name: "🔊 Замена динамика/микрофона", price: 1300 },
+            { id: 8, name: "🔘 Замена кнопок", price: 900 },
+            { id: 9, name: "⚡ Ремонт блока питания", price: 2000 },
+            { id: 10, name: "🩺 Диагностика", price: 500 }
         ];
         
         let repairs = [];
@@ -695,21 +698,110 @@
             renderRepairs();
             renderCompleted();
             updateStats();
-            renderPricesPanel();
+            renderPricesAccordion();
             
             let quickPanel = document.getElementById("quickAddPanel");
             if (quickPanel) quickPanel.style.display = currentUser?.role === "admin" ? "block" : "none";
         }
         
-        function renderPricesPanel() {
-            const container = document.getElementById("repairPricesList");
+        // АККОРДЕОН С ЦЕНАМИ
+        function renderPricesAccordion() {
+            const container = document.getElementById("pricesAccordion");
             if (!container) return;
             container.innerHTML = "";
-            repairPrices.forEach(p => {
-                let div = document.createElement("div");
-                div.className = "price-item";
-                div.innerHTML = `<span class="price-name">${p.name}</span><span class="price-value">${p.price.toLocaleString()} ₽</span>`;
-                container.appendChild(div);
+            // Группируем цены по категориям
+            const priceCategories = [
+                { name: "📱 Экран и корпус", items: repairPrices.filter(p => p.name.includes("экран") || p.name.includes("кнопк")) },
+                { name: "🔋 Электроника и питание", items: repairPrices.filter(p => p.name.includes("аккумулятор") || p.name.includes("разъём") || p.name.includes("плат") || p.name.includes("блок питания")) },
+                { name: "🛠️ Обслуживание и софт", items: repairPrices.filter(p => p.name.includes("чистк") || p.name.includes("Перепрошивк") || p.name.includes("Диагностик")) }
+            ];
+            
+            priceCategories.forEach(cat => {
+                if (cat.items.length === 0) return;
+                let accordion = document.createElement("div");
+                accordion.className = "accordion";
+                accordion.innerHTML = `
+                    <div class="accordion-header">
+                        <span>${cat.name}</span>
+                        <span class="accordion-icon">▼</span>
+                    </div>
+                    <div class="accordion-content">
+                        ${cat.items.map(p => `
+                            <div class="price-item" data-price="${p.price}" data-name="${p.name}">
+                                <span class="price-name">${p.name}</span>
+                                <span class="price-value">${p.price.toLocaleString()} ₽</span>
+                                <span class="price-calc-badge">📋 выбрать</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                container.appendChild(accordion);
+            });
+            
+            // Добавляем остальные цены, не попавшие в категории
+            let otherPrices = repairPrices.filter(p => 
+                !p.name.includes("экран") && !p.name.includes("кнопк") && 
+                !p.name.includes("аккумулятор") && !p.name.includes("разъём") && 
+                !p.name.includes("плат") && !p.name.includes("блок питания") &&
+                !p.name.includes("чистк") && !p.name.includes("Перепрошивк") && !p.name.includes("Диагностик")
+            );
+            if (otherPrices.length > 0) {
+                let accordion = document.createElement("div");
+                accordion.className = "accordion";
+                accordion.innerHTML = `
+                    <div class="accordion-header">
+                        <span>🔧 Другие работы</span>
+                        <span class="accordion-icon">▼</span>
+                    </div>
+                    <div class="accordion-content">
+                        ${otherPrices.map(p => `
+                            <div class="price-item" data-price="${p.price}" data-name="${p.name}">
+                                <span class="price-name">${p.name}</span>
+                                <span class="price-value">${p.price.toLocaleString()} ₽</span>
+                                <span class="price-calc-badge">📋 выбрать</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                container.appendChild(accordion);
+            }
+            
+            // Обработчики для аккордеонов
+            document.querySelectorAll(".accordion-header").forEach(header => {
+                header.onclick = () => {
+                    let content = header.nextElementSibling;
+                    let icon = header.querySelector(".accordion-icon");
+                    if (content.classList.contains("open")) {
+                        content.classList.remove("open");
+                        icon.textContent = "▼";
+                    } else {
+                        content.classList.add("open");
+                        icon.textContent = "▲";
+                    }
+                };
+            });
+            
+            // Обработчики для выбора цены
+            document.querySelectorAll(".price-item").forEach(item => {
+                item.onclick = (e) => {
+                    e.stopPropagation();
+                    let price = parseInt(item.getAttribute("data-price"));
+                    let name = item.getAttribute("data-name");
+                    document.getElementById("estimatedCost").value = price;
+                    // Также можно обновить тип поломки
+                    let faultSelect = document.getElementById("faultType");
+                    if (faultSelect && name) {
+                        let shortName = name.replace(/^[^a-zA-Zа-яА-Я]+/, "");
+                        if (!faultSelect.querySelector(`option[value="${shortName}"]`)) {
+                            // если нет точного совпадения, просто показываем
+                        }
+                    }
+                    showSyncStatus(`✅ Установлена цена: ${price} ₽ (${name})`);
+                    // Показываем уведомление
+                    let priceDiv = item.querySelector(".price-calc-badge");
+                    priceDiv.textContent = "✓ выбрано";
+                    setTimeout(() => { if (priceDiv) priceDiv.textContent = "📋 выбрать"; }, 1500);
+                };
             });
         }
         
@@ -762,9 +854,6 @@
             const brandModels = models.filter(m => m.brandId === brandId);
             renderModels(brandModels);
             document.getElementById("modelsSection").style.display = "block";
-            // Устанавливаем примерную стоимость
-            let avgPrice = repairPrices.reduce((sum, p) => sum + p.price, 0) / repairPrices.length;
-            document.getElementById("estimatedCost").value = Math.round(avgPrice);
         }
         
         function renderModels(modelsToShow) {
@@ -1054,7 +1143,6 @@
             brandSelect.innerHTML = "";
             brands.forEach(b => { let opt = document.createElement("option"); opt.value = b.id; opt.textContent = b.name; brandSelect.appendChild(opt); });
             
-            // Цены
             let pricesDiv = document.getElementById("adminPricesList");
             pricesDiv.innerHTML = "";
             repairPrices.forEach(p => {
@@ -1070,7 +1158,7 @@
                     let id = parseInt(btn.getAttribute("data-id"));
                     let newPrice = parseInt(document.getElementById(`price_${id}`).value);
                     let price = repairPrices.find(p => p.id === id);
-                    if (price && newPrice > 0) { price.price = newPrice; savePrices(); renderPricesPanel(); renderAdminPanel(); showSyncStatus(`✅ Цена обновлена`); }
+                    if (price && newPrice > 0) { price.price = newPrice; savePrices(); renderPricesAccordion(); renderAdminPanel(); showSyncStatus(`✅ Цена обновлена`); }
                 };
             });
             document.querySelectorAll(".delete-price").forEach(btn => {
@@ -1079,7 +1167,7 @@
                     if (repairPrices.length <= 1) { alert("Нельзя удалить последнюю позицию"); return; }
                     repairPrices = repairPrices.filter(p => p.id !== id);
                     savePrices();
-                    renderPricesPanel();
+                    renderPricesAccordion();
                     renderAdminPanel();
                     showSyncStatus(`🗑 Цена удалена`);
                 };
@@ -1174,7 +1262,7 @@
             document.getElementById("addPriceBtn").onclick = () => {
                 let name = document.getElementById("newPriceName").value.trim();
                 let price = parseInt(document.getElementById("newPriceValue").value);
-                if (name && price > 0) { repairPrices.push({ id: Date.now(), name: name, price: price }); savePrices(); renderPricesPanel(); renderAdminPanel(); showSyncStatus(`✅ Цена добавлена`); }
+                if (name && price > 0) { repairPrices.push({ id: Date.now(), name: name, price: price }); savePrices(); renderPricesAccordion(); renderAdminPanel(); showSyncStatus(`✅ Цена добавлена`); }
                 else alert("Введите название и цену");
             };
             window.onclick = (e) => { if (e.target === admModal) admModal.style.display = "none"; };
