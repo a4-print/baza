@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>A4-Принт | Копировальный центр + Автосинхронизация Google</title>
+    <title>A4-Принт | Копировальный центр</title>
     <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
@@ -67,7 +67,7 @@
         .fast-service-row { display: flex; gap: 10px; flex-wrap: wrap; }
         .fast-service-row input { flex: 1; min-width: 120px; }
         .cart-list { display: flex; flex-direction: column; gap: 10px; max-height: 320px; overflow-y: auto; margin-bottom: 20px; }
-        .cart-item { background: var(--gray-50); border-radius: 10px; padding: 12px 14px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; border-left: 3px solid var(--blue); position: relative; }
+        .cart-item { background: var(--gray-50); border-radius: 10px; padding: 12px 14px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; border-left: 3px solid var(--blue); }
         .cart-item-info { flex: 2; }
         .cart-item-name { font-weight: 600; font-size: 13px; margin-bottom: 4px; }
         .cart-item-detail { font-size: 11px; color: var(--gray-500); }
@@ -125,6 +125,7 @@
 </head>
 <body>
 
+    <!-- Форма входа -->
     <div id="loginOverlay" class="modal" style="display: flex;">
         <div class="modal-card" style="max-width: 380px;">
             <div style="text-align:center; margin-bottom: 20px;">
@@ -179,6 +180,7 @@
                 </div>
             </div>
 
+            <!-- Полоса смены -->
             <div class="shift-bar">
                 <div>
                     <span>🕒 Смена: <strong id="shiftStatus">Закрыта</strong></span>
@@ -238,6 +240,7 @@
 
     <div id="syncStatus" class="sync-status">💾 Готово</div>
 
+    <!-- Модалка выбора отчёта -->
     <div id="reportChoiceModal" class="modal">
         <div class="modal-card">
             <h3 style="margin-bottom: 20px; text-align:center;">📊 ВЫБЕРИТЕ ТИП ОТЧЁТА</h3>
@@ -252,6 +255,7 @@
         </div>
     </div>
 
+    <!-- Модалка комментария к смене -->
     <div id="shiftCommentModal" class="modal">
         <div class="modal-card">
             <h3 id="shiftCommentTitle" style="margin-bottom: 16px;">📝 Комментарий к смене</h3>
@@ -260,6 +264,7 @@
         </div>
     </div>
 
+    <!-- Модалка редактирования заказа -->
     <div id="editOrderModal" class="modal">
         <div class="modal-card" style="max-width: 700px;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;"><h2>✏️ Редактирование заказа №<span id="editOrderId"></span></h2><button id="closeEditModal" style="background:none; font-size: 24px;">✕</button></div>
@@ -281,6 +286,7 @@
         </div>
     </div>
 
+    <!-- Админ-панель -->
     <div id="adminModal" class="modal">
         <div class="modal-card">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 24px;"><h2>Администрирование</h2><button id="closeAdminModal" style="background:none; font-size: 24px;">✕</button></div>
@@ -321,10 +327,10 @@
     <div id="printBlankContainer" style="display: none;"></div>
 
     <script>
-        // ========== КОНФИГУРАЦИЯ GOOGLE (URL уже вставлен) ==========
+        // ========== КОНФИГУРАЦИЯ GOOGLE ==========
         let GOOGLE_WEBAPP_URL = localStorage.getItem("google_webapp_url") || "https://script.google.com/macros/s/AKfycbzXHLExmiAE6LYvcNO1iyAoLcYxryg5rdf_pvBAL05YfDd0Us-GHmdMJqPIvnjqZHI/exec";
         
-        // ========== ПОЛЬЗОВАТЕЛИ (ТОЛЬКО ТРИ ОПЕРАТОРА) ==========
+        // ========== ПОЛЬЗОВАТЕЛИ ==========
         let operators = { 
             "pavel": { password: "pavel123", name: "Павел", role: "admin", rate: 2500 }, 
             "ksenia": { password: "ksenia123", name: "Ксения", role: "operator", rate: 2000 }, 
@@ -366,12 +372,9 @@
         function saveAllShifts() { localStorage.setItem(SHIFTS_LIST_KEY, JSON.stringify(allShifts)); }
         function addShiftToHistory(shiftData) { allShifts.push(shiftData); saveAllShifts(); renderShiftsHistory(); }
 
-        // ========== ОЧИСТКА СТАРЫХ ОПЕРАТОРОВ ИЗ СТАТИСТИКИ ==========
+        // ========== ОЧИСТКА СТАРЫХ ОПЕРАТОРОВ ==========
         function cleanOldOperatorsData() {
-            // Получаем список допустимых имён операторов
             const validNames = Object.values(operators).map(op => op.name);
-            
-            // Очищаем заказы от несуществующих операторов
             let ordersChanged = false;
             for (let i = 0; i < allOrders.length; i++) {
                 if (!validNames.includes(allOrders[i].operator)) {
@@ -380,12 +383,8 @@
                     i--;
                 }
             }
-            if (ordersChanged) {
-                saveOrders();
-                console.log("Очищены заказы с несуществующими операторами");
-            }
+            if (ordersChanged) saveOrders();
             
-            // Очищаем смены от несуществующих операторов
             let shiftsChanged = false;
             for (let i = 0; i < allShifts.length; i++) {
                 if (!validNames.includes(allShifts[i].name)) {
@@ -394,24 +393,20 @@
                     i--;
                 }
             }
-            if (shiftsChanged) {
-                saveAllShifts();
-                console.log("Очищены смены с несуществующими операторами");
-            }
+            if (shiftsChanged) saveAllShifts();
         }
 
-        // ========== GOOGLE SHEETS СИНХРОНИЗАЦИЯ ==========
+        // ========== GOOGLE СИНХРОНИЗАЦИЯ ==========
         async function sendToGoogleSheets(type, data) {
             if (!GOOGLE_WEBAPP_URL) return false;
             try {
                 await fetch(GOOGLE_WEBAPP_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type: type, records: data }) });
-                console.log(`Отправлено в Google: ${type}, ${data.length} записей`);
                 return true;
-            } catch (error) { console.error("Ошибка отправки в Google:", error); return false; }
+            } catch (error) { return false; }
         }
         
         async function syncAllToGoogle() {
-            if (!GOOGLE_WEBAPP_URL) { alert("Сначала настройте URL веб-приложения в админке!"); updateGoogleStatus("❌ URL не настроен", true); return false; }
+            if (!GOOGLE_WEBAPP_URL) { alert("Сначала настройте URL веб-приложения в админке!"); return false; }
             if (isSyncing) { alert("Синхронизация уже выполняется..."); return false; }
             isSyncing = true;
             updateGoogleStatus("🔄 Синхронизация...", false, true);
@@ -425,7 +420,7 @@
                 showSyncStatus("✅ Синхронизация завершена");
                 alert("Все данные успешно отправлены в Google Sheets!");
                 return true;
-            } catch (error) { updateGoogleStatus("❌ Ошибка синхронизации", true); showSyncStatus("❌ Ошибка синхронизации"); return false; }
+            } catch (error) { updateGoogleStatus("❌ Ошибка синхронизации", true); return false; }
             finally { isSyncing = false; }
         }
         
@@ -440,18 +435,16 @@
         async function testGoogleConnection() {
             if (!GOOGLE_WEBAPP_URL) { alert("Сначала введите URL веб-приложения!"); return; }
             updateGoogleStatus("🔌 Проверка подключения...", false, true);
-            showSyncStatus("🔌 Проверка Google...");
             try {
                 await fetch(GOOGLE_WEBAPP_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type: 'test', records: [{ test: true, time: new Date().toISOString() }] }) });
-                updateGoogleStatus("✅ Подключение успешно! Данные будут синхронизироваться автоматически.", false);
-                showSyncStatus("✅ Google подключён");
-                alert("Подключение успешно!\n\nДанные будут автоматически синхронизироваться при:\n- Оформлении заказа\n- Закрытии смены\n- При нажатии кнопки синхронизации");
-            } catch (error) { updateGoogleStatus("❌ Ошибка подключения. Проверьте URL.", true); showSyncStatus("❌ Ошибка подключения"); alert("Ошибка подключения: " + error.message); }
+                updateGoogleStatus("✅ Подключение успешно!", false);
+                alert("Подключение успешно!");
+            } catch (error) { updateGoogleStatus("❌ Ошибка подключения", true); alert("Ошибка подключения: " + error.message); }
         }
 
         function saveGoogleSettings() {
             const url = document.getElementById("googleWebAppUrl").value.trim();
-            if (url) { GOOGLE_WEBAPP_URL = url; localStorage.setItem("google_webapp_url", url); updateGoogleStatus("✅ Настройки сохранены", false); showSyncStatus("✅ Настройки Google сохранены"); alert("Настройки сохранены!"); }
+            if (url) { GOOGLE_WEBAPP_URL = url; localStorage.setItem("google_webapp_url", url); updateGoogleStatus("✅ Настройки сохранены", false); alert("Настройки сохранены!"); }
             else { alert("Введите URL веб-приложения"); }
         }
 
@@ -572,16 +565,12 @@
             let o = localStorage.getItem(OPERATORS_KEY); if (o) operators = JSON.parse(o);
             let ord = localStorage.getItem(ORDERS_KEY); if (ord) allOrders = JSON.parse(ord);
             loadAllShifts();
-            
-            // Очищаем старых операторов из данных
             cleanOldOperatorsData();
-            
             renderServices(); renderGoods(); renderCart(); renderHistory(); loadShift();
             updateShiftFinanceDisplay(); renderShiftsHistory();
             document.getElementById("currentOperatorName").innerHTML = `${currentUser.name} ${currentUser.role === "admin" ? "👑" : "👤"}`;
             document.getElementById("burgerOperatorName").innerText = `${currentUser.name} ${currentUser.role === "admin" ? "👑" : "👤"}`;
             if (document.getElementById("googleWebAppUrl")) document.getElementById("googleWebAppUrl").value = GOOGLE_WEBAPP_URL;
-            if (GOOGLE_WEBAPP_URL) updateGoogleStatus("✅ Google синхронизация активна");
         }
 
         function loadShift() { 
@@ -604,14 +593,37 @@
         async function confirmShiftWithComment() { 
             let comment = document.getElementById("shiftCommentText").value.trim(); 
             if (window._pendingShiftAction === "open") { 
-                if (shiftOpen && !shiftClose) { let finance = getShiftFinance(); shiftClose = new Date().toLocaleString(); shiftCloseComment = comment || "Принудительное закрытие при открытии новой смены"; saveShift(); let shiftRecord = { login: currentUser.username, name: currentUser.name, role: currentUser.role, open: shiftOpen, close: shiftClose, openComment: shiftOpenComment, closeComment: shiftCloseComment }; addShiftToHistory(shiftRecord); }
-                shiftOpen = new Date().toLocaleString(); shiftClose = null; shiftOpenComment = comment; shiftCloseComment = ""; saveShift(); updateShiftUI(); updateShiftFinanceDisplay(); alert("✅ Новая смена открыта: " + shiftOpen); 
+                if (shiftOpen && !shiftClose) { 
+                    shiftClose = new Date().toLocaleString(); 
+                    shiftCloseComment = comment || "Принудительное закрытие при открытии новой смены"; 
+                    saveShift(); 
+                    let shiftRecord = { login: currentUser.username, name: currentUser.name, role: currentUser.role, open: shiftOpen, close: shiftClose, openComment: shiftOpenComment, closeComment: shiftCloseComment }; 
+                    addShiftToHistory(shiftRecord); 
+                }
+                shiftOpen = new Date().toLocaleString(); 
+                shiftClose = null; 
+                shiftOpenComment = comment; 
+                shiftCloseComment = ""; 
+                saveShift(); 
+                updateShiftUI(); 
+                updateShiftFinanceDisplay(); 
+                alert("✅ Новая смена открыта: " + shiftOpen); 
             } else if (window._pendingShiftAction === "close") { 
                 if (!shiftOpen) { alert("Нет открытой смены для закрытия"); document.getElementById("shiftCommentModal").style.display = "none"; window._pendingShiftAction = null; return; } 
-                if (shiftClose) { alert("Смена уже закрыта"); document.getElementById("shiftCommentModal").style.display = "none"); window._pendingShiftAction = null; return; }
-                let finance = getShiftFinance(); shiftClose = new Date().toLocaleString(); shiftCloseComment = comment; saveShift(); let shiftRecord = { login: currentUser.username, name: currentUser.name, role: currentUser.role, open: shiftOpen, close: shiftClose, openComment: shiftOpenComment, closeComment: shiftCloseComment }; addShiftToHistory(shiftRecord); updateShiftUI(); updateShiftFinanceDisplay(); alert(`✅ Смена закрыта: ${shiftClose}\n💰 Выручка: ${finance.revenue} ₽\n📊 Чистая прибыль: ${finance.profit} ₽\n💵 Наличные: ${finance.cash} ₽\n💳 Карта: ${finance.card} ₽`); await autoSyncAfterShift(); 
+                if (shiftClose) { alert("Смена уже закрыта"); document.getElementById("shiftCommentModal").style.display = "none"; window._pendingShiftAction = null; return; }
+                let finance = getShiftFinance(); 
+                shiftClose = new Date().toLocaleString(); 
+                shiftCloseComment = comment; 
+                saveShift(); 
+                let shiftRecord = { login: currentUser.username, name: currentUser.name, role: currentUser.role, open: shiftOpen, close: shiftClose, openComment: shiftOpenComment, closeComment: shiftCloseComment }; 
+                addShiftToHistory(shiftRecord); 
+                updateShiftUI(); 
+                updateShiftFinanceDisplay(); 
+                alert(`✅ Смена закрыта: ${shiftClose}\n💰 Выручка: ${finance.revenue} ₽\n📊 Чистая прибыль: ${finance.profit} ₽\n💵 Наличные: ${finance.cash} ₽\n💳 Карта: ${finance.card} ₽`); 
+                await autoSyncAfterShift(); 
             } 
-            document.getElementById("shiftCommentModal").style.display = "none"; window._pendingShiftAction = null; 
+            document.getElementById("shiftCommentModal").style.display = "none"; 
+            window._pendingShiftAction = null; 
         }
         
         function cancelShiftComment() { document.getElementById("shiftCommentModal").style.display = "none"; window._pendingShiftAction = null; }
@@ -758,41 +770,36 @@
             alert(`✅ Заказ №${order.id} на ${order.finalTotal} ₽\n💸 Расход: ${totals.orderExpense} ₽\n📊 Чистая прибыль: ${totals.profit} ₽`);
         }
 
-        // ========== ИСПРАВЛЕННАЯ СТАТИСТИКА ОПЕРАТОРОВ (ТОЛЬКО 3 ОПЕРАТОРА) ==========
+        function getMyOrders() { return currentUser.role === "admin" ? allOrders : allOrders.filter(o => o.operator === currentUser.name); }
+        
+        function renderHistory() {
+            let my = getMyOrders();
+            let cont = document.getElementById("historyList");
+            if (!my.length) { cont.innerHTML = "<div style='padding:40px;text-align:center;color:var(--gray-500);'>Нет заказов</div>"; return; }
+            let html = "";
+            [...my].reverse().forEach(o => { const profit = o.profit || 0; html += `<div class="history-item"><div><strong>${escapeHtml(o.client)}</strong> ${o.phone ? `📞 ${escapeHtml(o.phone)}` : ""} | ${o.date} | <strong>${o.finalTotal} ₽</strong> | 💸 расход: ${o.orderExpense || 0} ₽ | <span class="history-profit">💰 прибыль: ${profit} ₽</span></div><div style="font-size:12px; margin-top:6px;">${o.items.map(i => `${i.name} x${i.qty}`).join(", ")}</div><div style="font-size:11px; margin-top:4px; color:var(--gray-500);">${o.comment ? "📝 " + o.comment : ""}</div><div style="margin-top:8px; display:flex; gap:8px;"><button class="edit-order" data-id="${o.id}" style="background:var(--orange); border:none; border-radius:8px; padding:5px 14px; color:white; font-size:11px;">✏️ Редактировать</button><button class="delete-order" data-id="${o.id}" style="background:var(--red); border:none; border-radius:8px; padding:5px 14px; color:white; font-size:11px;">🗑 Удалить</button></div></div>`; });
+            cont.innerHTML = html;
+            document.querySelectorAll(".delete-order").forEach(btn => btn.onclick = () => { let id = parseInt(btn.getAttribute("data-id")); allOrders = allOrders.filter(o => o.id !== id); saveOrders(); renderHistory(); updateShiftFinanceDisplay(); });
+            document.querySelectorAll(".edit-order").forEach(btn => btn.onclick = () => { let id = parseInt(btn.getAttribute("data-id")); let order = allOrders.find(o => o.id === id); if (order) openEditOrder(order); });
+        }
+
+        // ========== СТАТИСТИКА (ТОЛЬКО 3 ОПЕРАТОРА) ==========
         function getOperatorsStats() {
-            // Базовые операторы только из списка operators
             let stats = {};
             for (let [login, data] of Object.entries(operators)) { 
-                stats[login] = { 
-                    name: data.name, 
-                    login: login, 
-                    orders: 0, 
-                    revenue: 0, 
-                    cash: 0, 
-                    card: 0, 
-                    profit: 0 
-                }; 
+                stats[login] = { name: data.name, login: login, orders: 0, revenue: 0, cash: 0, card: 0, profit: 0 }; 
             }
-            
             for (let order of allOrders) {
-                // Ищем оператора по имени в списке operators
                 let opLogin = null;
                 for (let [login, data] of Object.entries(operators)) { 
-                    if (data.name === order.operator) { 
-                        opLogin = login; 
-                        break; 
-                    } 
+                    if (data.name === order.operator) { opLogin = login; break; } 
                 }
-                // Если оператор найден в списке - добавляем статистику
                 if (opLogin && stats[opLogin]) {
                     stats[opLogin].orders++; 
                     stats[opLogin].revenue += order.finalTotal;
                     stats[opLogin].profit += order.profit || 0;
-                    if (order.paymentMethod === "cash") {
-                        stats[opLogin].cash += order.finalTotal;
-                    } else {
-                        stats[opLogin].card += order.finalTotal;
-                    }
+                    if (order.paymentMethod === "cash") stats[opLogin].cash += order.finalTotal;
+                    else stats[opLogin].card += order.finalTotal;
                 }
             }
             return stats;
@@ -825,7 +832,11 @@
                     let salary = calculateSalaryForShift(shift);
                     let key = shift.login;
                     let current = salaryMap.get(key) || { name: shift.name, total: 0, count: 0, role: shift.role, hours: 0 };
-                    current.total += salary; current.count++; let hours = (new Date(shift.close) - new Date(shift.open)) / (1000 * 60 * 60); hours = Math.min(hours, 8); current.hours += Math.round(hours * 10) / 10; salaryMap.set(key, current);
+                    current.total += salary; current.count++; 
+                    let hours = (new Date(shift.close) - new Date(shift.open)) / (1000 * 60 * 60);
+                    hours = Math.min(hours, 8);
+                    current.hours += Math.round(hours * 10) / 10; 
+                    salaryMap.set(key, current);
                 }
             }
             return salaryMap;
@@ -836,9 +847,9 @@
             let year = parseInt(document.getElementById("salaryYear").value);
             let salaryMap = calculateSalaryForMonth(month, year);
             let monthNames = ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"];
-            let html = `<table class="salary-table"><thead><tr><th>Оператор</th><th>Роль</th><th>Смен</th><th>Часов</th><th>Ставка</th><th>Итого</th><tr></thead><tbody>`;
+            let html = `<table class="salary-table"><thead><tr><th>Оператор</th><th>Роль</th><th>Смен</th><th>Часов</th><th>Ставка</th><th>Итого</th></tr></thead><tbody>`;
             let totalSalary = 0;
-            for (let [login, data] of salaryMap) { let rate = data.role === "admin" ? 2500 : 2000; html += `<tr><td><strong>${escapeHtml(data.name)}</strong></td><td>${data.role === "admin" ? "Администратор" : "Оператор"}</td><td>${data.count}</td><td>${data.hours}</td><td>${rate} ₽</td><td style="font-weight:bold;">${data.total.toLocaleString()} ₽</td></tr>`; totalSalary += data.total; }
+            for (let [login, data] of salaryMap) { let rate = data.role === "admin" ? 2500 : 2000; html += `<tr><td><strong>${escapeHtml(data.name)}</strong></td><td>${data.role === "admin" ? "Администратор" : "Оператор"}</td><td>${data.count}</td><td>${data.hours}</td><td>${rate} ₽</td><td style="font-weight:bold;">${data.total.toLocaleString()} ₽</td></td>`; totalSalary += data.total; }
             if (salaryMap.size === 0) { html += `<tr><td colspan="6" style="text-align:center;">Нет данных за выбранный период</td></tr>`; } else { html += `<tr style="background: var(--blue); color: white;"><td colspan="5"><strong>ИТОГО:</strong></td><td><strong>${totalSalary.toLocaleString()} ₽</strong></td></tr>`; }
             html += `</tbody></table>`;
             document.getElementById("salaryReportContent").innerHTML = html;
@@ -878,19 +889,6 @@
             document.querySelectorAll(".deleteGoods").forEach(btn => btn.onclick = () => { let id = parseInt(btn.getAttribute("data-id")); if (confirm("Удалить товар?")) { goods = goods.filter(x => x.id !== id); saveGoods(); renderGoods(); renderAdmin(); } });
         }
 
-        function getMyOrders() { return currentUser.role === "admin" ? allOrders : allOrders.filter(o => o.operator === currentUser.name); }
-        
-        function renderHistory() {
-            let my = getMyOrders();
-            let cont = document.getElementById("historyList");
-            if (!my.length) { cont.innerHTML = "<div style='padding:40px;text-align:center;color:var(--gray-500);'>Нет заказов</div>"; return; }
-            let html = "";
-            [...my].reverse().forEach(o => { const profit = o.profit || 0; html += `<div class="history-item"><div><strong>${escapeHtml(o.client)}</strong> ${o.phone ? `📞 ${escapeHtml(o.phone)}` : ""} | ${o.date} | <strong>${o.finalTotal} ₽</strong> | 💸 расход: ${o.orderExpense || 0} ₽ | <span class="history-profit">💰 прибыль: ${profit} ₽</span></div><div style="font-size:12px; margin-top:6px;">${o.items.map(i => `${i.name} x${i.qty}`).join(", ")}</div><div style="font-size:11px; margin-top:4px; color:var(--gray-500);">${o.comment ? "📝 " + o.comment : ""}</div><div style="margin-top:8px; display:flex; gap:8px;"><button class="edit-order" data-id="${o.id}" style="background:var(--orange); border:none; border-radius:8px; padding:5px 14px; color:white; font-size:11px;">✏️ Редактировать</button><button class="delete-order" data-id="${o.id}" style="background:var(--red); border:none; border-radius:8px; padding:5px 14px; color:white; font-size:11px;">🗑 Удалить</button></div></div>`; });
-            cont.innerHTML = html;
-            document.querySelectorAll(".delete-order").forEach(btn => btn.onclick = () => { let id = parseInt(btn.getAttribute("data-id")); allOrders = allOrders.filter(o => o.id !== id); saveOrders(); renderHistory(); updateShiftFinanceDisplay(); });
-            document.querySelectorAll(".edit-order").forEach(btn => btn.onclick = () => { let id = parseInt(btn.getAttribute("data-id")); let order = allOrders.find(o => o.id === id); if (order) openEditOrder(order); });
-        }
-
         function showReportChoice() { document.getElementById("reportChoiceModal").style.display = "flex"; }
         function reportTodayExcel() { const today = new Date().toLocaleDateString(); const myOrders = getMyOrders(); const todayOrders = myOrders.filter(o => o.date.includes(today)); if (todayOrders.length === 0) { alert("За сегодня нет заказов"); return; } exportToExcel(todayOrders, `Отчёт_за_${today.replace(/\./g, '-')}`, false); document.getElementById("reportChoiceModal").style.display = "none"; }
         function reportFullExcel() { const myOrders = getMyOrders(); if (myOrders.length === 0) { alert("Нет заказов"); return; } exportToExcel(myOrders, "Полный_отчёт", false); document.getElementById("reportChoiceModal").style.display = "none"; }
@@ -905,7 +903,7 @@
             let comment = document.getElementById("orderComment").value;
             let payment = document.querySelector('input[name="payment"]:checked').value;
             const totals = getCartTotals();
-            let itemsHtml = cart.map(i => `<tr><td style="border:1px solid #d1d5db; padding:8px;">${escapeHtml(i.name)}</td><td style="border:1px solid #d1d5db; text-align:center">${i.qty}</td><td style="border:1px solid #d1d5db; text-align:center">${i.price} ₽</td><td style="border:1px solid #d1d5db; text-align:right">${i.price * i.qty} ₽</td></tr>`).join('');
+            let itemsHtml = cart.map(i => `<tr><td style="border:1px solid #d1d5db; padding:8px;">${escapeHtml(i.name)}</td><td style="border:1px solid #d1d5db; text-align:center">${i.qty}</td><td style="border:1px solid #d1d5db; text-align:center">${i.price} ₽</td><td style="border:1px solid #d1d5db; text-align:right">${i.price * i.qty} ₽</td>`).join('');
             let cont = document.getElementById("printBlankContainer"); 
             cont.innerHTML = `<div class="blank-page" style="padding:20mm; background:white; color:black; font-family:monospace;"><div style="text-align:center;"><h2>A4-ПРИНТ</h2><p>Копировальный центр</p></div><div><strong>№ заказа:</strong> ${Date.now()}</div><div><strong>Дата:</strong> ${new Date().toLocaleString()}</div><div><strong>Оператор:</strong> ${currentUser.name}</div><div><strong>Клиент:</strong> ${escapeHtml(client)}</div>${phone ? `<div><strong>Телефон:</strong> ${escapeHtml(phone)}</div>` : ""}<div><strong>Оплата:</strong> ${payment === "cash" ? "Наличные" : "Карта"}</div><table border="1" cellpadding="5" cellspacing="0" style="width:100%; margin:15px 0; border-color:#d1d5db;"><thead><tr><th>Наименование</th><th>Кол-во</th><th>Цена</th><th>Сумма</th></tr></thead><tbody>${itemsHtml}</tbody><tfoot><tr><td colspan="3"><strong>Итого к оплате:</strong></td><td><strong>${totals.finalTotal} ₽</strong></td></tr><tr><td colspan="3"><strong>Расход по заказу:</strong></td><td>${totals.orderExpense} ₽</td></tr><tr style="background: #d1fae5;"><td colspan="3"><strong>📊 Чистая прибыль:</strong></td><td><strong>${totals.profit} ₽</strong></td></tr></tfoot></table>${comment ? `<div>Комментарий: ${escapeHtml(comment)}</div>` : ""}<div style="margin-top:30px; text-align:center;">Спасибо за заказ!</div></div>`;
             window.print(); setTimeout(() => cont.innerHTML = "", 1000);
