@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>A4-Принт | Копировальный центр + Учёт расходов</title>
+    <title>A4-Принт | Копировальный центр + Синхронизация Google</title>
     <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
@@ -481,6 +481,7 @@
                     <button id="adminPanelBtn" class="btn-primary">Админ</button>
                     <button id="shiftToggleBtn" class="btn-warning">🚀 Открыть смену</button>
                     <button id="reportMainBtn" class="btn-success">📊 Отчёт / Экспорт</button>
+                    <button id="syncGoogleBtn" class="btn-pink">🔄 Синхр. с Google</button>
                     <button id="printBlankBtn" class="btn-primary">🖨️ Бланк заказа</button>
                     <a href="service.html" target="_blank" style="text-decoration: none;">
                         <button class="service-link">🔧 Сервисный центр</button>
@@ -494,6 +495,7 @@
                     <button id="burgerAdminBtn">Админ</button>
                     <button id="burgerShiftBtn">🚀 Смена</button>
                     <button id="burgerReportBtn">📊 Отчёт</button>
+                    <button id="burgerSyncBtn">🔄 Синхр.</button>
                     <button id="burgerPrintBtn">🖨️ Бланк</button>
                     <a href="service.html" target="_blank" style="text-decoration: none;">
                         <button style="background: #8b5cf6; width:100%;">🔧 Сервис</button>
@@ -607,7 +609,7 @@
 
     <div id="syncStatus" class="sync-status">💾 Готово</div>
 
-    <!-- Модалка выбора отчёта (ОБЪЕДИНЁННАЯ) -->
+    <!-- Модалка выбора отчёта -->
     <div id="reportChoiceModal" class="modal">
         <div class="modal-card">
             <h3 style="margin-bottom: 20px; text-align:center;">📊 ВЫБЕРИТЕ ТИП ОТЧЁТА</h3>
@@ -682,18 +684,48 @@
                 <button class="tab-btn" data-tab="admin-shifts">📅 Смены</button>
                 <button class="tab-btn" data-tab="admin-services">📋 Услуги</button>
                 <button class="tab-btn" data-tab="admin-goods">🛍️ Товары</button>
+                <button class="tab-btn" data-tab="admin-google">🔄 Google</button>
             </div>
             <div id="admin-stats" class="instruction-content active"><h3>Статистика операторов</h3><div id="operatorsStatsContent"></div><button id="exportStatsExcelBtn" class="btn-success">📎 Экспорт статистики</button></div>
             <div id="admin-salary" class="instruction-content"><h3>Расчёт заработной платы</h3><div class="row-2"><select id="salaryMonth"><option value="1">Январь</option><option value="2">Февраль</option><option value="3">Март</option><option value="4">Апрель</option><option value="5">Май</option><option value="6">Июнь</option><option value="7">Июль</option><option value="8">Август</option><option value="9">Сентябрь</option><option value="10">Октябрь</option><option value="11">Ноябрь</option><option value="12">Декабрь</option></select><select id="salaryYear"></select><button id="calculateSalaryBtn" class="btn-primary">Рассчитать</button><button id="exportSalaryBtn" class="btn-success">📎 Экспорт зарплаты</button></div><div id="salaryReportContent"></div><div class="instruction-note">💰 Оператор — 2000 ₽/смена (8ч), Администратор — 2500 ₽/смена</div></div>
             <div id="admin-shifts" class="instruction-content"><h3>История смен</h3><div id="shiftsHistoryList" style="max-height: 400px; overflow-y: auto;"></div><button id="exportShiftsAdminBtn" class="btn-purple" style="margin-top: 16px;">📊 Экспорт всех смен в Excel</button></div>
             <div id="admin-services" class="instruction-content"><h3>Управление услугами</h3><div id="adminServicesList"></div><div style="display:flex; gap:12px; margin-top:16px;"><input type="text" id="newServiceName" placeholder="Название"><input type="number" id="newServicePrice" placeholder="Цена"><button id="addServiceBtn" class="btn-primary">Добавить</button></div></div>
             <div id="admin-goods" class="instruction-content"><h3>Товары (склад)</h3><div id="adminGoodsList"></div><div style="display:flex; gap:12px; margin-top:16px;"><input type="text" id="adminNewGoodsName" placeholder="Название"><input type="number" id="adminNewGoodsPrice" placeholder="Цена"><input type="number" id="adminNewGoodsStock" placeholder="Кол-во"><button id="adminAddGoodsBtn" class="btn-primary">Добавить</button></div></div>
+            <div id="admin-google" class="instruction-content">
+                <h3>🔄 Настройка Google Sheets</h3>
+                <p style="margin-bottom: 16px;">Данные автоматически синхронизируются при оформлении заказа и закрытии смены.</p>
+                <div style="background: var(--gray-100); padding: 16px; border-radius: 12px; margin-bottom: 16px;">
+                    <label style="font-weight: 600;">ID Google таблицы:</label>
+                    <input type="text" id="googleSheetId" placeholder="1n0xBHCyZQ7CUvPXPm0B7T65l236wu-7agHBiWyXcIlo" style="margin-top: 8px;">
+                    <label style="font-weight: 600; margin-top: 12px;">API Key:</label>
+                    <input type="text" id="googleApiKey" placeholder="AIzaSyD_fK2ixzC3yH4vCvl_OYRf78wvA9yqKMk" style="margin-top: 8px;">
+                    <button id="saveGoogleSettingsBtn" class="btn-primary" style="margin-top: 16px;">💾 Сохранить настройки</button>
+                    <button id="testGoogleBtn" class="btn-purple" style="margin-top: 16px; margin-left: 8px;">🔌 Проверить подключение</button>
+                </div>
+                <div class="row-2">
+                    <button id="manualExportBtn" class="btn-pink" style="flex:1;">📤 Выгрузить все данные</button>
+                    <button id="loadFromGoogleBtn" class="btn-primary" style="flex:1;">📥 Загрузить услуги/товары</button>
+                </div>
+                <div id="googleStatus" style="margin-top: 16px; padding: 12px; border-radius: 8px; font-size: 12px; background: var(--gray-100);"></div>
+                <div class="instruction-note" style="margin-top: 16px;">
+                    <strong>📌 Как настроить:</strong><br>
+                    1. Откройте Google Sheets и создайте таблицу<br>
+                    2. Нажмите «Поделиться» → «Доступ для всех у кого есть ссылка» → роль «Читатель»<br>
+                    3. Скопируйте ID таблицы из URL (часть между /d/ и /edit)<br>
+                    4. Включите Google Sheets API в Google Cloud Console и получите API ключ<br>
+                    5. Вставьте данные и нажмите «Сохранить»
+                </div>
+            </div>
         </div>
     </div>
 
     <div id="printBlankContainer" style="display: none;"></div>
 
     <script>
+        // ========== КОНФИГУРАЦИЯ GOOGLE ==========
+        let GOOGLE_SHEET_ID = localStorage.getItem("google_sheet_id") || "1n0xBHCyZQ7CUvPXPm0B7T65l236wu-7agHBiWyXcIlo";
+        let GOOGLE_API_KEY = localStorage.getItem("google_api_key") || "AIzaSyD_fK2ixzC3yH4vCvl_OYRf78wvA9yqKMk";
+        
         // ========== ПОЛЬЗОВАТЕЛИ ==========
         let operators = { 
             "pavel": { password: "pavel123", name: "Павел", role: "admin", rate: 2500 }, 
@@ -729,7 +761,7 @@
         let editOrderId = null;
         let tempEditOrder = null;
 
-        const SERVICES_KEY = "a4print_services_v10", GOODS_KEY = "a4print_goods_v10", OPERATORS_KEY = "a4print_operators", ORDERS_KEY = "a4print_orders", SHIFT_KEY = "a4print_shift", SHIFTS_LIST_KEY = "a4print_shifts_list";
+        const SERVICES_KEY = "a4print_services_v11", GOODS_KEY = "a4print_goods_v11", OPERATORS_KEY = "a4print_operators", ORDERS_KEY = "a4print_orders", SHIFT_KEY = "a4print_shift", SHIFTS_LIST_KEY = "a4print_shifts_list";
 
         function saveServices() { localStorage.setItem(SERVICES_KEY, JSON.stringify(services)); }
         function saveGoods() { localStorage.setItem(GOODS_KEY, JSON.stringify(goods)); }
@@ -824,10 +856,240 @@
             return Math.min(Math.round(hours * 10) / 10, 8);
         }
 
-        // ========== НОРМАЛЬНЫЙ ЭКСПОРТ В EXCEL ==========
+        // ========== ФУНКЦИИ GOOGLE SHEETS ==========
+        function updateGoogleStatus(message, isError = false) {
+            const statusDiv = document.getElementById("googleStatus");
+            if (statusDiv) {
+                statusDiv.textContent = message;
+                statusDiv.style.background = isError ? "var(--red)" : "var(--green)";
+                statusDiv.style.color = "white";
+                setTimeout(() => {
+                    statusDiv.style.background = "var(--gray-100)";
+                    statusDiv.style.color = "inherit";
+                    statusDiv.textContent = "Готово";
+                }, 3000);
+            }
+        }
+
+        function showSyncStatus(msg) { 
+            let d = document.getElementById("syncStatus"); 
+            if (d) { 
+                d.textContent = msg; 
+                setTimeout(() => { 
+                    if (d.textContent === msg) d.textContent = "💾 Готово"; 
+                }, 2000); 
+            } 
+        }
+
+        // АВТОМАТИЧЕСКАЯ ВЫГРУЗКА В GOOGLE
+        function exportToGoogleSheets() {
+            if (!GOOGLE_SHEET_ID) {
+                console.log("Google Sheet ID не настроен");
+                return false;
+            }
+            
+            const ordersData = allOrders.map(o => [
+                o.id, o.date, o.client, o.phone || "",
+                o.items.map(i => `${i.name} x${i.qty}`).join("; "),
+                o.subtotal, o.discount, o.finalTotal,
+                o.paymentMethod === "cash" ? "Наличные" : "Карта",
+                o.comment || "", o.operator, o.orderExpense || 0, o.profit || 0
+            ]);
+            
+            const shiftsData = allShifts.map(s => [
+                s.name, s.role === "admin" ? "Администратор" : "Оператор",
+                s.open, s.close || "—", calculateHoursWorked(s),
+                s.openComment || "", s.closeComment || "",
+                calculateSalaryForShift(s)
+            ]);
+            
+            const ordersHeaders = ["ID", "Дата", "Клиент", "Телефон", "Состав", "Подытог", "Скидка", "Итого", "Оплата", "Комментарий", "Оператор", "Расход", "Чистая прибыль"];
+            const shiftsHeaders = ["Оператор", "Роль", "Открытие", "Закрытие", "Часы", "Комментарий открытия", "Комментарий закрытия", "Начислено"];
+            
+            const ordersCSV = [ordersHeaders, ...ordersData].map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(",")).join("\n");
+            const shiftsCSV = [shiftsHeaders, ...shiftsData].map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(",")).join("\n");
+            const fullCSV = `=== ЗАКАЗЫ ===\n${ordersCSV}\n\n=== СМЕНЫ ===\n${shiftsCSV}`;
+            
+            navigator.clipboard.writeText(fullCSV).then(() => {
+                showSyncStatus("✅ Данные скопированы для Google");
+                updateGoogleStatus("Данные скопированы! Вставьте в Google Sheets (Ctrl+V)");
+                return true;
+            }).catch(() => {
+                updateGoogleStatus("Ошибка копирования", true);
+                return false;
+            });
+            
+            return true;
+        }
+        
+        // Автоматическая выгрузка при оформлении заказа
+        async function autoExportAfterOrder() {
+            if (GOOGLE_SHEET_ID) {
+                exportToGoogleSheets();
+            }
+        }
+        
+        // Автоматическая выгрузка при закрытии смены
+        async function autoExportAfterShift() {
+            if (GOOGLE_SHEET_ID) {
+                exportToGoogleSheets();
+                showSyncStatus("📤 Данные смены выгружены в Google");
+                updateGoogleStatus("Данные смены выгружены в Google");
+            }
+        }
+
+        // Загрузка из Google Sheets
+        async function loadFromGoogleSheets() {
+            if (!GOOGLE_SHEET_ID || !GOOGLE_API_KEY) {
+                alert("Сначала настройте ID таблицы и API ключ!");
+                return false;
+            }
+            
+            showSyncStatus("🔄 Загрузка из Google...");
+            updateGoogleStatus("Загрузка данных...");
+            
+            try {
+                const url = `https://sheets.googleapis.com/v4/spreadsheets/${GOOGLE_SHEET_ID}?key=${GOOGLE_API_KEY}`;
+                const response = await fetch(url);
+                
+                if (!response.ok) {
+                    if (response.status === 403) {
+                        alert("Ошибка 403: Таблица недоступна. Убедитесь, что она опубликована");
+                    } else if (response.status === 404) {
+                        alert("Ошибка 404: Таблица не найдена");
+                    } else {
+                        alert(`Ошибка ${response.status}`);
+                    }
+                    updateGoogleStatus("Ошибка доступа к таблице", true);
+                    return false;
+                }
+                
+                const sheetInfo = await response.json();
+                const sheetsList = sheetInfo.sheets.map(s => s.properties.title);
+                
+                // Загружаем услуги
+                if (sheetsList.includes("Услуги")) {
+                    const urlServices = `https://sheets.googleapis.com/v4/spreadsheets/${GOOGLE_SHEET_ID}/values/Услуги?key=${GOOGLE_API_KEY}`;
+                    const resp = await fetch(urlServices);
+                    if (resp.ok) {
+                        const data = await resp.json();
+                        if (data.values && data.values.length > 1) {
+                            const newServices = [];
+                            for (let i = 1; i < data.values.length; i++) {
+                                const row = data.values[i];
+                                if (row[0] && row[1]) {
+                                    newServices.push({
+                                        id: parseInt(row[2]) || Date.now() + i,
+                                        name: row[0],
+                                        price: parseFloat(row[1]) || 0
+                                    });
+                                }
+                            }
+                            if (newServices.length > 0) {
+                                services = newServices;
+                                saveServices();
+                                renderServices();
+                                showSyncStatus(`✅ Загружено ${services.length} услуг`);
+                            }
+                        }
+                    }
+                }
+                
+                // Загружаем товары
+                if (sheetsList.includes("Товары")) {
+                    const urlGoods = `https://sheets.googleapis.com/v4/spreadsheets/${GOOGLE_SHEET_ID}/values/Товары?key=${GOOGLE_API_KEY}`;
+                    const resp = await fetch(urlGoods);
+                    if (resp.ok) {
+                        const data = await resp.json();
+                        if (data.values && data.values.length > 1) {
+                            const newGoods = [];
+                            for (let i = 1; i < data.values.length; i++) {
+                                const row = data.values[i];
+                                if (row[0] && row[1]) {
+                                    newGoods.push({
+                                        id: parseInt(row[3]) || Date.now() + i,
+                                        name: row[0],
+                                        price: parseFloat(row[1]) || 0,
+                                        stock: parseInt(row[2]) || 0,
+                                        unit: "шт"
+                                    });
+                                }
+                            }
+                            if (newGoods.length > 0) {
+                                goods = newGoods;
+                                saveGoods();
+                                renderGoods();
+                                showSyncStatus(`✅ Загружено ${goods.length} товаров`);
+                            }
+                        }
+                    }
+                }
+                
+                alert("Синхронизация завершена!");
+                updateGoogleStatus("Синхронизация успешно завершена");
+                return true;
+                
+            } catch (error) {
+                alert("Ошибка: " + error.message);
+                updateGoogleStatus("Ошибка синхронизации", true);
+                return false;
+            }
+        }
+
+        // Тест подключения к Google
+        async function testGoogleConnection() {
+            if (!GOOGLE_SHEET_ID || !GOOGLE_API_KEY) {
+                alert("Сначала введите ID таблицы и API ключ!");
+                return;
+            }
+            
+            showSyncStatus("🔌 Проверка...");
+            try {
+                const url = `https://sheets.googleapis.com/v4/spreadsheets/${GOOGLE_SHEET_ID}?key=${GOOGLE_API_KEY}`;
+                const response = await fetch(url);
+                
+                if (!response.ok) {
+                    if (response.status === 403) {
+                        alert("❌ Ошибка 403: Таблица недоступна. Убедитесь, что таблица опубликована как 'Доступно для всех у кого есть ссылка'");
+                    } else if (response.status === 404) {
+                        alert("❌ Ошибка 404: Таблица не найдена");
+                    } else {
+                        alert(`❌ Ошибка ${response.status}`);
+                    }
+                    updateGoogleStatus("Ошибка подключения", true);
+                    return;
+                }
+                
+                const data = await response.json();
+                alert(`✅ Подключение успешно!\n\nТаблица: ${data.properties.title}\nЛисты: ${data.sheets.map(s => s.properties.title).join(", ")}`);
+                updateGoogleStatus("Подключение успешно");
+                showSyncStatus("✅ Google доступен");
+                
+            } catch (error) {
+                alert("❌ Ошибка: " + error.message);
+                updateGoogleStatus("Ошибка подключения", true);
+            }
+        }
+
+        function saveGoogleSettings() {
+            const sheetId = document.getElementById("googleSheetId").value.trim();
+            const apiKey = document.getElementById("googleApiKey").value.trim();
+            if (sheetId) {
+                GOOGLE_SHEET_ID = sheetId;
+                localStorage.setItem("google_sheet_id", sheetId);
+            }
+            if (apiKey) {
+                GOOGLE_API_KEY = apiKey;
+                localStorage.setItem("google_api_key", apiKey);
+            }
+            showSyncStatus("✅ Настройки Google сохранены");
+            updateGoogleStatus("Настройки сохранены");
+            alert("Настройки сохранены!");
+        }
+
+        // ========== ЭКСПОРТ В EXCEL ==========
         function exportToExcel(orders, title, isShiftsReport = false) {
             if (isShiftsReport) {
-                // Отчёт по сменам
                 if (allShifts.length === 0) {
                     alert("Нет данных о сменах для экспорта");
                     return;
@@ -835,30 +1097,21 @@
                 
                 const wb = XLSX.utils.book_new();
                 
-                // Лист 1: Смены
                 const shiftsData = [["№", "Оператор", "Роль", "Дата открытия", "Дата закрытия", "Часы работы", "Комментарий открытия", "Комментарий закрытия", "Ставка за смену", "Начислено"]];
                 allShifts.forEach((shift, idx) => {
                     const hours = calculateHoursWorked(shift);
                     const salary = calculateSalaryForShift(shift);
                     const rate = shift.role === "admin" ? 2500 : 2000;
-                    shiftsData.push([
-                        idx + 1, shift.name, shift.role === "admin" ? "Администратор" : "Оператор",
-                        shift.open, shift.close || "—", hours,
-                        shift.openComment || "", shift.closeComment || "",
-                        `${rate} ₽`, `${salary} ₽`
-                    ]);
+                    shiftsData.push([idx + 1, shift.name, shift.role === "admin" ? "Администратор" : "Оператор", shift.open, shift.close || "—", hours, shift.openComment || "", shift.closeComment || "", `${rate} ₽`, `${salary} ₽`]);
                 });
                 const wsShifts = XLSX.utils.aoa_to_sheet(shiftsData);
                 wsShifts['!cols'] = [{wch:5},{wch:20},{wch:12},{wch:22},{wch:22},{wch:10},{wch:30},{wch:30},{wch:15},{wch:15}];
                 XLSX.utils.book_append_sheet(wb, wsShifts, "Смены");
                 
-                // Лист 2: Сводка зарплаты
                 const salarySummary = new Map();
                 for (const shift of allShifts) {
                     const key = shift.login;
-                    if (!salarySummary.has(key)) {
-                        salarySummary.set(key, { name: shift.name, role: shift.role, shifts: 0, totalHours: 0, totalSalary: 0 });
-                    }
+                    if (!salarySummary.has(key)) salarySummary.set(key, { name: shift.name, role: shift.role, shifts: 0, totalHours: 0, totalSalary: 0 });
                     const data = salarySummary.get(key);
                     data.shifts++;
                     data.totalHours += calculateHoursWorked(shift);
@@ -866,23 +1119,18 @@
                 }
                 const summaryData = [["Оператор", "Роль", "Всего смен", "Всего часов", "Итого к выплате"]];
                 for (const [_, data] of salarySummary) {
-                    summaryData.push([
-                        data.name, data.role === "admin" ? "Администратор" : "Оператор",
-                        data.shifts, Math.round(data.totalHours * 10) / 10,
-                        `${Math.round(data.totalSalary)} ₽`
-                    ]);
+                    summaryData.push([data.name, data.role === "admin" ? "Администратор" : "Оператор", data.shifts, Math.round(data.totalHours * 10) / 10, `${Math.round(data.totalSalary)} ₽`]);
                 }
                 const wsSummary = XLSX.utils.aoa_to_sheet(summaryData);
                 wsSummary['!cols'] = [{wch:20},{wch:15},{wch:12},{wch:12},{wch:18}];
                 XLSX.utils.book_append_sheet(wb, wsSummary, "Зарплата");
                 
-                const fileName = `A4print_Смены_и_зарплата_${new Date().toISOString().slice(0,19).replace(/:/g, '-')}.xlsx`;
+                const fileName = `A4print_Смены_${new Date().toISOString().slice(0,19).replace(/:/g, '-')}.xlsx`;
                 XLSX.writeFile(wb, fileName);
                 showSyncStatus("✅ Экспорт смен выполнен");
                 return;
             }
             
-            // Обычный отчёт по заказам
             if (!orders || orders.length === 0) {
                 alert("Нет данных для экспорта");
                 return;
@@ -890,43 +1138,22 @@
             
             const wb = XLSX.utils.book_new();
             
-            // Основной лист с заказами
-            const ordersData = [["№", "Дата", "Клиент", "Телефон", "Состав заказа", "Кол-во", "Цена", "Сумма", "Итого", "Скидка", "Расход", "Прибыль", "Оплата", "Комментарий", "Оператор"]];
-            
+            const ordersData = [["№", "Дата", "Клиент", "Телефон", "Состав заказа", "Подытог", "Скидка", "Итого", "Расход", "Прибыль", "Оплата", "Комментарий", "Оператор"]];
             orders.forEach((order, idx) => {
-                // Для каждого заказа добавляем строку
-                const itemsStr = order.items.map(i => `${i.name} (${i.price}₽ x${i.qty})`).join("\n");
-                const totalQty = order.items.reduce((s, i) => s + i.qty, 0);
-                ordersData.push([
-                    idx + 1, order.date, order.client, order.phone || "",
-                    itemsStr, totalQty, order.subtotal, order.subtotal,
-                    order.finalTotal, order.discount || 0,
-                    order.orderExpense || 0, order.profit || 0,
-                    order.paymentMethod === "cash" ? "Наличные" : "Карта",
-                    order.comment || "", order.operator
-                ]);
+                const itemsStr = order.items.map(i => `${i.name} (${i.price}₽ x${i.qty})`).join("; ");
+                ordersData.push([idx + 1, order.date, order.client, order.phone || "", itemsStr, order.subtotal, order.discount || 0, order.finalTotal, order.orderExpense || 0, order.profit || 0, order.paymentMethod === "cash" ? "Наличные" : "Карта", order.comment || "", order.operator]);
             });
-            
             const wsOrders = XLSX.utils.aoa_to_sheet(ordersData);
-            wsOrders['!cols'] = [{wch:5},{wch:20},{wch:20},{wch:15},{wch:40},{wch:8},{wch:10},{wch:12},{wch:12},{wch:10},{wch:10},{wch:12},{wch:12},{wch:25},{wch:15}];
+            wsOrders['!cols'] = [{wch:5},{wch:20},{wch:20},{wch:15},{wch:40},{wch:10},{wch:10},{wch:12},{wch:10},{wch:12},{wch:12},{wch:25},{wch:15}];
             XLSX.utils.book_append_sheet(wb, wsOrders, "Заказы");
             
-            // Лист с итогами
             const totalRevenue = orders.reduce((s, o) => s + o.finalTotal, 0);
             const totalProfit = orders.reduce((s, o) => s + (o.profit || 0), 0);
             const totalExpense = orders.reduce((s, o) => s + (o.orderExpense || 0), 0);
             const cashTotal = orders.filter(o => o.paymentMethod === "cash").reduce((s, o) => s + o.finalTotal, 0);
             const cardTotal = orders.filter(o => o.paymentMethod === "card").reduce((s, o) => s + o.finalTotal, 0);
             
-            const summaryData = [
-                ["ИТОГОВАЯ СВОДКА", ""],
-                ["Всего заказов", orders.length],
-                ["Общая выручка", `${totalRevenue} ₽`],
-                ["Общий расход", `${totalExpense} ₽`],
-                ["Чистая прибыль", `${totalProfit} ₽`],
-                ["Оплачено наличными", `${cashTotal} ₽`],
-                ["Оплачено картой", `${cardTotal} ₽`]
-            ];
+            const summaryData = [["ИТОГОВАЯ СВОДКА", ""], ["Всего заказов", orders.length], ["Общая выручка", `${totalRevenue} ₽`], ["Общий расход", `${totalExpense} ₽`], ["Чистая прибыль", `${totalProfit} ₽`], ["Оплачено наличными", `${cashTotal} ₽`], ["Оплачено картой", `${cardTotal} ₽`]];
             const wsSummary = XLSX.utils.aoa_to_sheet(summaryData);
             XLSX.utils.book_append_sheet(wb, wsSummary, "Итоги");
             
@@ -961,30 +1188,10 @@
             const cardTotal = orders.filter(o => o.paymentMethod === "card").reduce((s, o) => s + o.finalTotal, 0);
             
             const html = `<div style="font-family: Arial, sans-serif; padding: 20px; max-width: 800px; margin: 0 auto;">
-                <div style="text-align: center;">
-                    <h2>A4-ПРИНТ</h2>
-                    <p>Копировальный центр</p>
-                    <p><strong>${title}</strong></p>
-                    <p>Оператор: ${currentUser.name}</p>
-                    <p>Дата: ${new Date().toLocaleString()}</p>
-                </div>
-                <hr>
-                <div style="margin: 20px 0;">
-                    <h3>📊 ИТОГИ:</h3>
-                    <p>📦 Всего заказов: ${orders.length}</p>
-                    <p>💰 Выручка: ${totalRevenue} ₽</p>
-                    <p>💸 Общий расход: ${totalExpense} ₽</p>
-                    <p>📊 Чистая прибыль: ${totalProfit} ₽</p>
-                    <p>💵 Наличные: ${cashTotal} ₽</p>
-                    <p>💳 Карта: ${cardTotal} ₽</p>
-                </div>
-                <hr>
-                <div><h3>📋 ДЕТАЛИ ЗАКАЗОВ:</h3>${ordersHtml}</div>
-                <hr>
-                <div style="text-align: center; margin-top: 40px;">
-                    <p>Подпись: _______________</p>
-                    <p>${new Date().toLocaleString()}</p>
-                </div>
+                <div style="text-align: center;"><h2>A4-ПРИНТ</h2><p>Копировальный центр</p><p><strong>${title}</strong></p><p>Оператор: ${currentUser.name}</p><p>Дата: ${new Date().toLocaleString()}</p></div>
+                <hr><div style="margin: 20px 0;"><h3>📊 ИТОГИ:</h3><p>📦 Всего заказов: ${orders.length}</p><p>💰 Выручка: ${totalRevenue} ₽</p><p>💸 Общий расход: ${totalExpense} ₽</p><p>📊 Чистая прибыль: ${totalProfit} ₽</p><p>💵 Наличные: ${cashTotal} ₽</p><p>💳 Карта: ${cardTotal} ₽</p></div>
+                <hr><div><h3>📋 ДЕТАЛИ ЗАКАЗОВ:</h3>${ordersHtml}</div>
+                <hr><div style="text-align: center; margin-top: 40px;"><p>Подпись: _______________</p><p>${new Date().toLocaleString()}</p></div>
             </div>`;
             
             const element = document.createElement('div');
@@ -994,7 +1201,7 @@
             html2pdf().set({ margin: 0.5, filename: filename, html2canvas: { scale: 2 } }).from(element).save().then(() => element.remove());
         }
 
-        // ========== ЗАГРУЗКА ДАННЫХ ==========
+        // ========== ОСТАЛЬНЫЕ ФУНКЦИИ ==========
         function loadData() {
             let s = localStorage.getItem(SERVICES_KEY); if (s) services = JSON.parse(s);
             let g = localStorage.getItem(GOODS_KEY); if (g) goods = JSON.parse(g);
@@ -1006,6 +1213,11 @@
             renderShiftsHistory();
             document.getElementById("currentOperatorName").innerHTML = `${currentUser.name} ${currentUser.role === "admin" ? "👑" : "👤"}`;
             document.getElementById("burgerOperatorName").innerText = `${currentUser.name} ${currentUser.role === "admin" ? "👑" : "👤"}`;
+            
+            if (document.getElementById("googleSheetId")) {
+                document.getElementById("googleSheetId").value = GOOGLE_SHEET_ID;
+                document.getElementById("googleApiKey").value = GOOGLE_API_KEY;
+            }
         }
 
         // ========== СМЕНА ==========
@@ -1057,7 +1269,7 @@
             } 
         }
         
-        function confirmShiftWithComment() { 
+        async function confirmShiftWithComment() { 
             let comment = document.getElementById("shiftCommentText").value.trim(); 
             if (window._pendingShiftAction === "open") { 
                 if (shiftOpen && !shiftClose) {
@@ -1114,6 +1326,9 @@
                 updateShiftUI(); 
                 updateShiftFinanceDisplay();
                 alert(`✅ Смена закрыта: ${shiftClose}\n💰 Выручка: ${finance.revenue} ₽\n📊 Чистая прибыль: ${finance.profit} ₽\n💵 Наличные: ${finance.cash} ₽\n💳 Карта: ${finance.card} ₽`);
+                
+                // АВТОМАТИЧЕСКАЯ ВЫГРУЗКА В GOOGLE
+                await autoExportAfterShift();
             } 
             document.getElementById("shiftCommentModal").style.display = "none"; 
             window._pendingShiftAction = null; 
@@ -1411,6 +1626,9 @@
             renderHistory();
             updateShiftFinanceDisplay();
             
+            // АВТОМАТИЧЕСКАЯ ВЫГРУЗКА В GOOGLE
+            await autoExportAfterOrder();
+            
             alert(`✅ Заказ №${order.id} на ${order.finalTotal} ₽\n💸 Расход: ${orderExpense} ₽\n📊 Чистая прибыль: ${totals.profit} ₽`);
         }
 
@@ -1438,7 +1656,7 @@
             document.querySelectorAll(".edit-order").forEach(btn => btn.onclick = () => { let id = parseInt(btn.getAttribute("data-id")); let order = allOrders.find(o => o.id === id); if (order) openEditOrder(order); });
         }
 
-        // ========== ОБЪЕДИНЁННЫЙ ОТЧЁТ ==========
+        // ========== ОТЧЁТЫ ==========
         function showReportChoice() { 
             document.getElementById("reportChoiceModal").style.display = "flex"; 
         }
@@ -1504,7 +1722,7 @@
                         <tr><td colspan="3"><strong>Расход по заказу:</strong></td><td>${totals.orderExpense} ₽</td></tr>
                         <tr style="background: #d1fae5;"><td colspan="3"><strong>📊 Чистая прибыль:</strong></td><td><strong>${totals.profit} ₽</strong></td></tr>
                     </tfoot>
-                <table>
+                </table>
                 ${comment ? `<div>Комментарий: ${escapeHtml(comment)}</div>` : ""}
                 <div style="margin-top:30px; text-align:center;">Спасибо за заказ!</div>
             </div>`;
@@ -1661,7 +1879,7 @@
         }
 
         function initTabs() { const tabs = document.querySelectorAll('.category-tab'); const panels = { services: document.getElementById('servicesPanel'), goods: document.getElementById('goodsPanel') }; tabs.forEach(tab => { tab.onclick = () => { tabs.forEach(t => t.classList.remove('active')); tab.classList.add('active'); Object.values(panels).forEach(p => p.classList.remove('active')); panels[tab.getAttribute('data-cat')].classList.add('active'); }; }); }
-        function initAdminTabs() { const tabs = document.querySelectorAll('#adminModal .tab-btn'); const contents = { 'admin-stats': document.getElementById('admin-stats'), 'admin-salary': document.getElementById('admin-salary'), 'admin-shifts': document.getElementById('admin-shifts'), 'admin-services': document.getElementById('admin-services'), 'admin-goods': document.getElementById('admin-goods') }; tabs.forEach(tab => { tab.onclick = () => { tabs.forEach(t => t.classList.remove('active')); tab.classList.add('active'); Object.values(contents).forEach(c => c.classList.remove('active')); contents[tab.getAttribute('data-tab')].classList.add('active'); }; }); }
+        function initAdminTabs() { const tabs = document.querySelectorAll('#adminModal .tab-btn'); const contents = { 'admin-stats': document.getElementById('admin-stats'), 'admin-salary': document.getElementById('admin-salary'), 'admin-shifts': document.getElementById('admin-shifts'), 'admin-services': document.getElementById('admin-services'), 'admin-goods': document.getElementById('admin-goods'), 'admin-google': document.getElementById('admin-google') }; tabs.forEach(tab => { tab.onclick = () => { tabs.forEach(t => t.classList.remove('active')); tab.classList.add('active'); Object.values(contents).forEach(c => c.classList.remove('active')); contents[tab.getAttribute('data-tab')].classList.add('active'); }; }); }
         function initSearch() { let searchService = document.getElementById('searchService'); let searchGoods = document.getElementById('searchGoods'); if (searchService) { searchService.oninput = () => { let q = searchService.value.toLowerCase(); renderServices(services.filter(s => s.name.toLowerCase().includes(q))); }; } if (searchGoods) { searchGoods.oninput = () => { let q = searchGoods.value.toLowerCase(); renderGoods(goods.filter(g => g.name.toLowerCase().includes(q))); }; } }
         function initYearSelect() {
             let yearSelect = document.getElementById("salaryYear");
@@ -1670,7 +1888,6 @@
             yearSelect.innerHTML = "";
             for (let y = 2023; y <= currentYear + 1; y++) { let opt = document.createElement("option"); opt.value = y; opt.textContent = y; if (y === currentYear) opt.selected = true; yearSelect.appendChild(opt); }
         }
-        function showSyncStatus(msg) { let d = document.getElementById("syncStatus"); if (d) { d.textContent = msg; setTimeout(() => { if (d.textContent === msg) d.textContent = "💾 Готово"; }, 2000); } }
         function toggleTheme() { document.body.classList.toggle("dark"); localStorage.setItem("a4print_theme", document.body.classList.contains("dark") ? "dark" : "light"); }
         
         function login() {
@@ -1703,6 +1920,7 @@
             document.getElementById("burgerAdminBtn").onclick = () => { if (currentUser?.role === "admin") { renderAdmin(); document.getElementById("adminModal").style.display = "flex"; } else alert("Доступно только администратору"); if (menu) menu.classList.remove("show"); }; 
             document.getElementById("burgerShiftBtn").onclick = () => { toggleShiftWithComment(); if (menu) menu.classList.remove("show"); }; 
             document.getElementById("burgerReportBtn").onclick = () => { showReportChoice(); if (menu) menu.classList.remove("show"); }; 
+            document.getElementById("burgerSyncBtn").onclick = () => { exportToGoogleSheets(); if (menu) menu.classList.remove("show"); }; 
             document.getElementById("burgerPrintBtn").onclick = () => { printOrderBlank(); if (menu) menu.classList.remove("show"); }; 
             document.getElementById("burgerLogoutBtn").onclick = () => { logout(); if (menu) menu.classList.remove("show"); }; 
         }
@@ -1733,6 +1951,7 @@
             }
             
             document.getElementById("themeToggleBtn").onclick = toggleTheme;
+            document.getElementById("syncGoogleBtn").onclick = () => exportToGoogleSheets();
             document.getElementById("loginBtn").onclick = login;
             document.getElementById("logoutBtn").onclick = logout;
             document.getElementById("applyDiscountBtn").onclick = applyDiscount;
@@ -1745,7 +1964,7 @@
             document.getElementById("shiftCommentConfirm").onclick = confirmShiftWithComment;
             document.getElementById("shiftCommentCancel").onclick = cancelShiftComment;
             
-            // Объединённая кнопка отчёта
+            // Отчёты
             document.getElementById("reportMainBtn").onclick = showReportChoice;
             document.getElementById("reportTodayExcelBtn").onclick = reportTodayExcel;
             document.getElementById("reportFullExcelBtn").onclick = reportFullExcel;
@@ -1754,6 +1973,7 @@
             document.getElementById("reportFullPdfBtn").onclick = reportFullPdf;
             document.getElementById("cancelReportBtn").onclick = () => document.getElementById("reportChoiceModal").style.display = "none";
             
+            // Редактирование
             document.getElementById("closeEditModal").onclick = () => document.getElementById("editOrderModal").style.display = "none";
             document.getElementById("cancelEditBtn").onclick = () => document.getElementById("editOrderModal").style.display = "none";
             document.getElementById("editAddItemBtn").onclick = addItemToEdit;
@@ -1762,6 +1982,7 @@
             document.getElementById("editDiscountAmount").onchange = updateEditTotals;
             document.getElementById("editOrderExpense").onchange = updateEditTotals;
             
+            // Админ
             let admModal = document.getElementById("adminModal");
             document.getElementById("adminPanelBtn").onclick = () => { renderAdmin(); admModal.style.display = "flex"; };
             document.getElementById("closeAdminModal").onclick = () => admModal.style.display = "none";
@@ -1772,6 +1993,13 @@
             document.getElementById("addServiceBtn").onclick = () => { let name = document.getElementById("newServiceName").value.trim(); let price = parseInt(document.getElementById("newServicePrice").value); if (name && price > 0) { services.push({ id: Date.now(), name, price }); saveServices(); renderServices(); renderAdmin(); } else alert("Введите название и цену"); };
             document.getElementById("adminAddGoodsBtn").onclick = () => { let name = document.getElementById("adminNewGoodsName").value.trim(); let price = parseFloat(document.getElementById("adminNewGoodsPrice").value); let stock = parseInt(document.getElementById("adminNewGoodsStock").value); if (name && price > 0 && !isNaN(stock)) { goods.push({ id: Date.now(), name: name, price: price, stock: stock, unit: "шт" }); saveGoods(); renderGoods(); renderAdmin(); showSyncStatus("✅ Товар добавлен"); document.getElementById("adminNewGoodsName").value = ""; document.getElementById("adminNewGoodsPrice").value = ""; document.getElementById("adminNewGoodsStock").value = ""; } else alert("Заполните все поля"); };
             
+            // Google настройки
+            document.getElementById("saveGoogleSettingsBtn").onclick = saveGoogleSettings;
+            document.getElementById("testGoogleBtn").onclick = testGoogleConnection;
+            document.getElementById("manualExportBtn").onclick = () => exportToGoogleSheets();
+            document.getElementById("loadFromGoogleBtn").onclick = () => loadFromGoogleSheets();
+            
+            // Обновление тоталов при изменении расхода
             document.getElementById("orderExpense").onchange = () => updateCartTotals();
             document.getElementById("orderExpense").oninput = () => updateCartTotals();
             
