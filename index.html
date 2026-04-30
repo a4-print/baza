@@ -301,22 +301,18 @@
                 <h3>🔄 Настройка Google Sheets синхронизации</h3>
                 <p style="margin-bottom: 16px;">Данные автоматически отправляются в Google Sheets при каждом заказе и закрытии смены.</p>
                 <div style="background: var(--gray-100); padding: 16px; border-radius: 12px; margin-bottom: 16px;">
-                    <label style="font-weight: 600;">URL веб-приложения (полученный после публикации Apps Script):</label>
-                    <input type="text" id="googleWebAppUrl" placeholder="https://script.google.com/macros/s/.../exec" style="margin-top: 8px;">
+                    <label style="font-weight: 600;">URL веб-приложения:</label>
+                    <input type="text" id="googleWebAppUrl" placeholder="https://script.google.com/macros/s/.../exec" style="margin-top: 8px;" value="https://script.google.com/macros/s/AKfycbzXHLExmiAE6LYvcNO1iyAoLcYxryg5rdf_pvBAL05YfDd0Us-GHmdMJqPIvnjqZHI/exec">
                     <button id="saveGoogleUrlBtn" class="btn-primary" style="margin-top: 16px;">💾 Сохранить настройки</button>
                     <button id="testGoogleConnectionBtn" class="btn-purple" style="margin-top: 16px; margin-left: 8px;">🔌 Тест подключения</button>
                 </div>
                 <div class="row-2"><button id="manualSyncBtn" class="btn-pink" style="flex:1;">📤 Ручная синхронизация</button></div>
-                <div id="googleStatus" class="google-status">⚙️ Настройка не выполнена</div>
+                <div id="googleStatus" class="google-status">⚙️ Настройка выполнена</div>
                 <div class="instruction-note" style="margin-top: 16px;">
-                    <strong>📌 Как настроить синхронизацию (один раз):</strong><br><br>
-                    1. Откройте Google таблицу: <a href="https://docs.google.com/spreadsheets/d/1n0xBHCyZQ7CUvPXPm0B7T65l236wu-7agHBiWyXcIlo/edit" target="_blank">A4-Print База данных</a><br>
-                    2. Нажмите «Расширения» → «Apps Script»<br>
-                    3. Вставьте код из инструкции в редактор<br>
-                    4. Нажмите «Развернуть» → «Новое развертывание»<br>
-                    5. Тип: «Веб-приложение», доступ: «Все, даже анонимные»<br>
-                    6. Скопируйте полученный URL и вставьте в поле выше<br>
-                    7. Нажмите «Сохранить настройки» и «Тест подключения»
+                    <strong>📌 Синхронизация работает автоматически!</strong><br><br>
+                    ✅ При оформлении заказа — данные отправляются в Google<br>
+                    ✅ При закрытии смены — данные отправляются в Google<br>
+                    ✅ Кнопка «Синхр. с Google» — ручная синхронизация
                 </div>
             </div>
         </div>
@@ -325,10 +321,10 @@
     <div id="printBlankContainer" style="display: none;"></div>
 
     <script>
-        // ========== КОНФИГУРАЦИЯ GOOGLE ==========
-        let GOOGLE_WEBAPP_URL = localStorage.getItem("google_webapp_url") || "";
+        // ========== КОНФИГУРАЦИЯ GOOGLE (URL уже вставлен) ==========
+        let GOOGLE_WEBAPP_URL = localStorage.getItem("google_webapp_url") || "https://script.google.com/macros/s/AKfycbzXHLExmiAE6LYvcNO1iyAoLcYxryg5rdf_pvBAL05YfDd0Us-GHmdMJqPIvnjqZHI/exec";
         
-        // ========== ПОЛЬЗОВАТЕЛИ ==========
+        // ========== ПОЛЬЗОВАТЕЛИ (ТОЛЬКО ТРИ ОПЕРАТОРА) ==========
         let operators = { 
             "pavel": { password: "pavel123", name: "Павел", role: "admin", rate: 2500 }, 
             "ksenia": { password: "ksenia123", name: "Ксения", role: "operator", rate: 2000 }, 
@@ -369,6 +365,40 @@
         function loadAllShifts() { let s = localStorage.getItem(SHIFTS_LIST_KEY); if (s) allShifts = JSON.parse(s); else allShifts = []; }
         function saveAllShifts() { localStorage.setItem(SHIFTS_LIST_KEY, JSON.stringify(allShifts)); }
         function addShiftToHistory(shiftData) { allShifts.push(shiftData); saveAllShifts(); renderShiftsHistory(); }
+
+        // ========== ОЧИСТКА СТАРЫХ ОПЕРАТОРОВ ИЗ СТАТИСТИКИ ==========
+        function cleanOldOperatorsData() {
+            // Получаем список допустимых имён операторов
+            const validNames = Object.values(operators).map(op => op.name);
+            
+            // Очищаем заказы от несуществующих операторов
+            let ordersChanged = false;
+            for (let i = 0; i < allOrders.length; i++) {
+                if (!validNames.includes(allOrders[i].operator)) {
+                    allOrders.splice(i, 1);
+                    ordersChanged = true;
+                    i--;
+                }
+            }
+            if (ordersChanged) {
+                saveOrders();
+                console.log("Очищены заказы с несуществующими операторами");
+            }
+            
+            // Очищаем смены от несуществующих операторов
+            let shiftsChanged = false;
+            for (let i = 0; i < allShifts.length; i++) {
+                if (!validNames.includes(allShifts[i].name)) {
+                    allShifts.splice(i, 1);
+                    shiftsChanged = true;
+                    i--;
+                }
+            }
+            if (shiftsChanged) {
+                saveAllShifts();
+                console.log("Очищены смены с несуществующими операторами");
+            }
+        }
 
         // ========== GOOGLE SHEETS СИНХРОНИЗАЦИЯ ==========
         async function sendToGoogleSheets(type, data) {
@@ -421,7 +451,7 @@
 
         function saveGoogleSettings() {
             const url = document.getElementById("googleWebAppUrl").value.trim();
-            if (url) { GOOGLE_WEBAPP_URL = url; localStorage.setItem("google_webapp_url", url); updateGoogleStatus("✅ Настройки сохранены", false); showSyncStatus("✅ Настройки Google сохранены"); alert("Настройки сохранены! Нажмите «Тест подключения» для проверки."); }
+            if (url) { GOOGLE_WEBAPP_URL = url; localStorage.setItem("google_webapp_url", url); updateGoogleStatus("✅ Настройки сохранены", false); showSyncStatus("✅ Настройки Google сохранены"); alert("Настройки сохранены!"); }
             else { alert("Введите URL веб-приложения"); }
         }
 
@@ -542,6 +572,10 @@
             let o = localStorage.getItem(OPERATORS_KEY); if (o) operators = JSON.parse(o);
             let ord = localStorage.getItem(ORDERS_KEY); if (ord) allOrders = JSON.parse(ord);
             loadAllShifts();
+            
+            // Очищаем старых операторов из данных
+            cleanOldOperatorsData();
+            
             renderServices(); renderGoods(); renderCart(); renderHistory(); loadShift();
             updateShiftFinanceDisplay(); renderShiftsHistory();
             document.getElementById("currentOperatorName").innerHTML = `${currentUser.name} ${currentUser.role === "admin" ? "👑" : "👤"}`;
@@ -574,7 +608,7 @@
                 shiftOpen = new Date().toLocaleString(); shiftClose = null; shiftOpenComment = comment; shiftCloseComment = ""; saveShift(); updateShiftUI(); updateShiftFinanceDisplay(); alert("✅ Новая смена открыта: " + shiftOpen); 
             } else if (window._pendingShiftAction === "close") { 
                 if (!shiftOpen) { alert("Нет открытой смены для закрытия"); document.getElementById("shiftCommentModal").style.display = "none"; window._pendingShiftAction = null; return; } 
-                if (shiftClose) { alert("Смена уже закрыта"); document.getElementById("shiftCommentModal").style.display = "none"; window._pendingShiftAction = null; return; }
+                if (shiftClose) { alert("Смена уже закрыта"); document.getElementById("shiftCommentModal").style.display = "none"); window._pendingShiftAction = null; return; }
                 let finance = getShiftFinance(); shiftClose = new Date().toLocaleString(); shiftCloseComment = comment; saveShift(); let shiftRecord = { login: currentUser.username, name: currentUser.name, role: currentUser.role, open: shiftOpen, close: shiftClose, openComment: shiftOpenComment, closeComment: shiftCloseComment }; addShiftToHistory(shiftRecord); updateShiftUI(); updateShiftFinanceDisplay(); alert(`✅ Смена закрыта: ${shiftClose}\n💰 Выручка: ${finance.revenue} ₽\n📊 Чистая прибыль: ${finance.profit} ₽\n💵 Наличные: ${finance.cash} ₽\n💳 Карта: ${finance.card} ₽`); await autoSyncAfterShift(); 
             } 
             document.getElementById("shiftCommentModal").style.display = "none"; window._pendingShiftAction = null; 
@@ -724,46 +758,42 @@
             alert(`✅ Заказ №${order.id} на ${order.finalTotal} ₽\n💸 Расход: ${totals.orderExpense} ₽\n📊 Чистая прибыль: ${totals.profit} ₽`);
         }
 
-        function getMyOrders() { return currentUser.role === "admin" ? allOrders : allOrders.filter(o => o.operator === currentUser.name); }
-        
-        function renderHistory() {
-            let my = getMyOrders();
-            let cont = document.getElementById("historyList");
-            if (!my.length) { cont.innerHTML = "<div style='padding:40px;text-align:center;color:var(--gray-500);'>Нет заказов</div>"; return; }
-            let html = "";
-            [...my].reverse().forEach(o => { const profit = o.profit || 0; html += `<div class="history-item"><div><strong>${escapeHtml(o.client)}</strong> ${o.phone ? `📞 ${escapeHtml(o.phone)}` : ""} | ${o.date} | <strong>${o.finalTotal} ₽</strong> | 💸 расход: ${o.orderExpense || 0} ₽ | <span class="history-profit">💰 прибыль: ${profit} ₽</span></div><div style="font-size:12px; margin-top:6px;">${o.items.map(i => `${i.name} x${i.qty}`).join(", ")}</div><div style="font-size:11px; margin-top:4px; color:var(--gray-500);">${o.comment ? "📝 " + o.comment : ""}</div><div style="margin-top:8px; display:flex; gap:8px;"><button class="edit-order" data-id="${o.id}" style="background:var(--orange); border:none; border-radius:8px; padding:5px 14px; color:white; font-size:11px;">✏️ Редактировать</button><button class="delete-order" data-id="${o.id}" style="background:var(--red); border:none; border-radius:8px; padding:5px 14px; color:white; font-size:11px;">🗑 Удалить</button></div></div>`; });
-            cont.innerHTML = html;
-            document.querySelectorAll(".delete-order").forEach(btn => btn.onclick = () => { let id = parseInt(btn.getAttribute("data-id")); allOrders = allOrders.filter(o => o.id !== id); saveOrders(); renderHistory(); updateShiftFinanceDisplay(); });
-            document.querySelectorAll(".edit-order").forEach(btn => btn.onclick = () => { let id = parseInt(btn.getAttribute("data-id")); let order = allOrders.find(o => o.id === id); if (order) openEditOrder(order); });
-        }
-
-        function showReportChoice() { document.getElementById("reportChoiceModal").style.display = "flex"; }
-        function reportTodayExcel() { const today = new Date().toLocaleDateString(); const myOrders = getMyOrders(); const todayOrders = myOrders.filter(o => o.date.includes(today)); if (todayOrders.length === 0) { alert("За сегодня нет заказов"); return; } exportToExcel(todayOrders, `Отчёт_за_${today.replace(/\./g, '-')}`, false); document.getElementById("reportChoiceModal").style.display = "none"; }
-        function reportFullExcel() { const myOrders = getMyOrders(); if (myOrders.length === 0) { alert("Нет заказов"); return; } exportToExcel(myOrders, "Полный_отчёт", false); document.getElementById("reportChoiceModal").style.display = "none"; }
-        function reportShiftsExcel() { exportToExcel(null, null, true); document.getElementById("reportChoiceModal").style.display = "none"; }
-        async function reportTodayPdf() { const today = new Date().toLocaleDateString(); const myOrders = getMyOrders(); const todayOrders = myOrders.filter(o => o.date.includes(today)); if (todayOrders.length === 0) { alert("За сегодня нет заказов"); return; } await generatePdfReport(todayOrders, `Отчёт за ${today}`); document.getElementById("reportChoiceModal").style.display = "none"; }
-        async function reportFullPdf() { const myOrders = getMyOrders(); if (myOrders.length === 0) { alert("Нет заказов"); return; } await generatePdfReport(myOrders, "Полный отчёт"); document.getElementById("reportChoiceModal").style.display = "none"; }
-
-        function printOrderBlank() {
-            if (cart.length === 0) { alert("Корзина пуста"); return; }
-            let client = document.getElementById("clientName").value.trim() || "Клиент";
-            let phone = document.getElementById("clientPhone").value.trim();
-            let comment = document.getElementById("orderComment").value;
-            let payment = document.querySelector('input[name="payment"]:checked').value;
-            const totals = getCartTotals();
-            let itemsHtml = cart.map(i => `<tr><td style="border:1px solid #d1d5db; padding:8px;">${escapeHtml(i.name)}</td><td style="border:1px solid #d1d5db; text-align:center">${i.qty}</td><td style="border:1px solid #d1d5db; text-align:center">${i.price} ₽</td><td style="border:1px solid #d1d5db; text-align:right">${i.price * i.qty} ₽</td>`).join('');
-            let cont = document.getElementById("printBlankContainer"); 
-            cont.innerHTML = `<div class="blank-page" style="padding:20mm; background:white; color:black; font-family:monospace;"><div style="text-align:center;"><h2>A4-ПРИНТ</h2><p>Копировальный центр</p></div><div><strong>№ заказа:</strong> ${Date.now()}</div><div><strong>Дата:</strong> ${new Date().toLocaleString()}</div><div><strong>Оператор:</strong> ${currentUser.name}</div><div><strong>Клиент:</strong> ${escapeHtml(client)}</div>${phone ? `<div><strong>Телефон:</strong> ${escapeHtml(phone)}</div>` : ""}<div><strong>Оплата:</strong> ${payment === "cash" ? "Наличные" : "Карта"}</div><table border="1" cellpadding="5" cellspacing="0" style="width:100%; margin:15px 0; border-color:#d1d5db;"><thead><tr><th>Наименование</th><th>Кол-во</th><th>Цена</th><th>Сумма</th></tr></thead><tbody>${itemsHtml}</tbody><tfoot><tr><td colspan="3"><strong>Итого к оплате:</strong></td><td><strong>${totals.finalTotal} ₽</strong></td></tr><tr><td colspan="3"><strong>Расход по заказу:</strong></td><td>${totals.orderExpense} ₽</td></tr><tr style="background: #d1fae5;"><td colspan="3"><strong>📊 Чистая прибыль:</strong></td><td><strong>${totals.profit} ₽</strong></td></tr></tfoot></table>${comment ? `<div>Комментарий: ${escapeHtml(comment)}</div>` : ""}<div style="margin-top:30px; text-align:center;">Спасибо за заказ!</div></div>`;
-            window.print(); setTimeout(() => cont.innerHTML = "", 1000);
-        }
-
+        // ========== ИСПРАВЛЕННАЯ СТАТИСТИКА ОПЕРАТОРОВ (ТОЛЬКО 3 ОПЕРАТОРА) ==========
         function getOperatorsStats() {
+            // Базовые операторы только из списка operators
             let stats = {};
-            for (let [login, data] of Object.entries(operators)) { stats[login] = { name: data.name, login: login, orders: 0, revenue: 0, cash: 0, card: 0, profit: 0 }; }
+            for (let [login, data] of Object.entries(operators)) { 
+                stats[login] = { 
+                    name: data.name, 
+                    login: login, 
+                    orders: 0, 
+                    revenue: 0, 
+                    cash: 0, 
+                    card: 0, 
+                    profit: 0 
+                }; 
+            }
+            
             for (let order of allOrders) {
+                // Ищем оператора по имени в списке operators
                 let opLogin = null;
-                for (let [login, data] of Object.entries(operators)) { if (data.name === order.operator) { opLogin = login; break; } }
-                if (opLogin && stats[opLogin]) { stats[opLogin].orders++; stats[opLogin].revenue += order.finalTotal; stats[opLogin].profit += order.profit || 0; if (order.paymentMethod === "cash") stats[opLogin].cash += order.finalTotal; else stats[opLogin].card += order.finalTotal; }
+                for (let [login, data] of Object.entries(operators)) { 
+                    if (data.name === order.operator) { 
+                        opLogin = login; 
+                        break; 
+                    } 
+                }
+                // Если оператор найден в списке - добавляем статистику
+                if (opLogin && stats[opLogin]) {
+                    stats[opLogin].orders++; 
+                    stats[opLogin].revenue += order.finalTotal;
+                    stats[opLogin].profit += order.profit || 0;
+                    if (order.paymentMethod === "cash") {
+                        stats[opLogin].cash += order.finalTotal;
+                    } else {
+                        stats[opLogin].card += order.finalTotal;
+                    }
+                }
             }
             return stats;
         }
@@ -771,7 +801,10 @@
         function renderOperatorsStats() {
             let stats = getOperatorsStats();
             let html = `<div><div class="stats-row stats-header"><span style="width:100px;">Оператор</span><span style="width:60px;">Заказов</span><span style="width:100px;">Выручка</span><span style="width:100px;">Прибыль</span><span style="width:80px;">Наличные</span><span style="width:80px;">Карта</span><span style="width:70px;">Ср. чек</span></div></div>`;
-            for (let [login, st] of Object.entries(stats)) { let avg = st.orders > 0 ? Math.round(st.revenue / st.orders) : 0; html += `<div class="stats-row"><span style="width:100px;"><strong>${escapeHtml(st.name)}</strong> ${login === "pavel" ? "👑" : "👤"}</span><span style="width:60px;">${st.orders}</span><span style="width:100px;">${st.revenue.toLocaleString()}</span><span style="width:100px; color:var(--green);">${st.profit.toLocaleString()}</span><span style="width:80px;">${st.cash.toLocaleString()}</span><span style="width:80px;">${st.card.toLocaleString()}</span><span style="width:70px;">${avg.toLocaleString()}</span></div>`; }
+            for (let [login, st] of Object.entries(stats)) { 
+                let avg = st.orders > 0 ? Math.round(st.revenue / st.orders) : 0; 
+                html += `<div class="stats-row"><span style="width:100px;"><strong>${escapeHtml(st.name)}</strong> ${login === "pavel" ? "👑" : "👤"}</span><span style="width:60px;">${st.orders}</span><span style="width:100px;">${st.revenue.toLocaleString()}</span><span style="width:100px; color:var(--green);">${st.profit.toLocaleString()}</span><span style="width:80px;">${st.cash.toLocaleString()}</span><span style="width:80px;">${st.card.toLocaleString()}</span><span style="width:70px;">${avg.toLocaleString()}</span></div>`; 
+            }
             document.getElementById("operatorsStatsContent").innerHTML = html;
         }
         
@@ -803,7 +836,7 @@
             let year = parseInt(document.getElementById("salaryYear").value);
             let salaryMap = calculateSalaryForMonth(month, year);
             let monthNames = ["Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль", "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"];
-            let html = `<table class="salary-table"><thead><tr><th>Оператор</th><th>Роль</th><th>Смен</th><th>Часов</th><th>Ставка</th><th>Итого</th></tr></thead><tbody>`;
+            let html = `<table class="salary-table"><thead><tr><th>Оператор</th><th>Роль</th><th>Смен</th><th>Часов</th><th>Ставка</th><th>Итого</th><tr></thead><tbody>`;
             let totalSalary = 0;
             for (let [login, data] of salaryMap) { let rate = data.role === "admin" ? 2500 : 2000; html += `<tr><td><strong>${escapeHtml(data.name)}</strong></td><td>${data.role === "admin" ? "Администратор" : "Оператор"}</td><td>${data.count}</td><td>${data.hours}</td><td>${rate} ₽</td><td style="font-weight:bold;">${data.total.toLocaleString()} ₽</td></tr>`; totalSalary += data.total; }
             if (salaryMap.size === 0) { html += `<tr><td colspan="6" style="text-align:center;">Нет данных за выбранный период</td></tr>`; } else { html += `<tr style="background: var(--blue); color: white;"><td colspan="5"><strong>ИТОГО:</strong></td><td><strong>${totalSalary.toLocaleString()} ₽</strong></td></tr>`; }
@@ -843,6 +876,39 @@
             document.querySelectorAll(".updateGoodsStock").forEach(btn => btn.onclick = () => { let id = parseInt(btn.getAttribute("data-id")); let g = goods.find(x => x.id === id); if (g) { g.stock = parseInt(document.getElementById(`stock_${id}`).value); if (g.stock < 0) g.stock = 0; saveGoods(); renderGoods(); renderAdmin(); showSyncStatus("✅ Склад обновлён"); } });
             document.querySelectorAll(".updateGoodsPrice").forEach(btn => btn.onclick = () => { let id = parseInt(btn.getAttribute("data-id")); let newPrice = prompt("Новая цена:"); if (newPrice && !isNaN(parseFloat(newPrice))) { let g = goods.find(x => x.id === id); if (g) { g.price = parseFloat(newPrice); saveGoods(); renderGoods(); renderAdmin(); showSyncStatus("✅ Цена обновлена"); } } });
             document.querySelectorAll(".deleteGoods").forEach(btn => btn.onclick = () => { let id = parseInt(btn.getAttribute("data-id")); if (confirm("Удалить товар?")) { goods = goods.filter(x => x.id !== id); saveGoods(); renderGoods(); renderAdmin(); } });
+        }
+
+        function getMyOrders() { return currentUser.role === "admin" ? allOrders : allOrders.filter(o => o.operator === currentUser.name); }
+        
+        function renderHistory() {
+            let my = getMyOrders();
+            let cont = document.getElementById("historyList");
+            if (!my.length) { cont.innerHTML = "<div style='padding:40px;text-align:center;color:var(--gray-500);'>Нет заказов</div>"; return; }
+            let html = "";
+            [...my].reverse().forEach(o => { const profit = o.profit || 0; html += `<div class="history-item"><div><strong>${escapeHtml(o.client)}</strong> ${o.phone ? `📞 ${escapeHtml(o.phone)}` : ""} | ${o.date} | <strong>${o.finalTotal} ₽</strong> | 💸 расход: ${o.orderExpense || 0} ₽ | <span class="history-profit">💰 прибыль: ${profit} ₽</span></div><div style="font-size:12px; margin-top:6px;">${o.items.map(i => `${i.name} x${i.qty}`).join(", ")}</div><div style="font-size:11px; margin-top:4px; color:var(--gray-500);">${o.comment ? "📝 " + o.comment : ""}</div><div style="margin-top:8px; display:flex; gap:8px;"><button class="edit-order" data-id="${o.id}" style="background:var(--orange); border:none; border-radius:8px; padding:5px 14px; color:white; font-size:11px;">✏️ Редактировать</button><button class="delete-order" data-id="${o.id}" style="background:var(--red); border:none; border-radius:8px; padding:5px 14px; color:white; font-size:11px;">🗑 Удалить</button></div></div>`; });
+            cont.innerHTML = html;
+            document.querySelectorAll(".delete-order").forEach(btn => btn.onclick = () => { let id = parseInt(btn.getAttribute("data-id")); allOrders = allOrders.filter(o => o.id !== id); saveOrders(); renderHistory(); updateShiftFinanceDisplay(); });
+            document.querySelectorAll(".edit-order").forEach(btn => btn.onclick = () => { let id = parseInt(btn.getAttribute("data-id")); let order = allOrders.find(o => o.id === id); if (order) openEditOrder(order); });
+        }
+
+        function showReportChoice() { document.getElementById("reportChoiceModal").style.display = "flex"; }
+        function reportTodayExcel() { const today = new Date().toLocaleDateString(); const myOrders = getMyOrders(); const todayOrders = myOrders.filter(o => o.date.includes(today)); if (todayOrders.length === 0) { alert("За сегодня нет заказов"); return; } exportToExcel(todayOrders, `Отчёт_за_${today.replace(/\./g, '-')}`, false); document.getElementById("reportChoiceModal").style.display = "none"; }
+        function reportFullExcel() { const myOrders = getMyOrders(); if (myOrders.length === 0) { alert("Нет заказов"); return; } exportToExcel(myOrders, "Полный_отчёт", false); document.getElementById("reportChoiceModal").style.display = "none"; }
+        function reportShiftsExcel() { exportToExcel(null, null, true); document.getElementById("reportChoiceModal").style.display = "none"; }
+        async function reportTodayPdf() { const today = new Date().toLocaleDateString(); const myOrders = getMyOrders(); const todayOrders = myOrders.filter(o => o.date.includes(today)); if (todayOrders.length === 0) { alert("За сегодня нет заказов"); return; } await generatePdfReport(todayOrders, `Отчёт за ${today}`); document.getElementById("reportChoiceModal").style.display = "none"; }
+        async function reportFullPdf() { const myOrders = getMyOrders(); if (myOrders.length === 0) { alert("Нет заказов"); return; } await generatePdfReport(myOrders, "Полный отчёт"); document.getElementById("reportChoiceModal").style.display = "none"; }
+
+        function printOrderBlank() {
+            if (cart.length === 0) { alert("Корзина пуста"); return; }
+            let client = document.getElementById("clientName").value.trim() || "Клиент";
+            let phone = document.getElementById("clientPhone").value.trim();
+            let comment = document.getElementById("orderComment").value;
+            let payment = document.querySelector('input[name="payment"]:checked').value;
+            const totals = getCartTotals();
+            let itemsHtml = cart.map(i => `<tr><td style="border:1px solid #d1d5db; padding:8px;">${escapeHtml(i.name)}</td><td style="border:1px solid #d1d5db; text-align:center">${i.qty}</td><td style="border:1px solid #d1d5db; text-align:center">${i.price} ₽</td><td style="border:1px solid #d1d5db; text-align:right">${i.price * i.qty} ₽</td></tr>`).join('');
+            let cont = document.getElementById("printBlankContainer"); 
+            cont.innerHTML = `<div class="blank-page" style="padding:20mm; background:white; color:black; font-family:monospace;"><div style="text-align:center;"><h2>A4-ПРИНТ</h2><p>Копировальный центр</p></div><div><strong>№ заказа:</strong> ${Date.now()}</div><div><strong>Дата:</strong> ${new Date().toLocaleString()}</div><div><strong>Оператор:</strong> ${currentUser.name}</div><div><strong>Клиент:</strong> ${escapeHtml(client)}</div>${phone ? `<div><strong>Телефон:</strong> ${escapeHtml(phone)}</div>` : ""}<div><strong>Оплата:</strong> ${payment === "cash" ? "Наличные" : "Карта"}</div><table border="1" cellpadding="5" cellspacing="0" style="width:100%; margin:15px 0; border-color:#d1d5db;"><thead><tr><th>Наименование</th><th>Кол-во</th><th>Цена</th><th>Сумма</th></tr></thead><tbody>${itemsHtml}</tbody><tfoot><tr><td colspan="3"><strong>Итого к оплате:</strong></td><td><strong>${totals.finalTotal} ₽</strong></td></tr><tr><td colspan="3"><strong>Расход по заказу:</strong></td><td>${totals.orderExpense} ₽</td></tr><tr style="background: #d1fae5;"><td colspan="3"><strong>📊 Чистая прибыль:</strong></td><td><strong>${totals.profit} ₽</strong></td></tr></tfoot></table>${comment ? `<div>Комментарий: ${escapeHtml(comment)}</div>` : ""}<div style="margin-top:30px; text-align:center;">Спасибо за заказ!</div></div>`;
+            window.print(); setTimeout(() => cont.innerHTML = "", 1000);
         }
 
         function initTabs() { const tabs = document.querySelectorAll('.category-tab'); const panels = { services: document.getElementById('servicesPanel'), goods: document.getElementById('goodsPanel') }; tabs.forEach(tab => { tab.onclick = () => { tabs.forEach(t => t.classList.remove('active')); tab.classList.add('active'); Object.values(panels).forEach(p => p.classList.remove('active')); panels[tab.getAttribute('data-cat')].classList.add('active'); }; }); }
