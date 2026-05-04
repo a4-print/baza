@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>A4-Принт | Управление заказами и счетами</title>
+    <title>A4-Принт | Копировальный центр</title>
     <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
@@ -91,8 +91,6 @@
         .stats-row { display: flex; justify-content: space-between; padding: 12px; border-bottom: 1px solid var(--gray-200); }
         .stats-header { font-weight: 700; background: var(--gray-100); border-radius: 8px; }
         .login-select { width: 100%; padding: 14px; font-size: 16px; border-radius: 10px; border: 1px solid var(--gray-300); margin-bottom: 14px; }
-        
-        /* Стили для счетов */
         .invoice-module { margin-top: 30px; border-top: 2px solid var(--gray-300); padding-top: 20px; }
         .invoice-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 20px; }
         .invoice-card { background: var(--gray-50); border-radius: 12px; padding: 16px; margin-bottom: 12px; border: 1px solid var(--gray-200); cursor: pointer; transition: all 0.15s; }
@@ -103,18 +101,85 @@
         .status-draft { background: var(--gray-400); color: white; }
         .status-sent { background: var(--orange); color: white; }
         .status-paid { background: var(--green); color: white; }
-        .invoice-client { font-size: 13px; color: var(--gray-600); margin-bottom: 8px; }
-        .invoice-details { display: flex; gap: 20px; flex-wrap: wrap; font-size: 12px; }
-        .invoice-amount { font-weight: 700; font-size: 18px; color: var(--blue); }
         .requisites-form { background: var(--gray-100); padding: 20px; border-radius: 12px; margin-bottom: 20px; }
         .requisites-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px; }
-        .invoice-preview { max-width: 800px; margin: 0 auto; padding: 30px; background: white; color: black; font-family: 'Times New Roman', serif; }
-        .invoice-preview table { width: 100%; border-collapse: collapse; }
-        .invoice-preview th, .invoice-preview td { border: 1px solid #ddd; padding: 10px; text-align: left; }
-        .invoice-preview th { background: #f5f5f5; }
         .edit-item-row { display: flex; justify-content: space-between; align-items: center; padding: 8px; border-bottom: 1px solid var(--gray-200); gap: 8px; flex-wrap: wrap; }
-        @media print { .no-print { display: none; } .invoice-preview { margin: 0; padding: 20px; } }
-        @media (max-width: 850px) { body { padding: 16px; } .user-bar { display: none !important; } .burger-btn { display: block; } }
+        
+        /* Стили для печати бланка заказа */
+        @media print {
+            body * { visibility: hidden; }
+            #printArea, #printArea * { visibility: visible; }
+            #printArea { position: absolute; top: 0; left: 0; width: 100%; margin: 0; padding: 0; }
+            .no-print { display: none !important; }
+            button, .btn, .no-print { display: none !important; }
+            @page { size: A4; margin: 15mm; }
+        }
+        
+        .order-blank {
+            max-width: 210mm;
+            margin: 0 auto;
+            padding: 0;
+            background: white;
+            font-family: 'Times New Roman', 'Arial', sans-serif;
+            color: black;
+        }
+        .order-blank-header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #000;
+        }
+        .order-blank-header h2 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+        .order-blank-header p {
+            font-size: 12px;
+            color: #555;
+        }
+        .order-blank-recipient {
+            margin-bottom: 20px;
+            padding: 10px;
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+        }
+        .order-blank-recipient td { border: none !important; padding: 4px; }
+        .order-blank-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        .order-blank-table th, .order-blank-table td {
+            border: 1px solid #000;
+            padding: 10px;
+            text-align: left;
+            vertical-align: top;
+        }
+        .order-blank-table th {
+            background: #f0f0f0;
+            font-weight: bold;
+            text-align: center;
+        }
+        .order-blank-totals {
+            width: 100%;
+            margin-bottom: 20px;
+            border: none;
+        }
+        .order-blank-totals td { border: none; padding: 5px; }
+        .order-blank-signatures {
+            margin-top: 30px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .order-blank-footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 10px;
+            color: #888;
+            border-top: 1px solid #ccc;
+            padding-top: 10px;
+        }
+        @media (max-width: 850px) { body { padding: 16px; } .user-bar { display: none !important; } .burger-btn { display: block; } .services-grid, .goods-grid { grid-template-columns: repeat(2, 1fr) !important; } }
         @media (min-width: 851px) { .burger-menu { display: none !important; } }
     </style>
 </head>
@@ -221,7 +286,6 @@
             </div>
             <div id="historyList" class="history-list"></div>
 
-            <!-- Модуль счетов -->
             <div class="invoice-module">
                 <div class="invoice-header">
                     <div class="panel-title">📄 СЧЕТА ДЛЯ ЮР. ЛИЦ</div>
@@ -235,7 +299,6 @@
 
 <div id="syncStatus" class="sync-status">💾 Готово</div>
 
-<!-- Модалка отчёта -->
 <div id="reportChoiceModal" class="modal">
     <div class="modal-card"><h3 style="margin-bottom:20px; text-align:center;">📊 ВЫБЕРИТЕ ТИП ОТЧЁТА</h3>
         <div style="display:flex; flex-direction:column; gap:10px;">
@@ -249,7 +312,6 @@
     </div>
 </div>
 
-<!-- Модалка комментария к смене -->
 <div id="shiftCommentModal" class="modal">
     <div class="modal-card"><h3 id="shiftCommentTitle" style="margin-bottom:16px;">📝 Комментарий к смене</h3>
         <textarea id="shiftCommentText" rows="3" style="margin:16px 0;"></textarea>
@@ -257,7 +319,6 @@
     </div>
 </div>
 
-<!-- Модалка создания/редактирования счета -->
 <div id="invoiceModal" class="modal">
     <div class="modal-card" style="max-width: 900px;">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;"><h2 id="invoiceModalTitle">🧾 Создание счета</h2><button id="closeInvoiceModal" style="background:none; font-size:24px;">✕</button></div>
@@ -292,14 +353,12 @@
     </div>
 </div>
 
-<!-- Модалка просмотра счета -->
 <div id="invoicePreviewModal" class="modal">
     <div class="modal-card" style="max-width:800px;"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;"><h2>🧾 Счет на оплату</h2><button id="closePreviewModal" style="background:none; font-size:24px;">✕</button></div>
     <div id="invoicePreviewContent" class="invoice-preview"></div>
     <div class="row-2 no-print" style="margin-top:20px;"><button id="printInvoiceBtn" class="btn-primary">🖨️ Распечатать / Сохранить PDF</button><button id="closePreviewModalBtn" class="btn-outline">Закрыть</button></div></div>
 </div>
 
-<!-- Модалка редактирования заказа -->
 <div id="editOrderModal" class="modal">
     <div class="modal-card" style="max-width:700px;"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;"><h2>✏️ Редактирование заказа №<span id="editOrderId"></span></h2><button id="closeEditModal" style="background:none; font-size:24px;">✕</button></div>
     <div class="field"><label>Клиент</label><input type="text" id="editClientName"></div><div class="field"><label>Телефон</label><input type="text" id="editClientPhone"></div>
@@ -318,7 +377,6 @@
     <div class="row-2"><button id="saveEditedOrderBtn" class="btn-success" style="flex:2;">💾 Сохранить</button><button id="cancelEditBtn" class="btn-outline" style="flex:1;">Отмена</button></div></div>
 </div>
 
-<!-- Админ-панель -->
 <div id="adminModal" class="modal">
     <div class="modal-card"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;"><h2>Администрирование</h2><button id="closeAdminModal" style="background:none; font-size:24px;">✕</button></div>
     <div class="instruction-tabs"><button class="tab-btn active" data-tab="admin-stats">📊 Статистика</button><button class="tab-btn" data-tab="admin-salary">💰 Зарплата</button><button class="tab-btn" data-tab="admin-shifts">📅 Смены</button><button class="tab-btn" data-tab="admin-services">📋 Услуги</button><button class="tab-btn" data-tab="admin-goods">🛍️ Товары</button><button class="tab-btn" data-tab="admin-google">🔄 Google</button></div>
@@ -327,26 +385,91 @@
     <div id="admin-shifts" class="instruction-content"><h3>История смен</h3><div id="shiftsHistoryList" style="max-height:400px; overflow-y:auto;"></div><button id="exportShiftsAdminBtn" class="btn-purple" style="margin-top:16px;">📊 Экспорт всех смен в Excel</button></div>
     <div id="admin-services" class="instruction-content"><h3>Управление услугами</h3><div id="adminServicesList"></div><div style="display:flex; gap:12px; margin-top:16px;"><input type="text" id="newServiceName" placeholder="Название"><input type="number" id="newServicePrice" placeholder="Цена"><button id="addServiceBtn" class="btn-primary">Добавить</button></div></div>
     <div id="admin-goods" class="instruction-content"><h3>Товары (склад)</h3><div id="adminGoodsList"></div><div style="display:flex; gap:12px; margin-top:16px;"><input type="text" id="adminNewGoodsName" placeholder="Название"><input type="number" id="adminNewGoodsPrice" placeholder="Цена"><input type="number" id="adminNewGoodsStock" placeholder="Кол-во"><button id="adminAddGoodsBtn" class="btn-primary">Добавить</button></div></div>
-    <div id="admin-google" class="instruction-content"><h3>🔄 Настройка Google Sheets синхронизации</h3><p>Данные автоматически отправляются в Google Sheets при каждом заказе и закрытии смены.</p><div style="background:var(--gray-100); padding:16px; border-radius:12px; margin-bottom:16px;"><label style="font-weight:600;">URL веб-приложения:</label><input type="text" id="googleWebAppUrl" style="margin-top:8px;" value="https://script.google.com/macros/s/AKfycbzXHLExmiAE6LYvcNO1iyAoLcYxryg5rdf_pvBAL05YfDd0Us-GHmdMJqPIvnjqZHI/exec"><button id="saveGoogleUrlBtn" class="btn-primary" style="margin-top:16px;">💾 Сохранить настройки</button><button id="testGoogleConnectionBtn" class="btn-purple" style="margin-top:16px; margin-left:8px;">🔌 Тест подключения</button></div><div class="row-2"><button id="manualSyncBtn" class="btn-pink" style="flex:1;">📤 Ручная синхронизация</button></div><div id="googleStatus" class="google-status" style="margin-top:16px; padding:12px; border-radius:8px; background:var(--gray-100);">⚙️ Настройка выполнена</div></div>
+    <div id="admin-google" class="instruction-content"><h3>🔄 Настройка Google Sheets синхронизации</h3><p>Данные автоматически отправляются в Google Sheets при каждом заказе и закрытии смены.</p><div style="background:var(--gray-100); padding:16px; border-radius:12px; margin-bottom:16px;"><label style="font-weight:600;">URL веб-приложения:</label><input type="text" id="googleWebAppUrl" style="margin-top:8px;" value="https://script.google.com/macros/s/AKfycbzXHLExmiAE6LYvcNO1iyAoLcYxryg5rdf_pvBAL05YfDd0Us-GHmdMJqPIvnjqZHI/exec"><button id="saveGoogleUrlBtn" class="btn-primary" style="margin-top:16px;">💾 Сохранить настройки</button><button id="testGoogleConnectionBtn" class="btn-purple" style="margin-top:16px; margin-left:8px;">🔌 Тест подключения</button></div><div class="row-2"><button id="manualSyncBtn" class="btn-pink" style="flex:1;">📤 Ручная синхронизация</button></div><div id="googleStatus" style="margin-top:16px; padding:12px; border-radius:8px; background:var(--gray-100);">⚙️ Настройка выполнена</div></div>
 </div>
 
 <div id="printBlankContainer" style="display: none;"></div>
 
 <script>
-    // ========== КОНФИГУРАЦИЯ GOOGLE ==========
     let GOOGLE_WEBAPP_URL = localStorage.getItem("google_webapp_url") || "https://script.google.com/macros/s/AKfycbzXHLExmiAE6LYvcNO1iyAoLcYxryg5rdf_pvBAL05YfDd0Us-GHmdMJqPIvnjqZHI/exec";
-    
-    // ========== ПОЛЬЗОВАТЕЛИ ==========
     let operators = { "pavel": { password: "pavel123", name: "Павел", role: "admin", rate: 2500 }, "ksenia": { password: "ksenia123", name: "Ксения", role: "operator", rate: 2000 }, "natalia": { password: "natalia123", name: "Наталья", role: "operator", rate: 2000 } };
-    
-    // ========== УСЛУГИ ==========
     let services = [{ id: 1, name: "Копирование ч/б A4", price: 25 }, { id: 2, name: "Копирование цветное A4", price: 35 }, { id: 3, name: "Сканирование A4", price: 25 }, { id: 4, name: "Ламинирование A4", price: 150 }, { id: 5, name: "Печать фото 10x15", price: 55 }, { id: 6, name: "Печать фото 15x21", price: 75 }, { id: 7, name: "Печать на кружке", price: 1000 }, { id: 8, name: "Печать на футболке", price: 1500 }, { id: 9, name: "Ретушь фото", price: 200 }, { id: 10, name: "Брошюровка", price: 350 }];
     let goods = [{ id: 1001, name: "Бумага А4 80г/м2", price: 350, stock: 50, unit: "пачка" }, { id: 1002, name: "Тонер чёрный HP", price: 1200, stock: 8, unit: "шт" }, { id: 1003, name: "Плёнка для ламинации А4", price: 1500, stock: 15, unit: "упаковка" }, { id: 1004, name: "USB-флешка 16Gb", price: 450, stock: 10, unit: "шт" }];
     let allOrders = [], currentUser = null, cart = [], discountPct = 0, discountAmt = 0;
     let shiftOpen = null, shiftClose = null, shiftOpenComment = "", shiftCloseComment = "";
     let allShifts = [], editOrderId = null, tempEditOrder = null, isSyncing = false;
     let clients = [], invoices = [], currentInvoiceItems = [], currentEditingInvoiceId = null;
-    const SERVICES_KEY = "a4print_services", GOODS_KEY = "a4print_goods", OPERATORS_KEY = "a4print_operators", ORDERS_KEY = "a4print_orders", SHIFT_KEY = "a4print_shift", SHIFTS_LIST_KEY = "a4print_shifts_list", CLIENTS_KEY = "a4print_clients", INVOICES_KEY = "a4print_invoices";
+    
+    // ФИКСИРОВАННЫЕ КЛЮЧИ (без версий, чтобы данные не терялись)
+    const SERVICES_KEY = "a4print_services";
+    const GOODS_KEY = "a4print_goods";
+    const OPERATORS_KEY = "a4print_operators";
+    const ORDERS_KEY = "a4print_orders";
+    const SHIFT_KEY = "a4print_shift";
+    const SHIFTS_LIST_KEY = "a4print_shifts_list";
+    const CLIENTS_KEY = "a4print_clients";
+    const INVOICES_KEY = "a4print_invoices";
+
+    // Функция миграции старых данных (перенос из старых ключей)
+    function migrateOldData() {
+        const oldKeysMap = [
+            { old: "a4print_orders_v12", new: ORDERS_KEY },
+            { old: "a4print_orders_v11", new: ORDERS_KEY },
+            { old: "a4print_orders_v10", new: ORDERS_KEY },
+            { old: "a4print_services_v12", new: SERVICES_KEY },
+            { old: "a4print_services_v11", new: SERVICES_KEY },
+            { old: "a4print_services_v10", new: SERVICES_KEY },
+            { old: "a4print_goods_v12", new: GOODS_KEY },
+            { old: "a4print_goods_v11", new: GOODS_KEY },
+            { old: "a4print_goods_v10", new: GOODS_KEY },
+            { old: "a4print_shifts_list", new: SHIFTS_LIST_KEY },
+            { old: "a4print_operators", new: OPERATORS_KEY }
+        ];
+        
+        let migrated = false;
+        for (let item of oldKeysMap) {
+            let oldData = localStorage.getItem(item.old);
+            let newData = localStorage.getItem(item.new);
+            if (oldData && !newData) {
+                localStorage.setItem(item.new, oldData);
+                console.log(`📦 Перенесено из ${item.old} в ${item.new}`);
+                migrated = true;
+            }
+        }
+        
+        // Особый случай: нужно объединить заказы, если есть и старые и новые
+        let oldOrders = null;
+        for (let item of oldKeysMap) {
+            if (item.new === ORDERS_KEY) {
+                let data = localStorage.getItem(item.old);
+                if (data && !oldOrders) oldOrders = data;
+            }
+        }
+        let newOrders = localStorage.getItem(ORDERS_KEY);
+        
+        if (oldOrders && newOrders) {
+            try {
+                let oldArr = JSON.parse(oldOrders);
+                let newArr = JSON.parse(newOrders);
+                let merged = [...newArr];
+                let existingIds = new Set(newArr.map(o => o.id));
+                for (let order of oldArr) {
+                    if (!existingIds.has(order.id)) {
+                        merged.push(order);
+                    }
+                }
+                if (merged.length > newArr.length) {
+                    localStorage.setItem(ORDERS_KEY, JSON.stringify(merged));
+                    console.log(`📦 Объединено заказов: старых ${oldArr.length}, новых ${newArr.length}, итого ${merged.length}`);
+                    migrated = true;
+                }
+            } catch(e) {}
+        }
+        
+        if (migrated) {
+            console.log("✅ Миграция данных завершена!");
+        }
+    }
 
     function saveServices() { localStorage.setItem(SERVICES_KEY, JSON.stringify(services)); }
     function saveGoods() { localStorage.setItem(GOODS_KEY, JSON.stringify(goods)); }
@@ -361,7 +484,6 @@
 
     function cleanOldOperatorsData() { const validNames = Object.values(operators).map(op => op.name); for (let i = 0; i < allOrders.length; i++) { if (!validNames.includes(allOrders[i].operator)) { allOrders.splice(i, 1); i--; saveOrders(); } } for (let i = 0; i < allShifts.length; i++) { if (!validNames.includes(allShifts[i].name)) { allShifts.splice(i, 1); i--; saveAllShifts(); } } }
 
-    // ========== GOOGLE СИНХРОНИЗАЦИЯ ==========
     async function sendToGoogleSheets(type, data) { if (!GOOGLE_WEBAPP_URL) return false; try { await fetch(GOOGLE_WEBAPP_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ type: type, records: data }) }); return true; } catch(e) { return false; } }
     async function syncAllToGoogle() { if (!GOOGLE_WEBAPP_URL) { alert("Сначала настройте URL!"); return; } if (isSyncing) { alert("Синхронизация уже выполняется..."); return; } isSyncing = true; showSyncStatus("🔄 Синхронизация..."); try { if (allOrders.length) await sendToGoogleSheets('orders', allOrders); if (allShifts.length) { const shiftsWithSalary = allShifts.map(shift => ({ ...shift, hours: (new Date(shift.close) - new Date(shift.open)) / (1000*3600), salary: calculateSalaryForShift(shift) })); await sendToGoogleSheets('shifts', shiftsWithSalary); } await sendToGoogleSheets('services', services); await sendToGoogleSheets('goods', goods); showSyncStatus("✅ Синхронизация завершена"); alert("Данные отправлены в Google!"); } catch(e) { showSyncStatus("❌ Ошибка"); } finally { isSyncing = false; } }
     async function autoSyncAfterOrder() { if (GOOGLE_WEBAPP_URL) await sendToGoogleSheets('orders', allOrders); }
@@ -386,6 +508,9 @@
     async function generatePdfReport(orders, title) { if (!orders?.length) { alert("Нет данных"); return; } let oh=""; orders.forEach(o=>{ oh+=`<div style="border:1px solid #ddd; margin:10px 0; padding:12px; border-radius:8px;"><div><strong>№${o.id}</strong> | ${o.date}</div><div><strong>Клиент:</strong> ${escapeHtml(o.client)} ${o.phone?`📞 ${escapeHtml(o.phone)}`:""}</div><div><strong>Состав:</strong> ${o.items.map(i=>`${i.name} x${i.qty}`).join(", ")}</div><div><strong>Итого:</strong> ${o.finalTotal} ₽ | <strong>Расход:</strong> ${o.orderExpense||0} ₽ | <span style="color:green;">💰 Прибыль: ${o.profit||0} ₽</span></div>${o.comment?`<div><strong>Комментарий:</strong> ${escapeHtml(o.comment)}</div>`:""}</div>`; }); const rev=orders.reduce((s,o)=>s+o.finalTotal,0), prof=orders.reduce((s,o)=>s+(o.profit||0),0), exp=orders.reduce((s,o)=>s+(o.orderExpense||0),0), cash=orders.filter(o=>o.paymentMethod==="cash").reduce((s,o)=>s+o.finalTotal,0), card=orders.filter(o=>o.paymentMethod==="card").reduce((s,o)=>s+o.finalTotal,0); const html=`<div style="font-family:Arial,sans-serif; padding:20px; max-width:800px; margin:0 auto;"><div style="text-align:center;"><h2>A4-ПРИНТ</h2><p>${title}</p><p>Оператор: ${currentUser.name}</p><p>${new Date().toLocaleString()}</p></div><hr><div><h3>📊 ИТОГИ:</h3><p>📦 Заказов: ${orders.length}</p><p>💰 Выручка: ${rev} ₽</p><p>💸 Расход: ${exp} ₽</p><p>📊 Прибыль: ${prof} ₽</p><p>💵 Наличные: ${cash} ₽</p><p>💳 Карта: ${card} ₽</p></div><hr><div>${oh}</div><hr><div style="text-align:center;">Подпись: _______________</div></div>`; const el=document.createElement('div'); el.innerHTML=html; document.body.appendChild(el); html2pdf().set({margin:.5, filename:`A4print_${title}.pdf`}).from(el).save().then(()=>el.remove()); }
 
     function loadData() {
+        // Сначала переносим старые данные
+        migrateOldData();
+        
         let s = localStorage.getItem(SERVICES_KEY); if (s) services = JSON.parse(s);
         let g = localStorage.getItem(GOODS_KEY); if (g) goods = JSON.parse(g);
         let o = localStorage.getItem(OPERATORS_KEY); if (o) operators = JSON.parse(o);
@@ -398,6 +523,25 @@
         document.getElementById("burgerOperatorName").innerHTML = `${currentUser.name} ${currentUser.role === "admin" ? "👑" : "👤"}`;
         if (document.getElementById("googleWebAppUrl")) document.getElementById("googleWebAppUrl").value = GOOGLE_WEBAPP_URL;
         loadInvoicesData();
+        
+        // Показываем сообщение о восстановлении данных
+        let showMessage = localStorage.getItem("a4print_migration_shown");
+        if (!showMessage) {
+            let oldCount = 0;
+            for (let i = 0; i < localStorage.length; i++) {
+                let key = localStorage.key(i);
+                if (key && key.includes("a4print_orders_v")) {
+                    try {
+                        let old = JSON.parse(localStorage.getItem(key));
+                        if (old && old.length) oldCount += old.length;
+                    } catch(e) {}
+                }
+            }
+            if (oldCount > 0) {
+                console.log(`📊 Восстановлено ${oldCount} старых заказов`);
+            }
+            localStorage.setItem("a4print_migration_shown", "true");
+        }
     }
 
     function loadShift() { let s = localStorage.getItem(SHIFT_KEY); if (s) { let d = JSON.parse(s); if (d.operator === currentUser?.name) { shiftOpen = d.open; shiftClose = d.close; shiftOpenComment = d.openComment || ""; shiftCloseComment = d.closeComment || ""; } } updateShiftUI(); updateShiftFinanceDisplay(); }
@@ -417,19 +561,44 @@
     function updateInvoiceTotals() { const vatRate=parseFloat(document.getElementById("invoiceVatRate")?.value)||20; document.getElementById("invoiceVatPercent").innerText=vatRate; const subtotal=currentInvoiceItems.reduce((s,i)=>s+i.price*i.qty,0); const vat=subtotal*vatRate/100; const total=subtotal+vat; document.getElementById("invoiceSubtotal").innerHTML=subtotal.toLocaleString()+" ₽"; document.getElementById("invoiceVat").innerHTML=vat.toLocaleString()+" ₽"; document.getElementById("invoiceTotal").innerHTML=total.toLocaleString()+" ₽"; }
     function addInvoiceItem() { const sel=document.getElementById("invoiceAddItemSelect"); let name="", price=0; if(sel.value && sel.value!=="custom"){ try{ const d=JSON.parse(sel.value); name=d.name; price=d.price; }catch(e){} } if(!name){ const cn=prompt("Введите название товара/услуги:"); if(!cn) return; name=cn; } const qty=parseInt(document.getElementById("invoiceAddItemQty").value)||1; price=parseFloat(document.getElementById("invoiceAddItemPrice").value)||price; if(qty<=0 || price<=0){ alert("Введите корректные количество и цену"); return; } currentInvoiceItems.push({name, qty, price}); renderInvoiceItemsList(); updateInvoiceTotals(); document.getElementById("invoiceAddItemQty").value="1"; document.getElementById("invoiceAddItemPrice").value=""; sel.value=""; }
     function saveInvoice() { const clientId=document.getElementById("invoiceClientSelect").value; if(!clientId || clientId==="new"){ alert("Выберите клиента или сохраните нового"); return; } if(currentInvoiceItems.length===0){ alert("Добавьте позиции в счет"); return; } const number=document.getElementById("invoiceNumber").value.trim(); if(!number){ alert("Введите номер счета"); return; } const vatRate=parseFloat(document.getElementById("invoiceVatRate").value); const subtotal=currentInvoiceItems.reduce((s,i)=>s+i.price*i.qty,0); const vat=subtotal*vatRate/100; const total=subtotal+vat; const invData={ id:currentEditingInvoiceId||Date.now(), number, date:document.getElementById("invoiceDate").value, dueDate:document.getElementById("invoiceDueDate").value, contract:document.getElementById("invoiceContract").value, status:document.getElementById("invoiceStatus").value, vatRate, clientId:parseInt(clientId), items:currentInvoiceItems, subtotal, vat, total, createdAt:new Date().toISOString() }; if(currentEditingInvoiceId){ const idx=invoices.findIndex(i=>i.id===currentEditingInvoiceId); if(idx!==-1) invoices[idx]=invData; } else { invoices.push(invData); } saveInvoices(); renderInvoicesList(); document.getElementById("invoiceModal").style.display="none"; showSyncStatus("✅ Счет сохранен"); alert("Счет сохранен!"); }
-    function viewInvoice(id) { const inv=invoices.find(i=>i.id===id); if(!inv) return; const client=clients.find(c=>c.id===inv.clientId); const itemsHtml=inv.items.map(it=>`<tr><td>${escapeHtml(it.name)}</td><td style="text-align:center">${it.qty}</td><td style="text-align:center">${it.price.toLocaleString()} ₽</td><td style="text-align:right">${(it.price*it.qty).toLocaleString()} ₽</td>`).join(''); const html=`<div style="font-family:'Times New Roman',serif;"><div style="text-align:center; margin-bottom:30px;"><h2>A4-ПРИНТ</h2><p>Копировальный центр</p><p>ИНН: ___________ | КПП: ___________ | ОГРН: ___________</p><p>Юр. адрес: г. Москва, ул. Примерная, д. 1</p><p>Тел: +7 (XXX) XXX-XX-XX | Email: info@a4print.ru</p></div><div style="margin-bottom:30px;"><h3>СЧЕТ НА ОПЛАТУ №${inv.number} от ${inv.date}</h3><p><strong>Плательщик:</strong> ${client?escapeHtml(client.name):"—"}</p><p><strong>ИНН/КПП:</strong> ${client?client.inn:"—"} / ${client?.kpp||"—"}</p><p><strong>Юр. адрес:</strong> ${client?.address||"—"}</p>${inv.contract?`<p><strong>Основание:</strong> ${escapeHtml(inv.contract)}</p>`:""}${inv.dueDate?`<p><strong>Срок оплаты:</strong> ${inv.dueDate}</p>`:""}</div><table style="width:100%; border-collapse:collapse; margin-bottom:20px;"><thead><tr style="background:#f5f5f5;"><th style="border:1px solid #ddd; padding:10px;">Наименование</th><th style="border:1px solid #ddd; padding:10px;">Кол-во</th><th style="border:1px solid #ddd; padding:10px;">Цена</th><th style="border:1px solid #ddd; padding:10px;">Сумма</th></tr></thead><tbody>${itemsHtml}</tbody><tfoot><tr><td colspan="3" style="border:1px solid #ddd; padding:10px; text-align:right;"><strong>Сумма без НДС:</strong></td><td style="border:1px solid #ddd; padding:10px; text-align:right;">${inv.subtotal.toLocaleString()} ₽</td></tr><tr><td colspan="3" style="border:1px solid #ddd; padding:10px; text-align:right;"><strong>НДС ${inv.vatRate}%:</strong></td><td style="border:1px solid #ddd; padding:10px; text-align:right;">${inv.vat.toLocaleString()} ₽</td></tr><tr style="background:#d1fae5;"><td colspan="3" style="border:1px solid #ddd; padding:10px; text-align:right;"><strong>ИТОГО к оплате:</strong></td><td style="border:1px solid #ddd; padding:10px; text-align:right;"><strong>${inv.total.toLocaleString()} ₽</strong></td></tr></tfoot></table><div style="margin-top:40px;"><div style="display:flex; justify-content:space-between;"><div>Руководитель: _______________ /_____________/</div><div>Главный бухгалтер: _______________ /_____________/</div></div><div style="margin-top:30px;"><p><strong>Банковские реквизиты:</strong></p><p>Банк: АО "ТИНЬКОФФ БАНК"</p><p>БИК: 044525974 | Р/с: 40802810000000000000 | К/с: 30101810145250000974</p></div></div></div>`; document.getElementById("invoicePreviewContent").innerHTML=html; document.getElementById("invoicePreviewModal").style.display="flex"; }
+    function viewInvoice(id) { const inv=invoices.find(i=>i.id===id); if(!inv) return; const client=clients.find(c=>c.id===inv.clientId); const itemsHtml=inv.items.map(it=>`<tr><td style="border:1px solid #ddd; padding:8px;">${escapeHtml(it.name)}</td><td style="text-align:center">${it.qty}</td><td style="text-align:center">${it.price.toLocaleString()} ₽</td><td style="text-align:right">${(it.price*it.qty).toLocaleString()} ₽</td>`).join(''); const html=`<div style="font-family:'Times New Roman',serif;"><div style="text-align:center;margin-bottom:30px;"><h2>A4-ПРИНТ</h2><p>Копировальный центр</p><p>ИНН: ___________ | КПП: ___________ | ОГРН: ___________</p><p>Юр. адрес: г. Москва, ул. Примерная, д. 1</p><p>Тел: +7 (XXX) XXX-XX-XX | Email: info@a4print.ru</p></div><div style="margin-bottom:30px;"><h3>СЧЕТ НА ОПЛАТУ №${inv.number} от ${inv.date}</h3><p><strong>Плательщик:</strong> ${client?escapeHtml(client.name):"—"}</p><p><strong>ИНН/КПП:</strong> ${client?client.inn:"—"} / ${client?.kpp||"—"}</p><p><strong>Юр. адрес:</strong> ${client?.address||"—"}</p>${inv.contract?`<p><strong>Основание:</strong> ${escapeHtml(inv.contract)}</p>`:""}${inv.dueDate?`<p><strong>Срок оплаты:</strong> ${inv.dueDate}</p>`:""}</div><table style="width:100%;border-collapse:collapse;"><thead><tr style="background:#f5f5f5;"><th>Наименование</th><th>Кол-во</th><th>Цена</th><th>Сумма</th></tr></thead><tbody>${itemsHtml}</tbody><tfoot><tr><td colspan="3"><strong>Сумма без НДС:</strong></td><td style="text-align:right">${inv.subtotal.toLocaleString()} ₽</td></tr><tr><td colspan="3"><strong>НДС ${inv.vatRate}%:</strong></td><td style="text-align:right">${inv.vat.toLocaleString()} ₽</td></tr><tr style="background:#d1fae5;"><td colspan="3"><strong>ИТОГО к оплате:</strong></td><td style="text-align:right"><strong>${inv.total.toLocaleString()} ₽</strong></td></tr></tfoot></table><div style="margin-top:40px;"><div style="display:flex; justify-content:space-between;"><div>Руководитель: _______________ /_____________/</div><div>Главный бухгалтер: _______________ /_____________/</div></div><div style="margin-top:30px;"><p><strong>Банковские реквизиты:</strong></p><p>Банк: АО "ТИНЬКОФФ БАНК"</p><p>БИК: 044525974 | Р/с: 40802810000000000000 | К/с: 30101810145250000974</p></div></div></div>`; document.getElementById("invoicePreviewContent").innerHTML=html; document.getElementById("invoicePreviewModal").style.display="flex"; }
     function saveNewClient() { const name=document.getElementById("newClientName").value.trim(); const inn=document.getElementById("newClientInn").value.trim(); if(!name || !inn){ alert("Введите название и ИНН"); return; } const newClient={ id:Date.now(), name, inn, kpp:document.getElementById("newClientKpp").value.trim(), ogrn:document.getElementById("newClientOgrn").value.trim(), address:document.getElementById("newClientAddress").value.trim(), phone:document.getElementById("newClientPhone").value.trim(), email:document.getElementById("newClientEmail").value.trim(), bank:document.getElementById("newClientBank").value.trim(), bik:document.getElementById("newClientBik").value.trim(), account:document.getElementById("newClientAccount").value.trim(), corrAccount:document.getElementById("newClientCorrAccount").value.trim(), createdAt:new Date().toISOString() }; clients.push(newClient); saveClients(); renderClientsSelect(); document.getElementById("invoiceClientSelect").value=newClient.id; document.getElementById("newClientForm").style.display="none"; document.getElementById("newClientName").value=""; document.getElementById("newClientInn").value=""; document.getElementById("newClientKpp").value=""; document.getElementById("newClientOgrn").value=""; document.getElementById("newClientAddress").value=""; document.getElementById("newClientPhone").value=""; document.getElementById("newClientEmail").value=""; document.getElementById("newClientBank").value=""; document.getElementById("newClientBik").value=""; document.getElementById("newClientAccount").value=""; document.getElementById("newClientCorrAccount").value=""; showSyncStatus(`✅ Клиент "${name}" добавлен`); }
     function printInvoice() { const content=document.getElementById("invoicePreviewContent").innerHTML; const win=window.open('','_blank'); win.document.write(`<html><head><title>Счет на оплату</title><style>body{font-family:'Times New Roman',serif;padding:30px;} table{width:100%;border-collapse:collapse;} th,td{border:1px solid #ddd;padding:10px;} th{background:#f5f5f5;} @media print{.no-print{display:none;}}</style></head><body>${content}</body></html>`); win.document.close(); win.print(); }
 
-    // ========== ОСТАЛЬНЫЕ ФУНКЦИИ ==========
+    // ========== НОРМАЛЬНЫЙ БЛАНК ЗАКАЗА (А4) ==========
+    function printOrderBlank() {
+        if (cart.length === 0) { alert("Корзина пуста"); return; }
+        
+        const clientName = document.getElementById("clientName").value.trim() || "_______________";
+        const clientPhone = document.getElementById("clientPhone").value.trim() || "_______________";
+        const comment = document.getElementById("orderComment").value.trim();
+        const payment = document.querySelector('input[name="payment"]:checked').value;
+        const totals = getCartTotals();
+        const date = new Date().toLocaleString('ru-RU');
+        const orderNumber = Date.now().toString().slice(-8);
+        
+        let itemsHtml = "";
+        cart.forEach((item, idx) => {
+            const sum = item.price * item.qty;
+            itemsHtml += `<tr><td style="border: 1px solid #000; padding: 8px; text-align: left;">${escapeHtml(item.name)}</td><td style="border: 1px solid #000; padding: 8px; text-align: center;">${item.qty}</td><td style="border: 1px solid #000; padding: 8px; text-align: right;">${item.price.toLocaleString()} ₽</td><td style="border: 1px solid #000; padding: 8px; text-align: right;">${sum.toLocaleString()} ₽</td></tr>`;
+        });
+        
+        const html = `<div id="printArea" class="order-blank"><div class="order-blank-header"><h2>А4-ПРИНТ</h2><p>Копировальный центр</p><p>ИНН: ___________ | ОГРН: ___________</p><p>г. Москва, ул. Примерная, д. 1 | Тел: +7 (XXX) XXX-XX-XX</p></div><div class="order-blank-recipient"><table style="width:100%; border:none;"><tr><td style="border:none; width:120px;"><strong>Клиент:</strong></td><td style="border:none;">${escapeHtml(clientName)}</td></tr><tr><td style="border:none;"><strong>Телефон:</strong></td><td style="border:none;">${escapeHtml(clientPhone)}</td></tr><tr><td style="border:none;"><strong>Дата:</strong></td><td style="border:none;">${date}</td></tr><tr><td style="border:none;"><strong>Заказ №:</strong></td><td style="border:none;">${orderNumber}</td></tr><tr><td style="border:none;"><strong>Оператор:</strong></td><td style="border:none;">${currentUser.name}</td></tr></table></div><table class="order-blank-table"><thead><tr><th style="width:50%;">Наименование</th><th style="width:10%;">Кол-во</th><th style="width:20%;">Цена</th><th style="width:20%;">Сумма</th></tr></thead><tbody>${itemsHtml}</tbody></table><table class="order-blank-totals" style="width:100%;"><tr><td style="text-align:right; width:70%;"><strong>Подытог:</strong></td><td style="text-align:right; width:30%;">${totals.subtotal.toLocaleString()} ₽</td></tr>${totals.discount > 0 ? `<tr><td style="text-align:right;"><strong>Скидка:</strong></td><td style="text-align:right;">- ${totals.discount.toLocaleString()} ₽</td></tr>` : ''}<tr style="font-size:16px; font-weight:bold;"><td style="text-align:right;"><strong>ИТОГО к оплате:</strong></td><td style="text-align:right;"><strong>${totals.finalTotal.toLocaleString()} ₽</strong></td></tr><tr><td style="text-align:right;"><strong>💸 Расход по заказу:</strong></td><td style="text-align:right;">${totals.orderExpense.toLocaleString()} ₽</td></tr><tr style="background:#d1fae5;"><td style="text-align:right;"><strong>📊 Чистая прибыль:</strong></td><td style="text-align:right;"><strong>${totals.profit.toLocaleString()} ₽</strong></td></tr><tr><td style="text-align:right;"><strong>Способ оплаты:</strong></td><td style="text-align:right;">${payment === "cash" ? "Наличные" : "Банковская карта"}</td></tr></table>${comment ? `<div style="margin:15px 0; padding:10px; background:#f9f9f9; border:1px solid #ddd;"><strong>Комментарий:</strong> ${escapeHtml(comment)}</div>` : ''}<div class="order-blank-signatures"><div>_______________ / _______________/<br><small>Подпись клиента</small></div><div>_______________ / _______________/<br><small>Подпись оператора</small></div></div><div class="order-blank-footer"><p>Спасибо за обращение в А4-ПРИНТ! Ждём вас снова!</p><p style="font-size:10px;">Данный документ является бланком заказа и не является фискальным чеком.</p></div></div>`;
+        
+        const printWindow = window.open('', '_blank');
+        printWindow.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Бланк заказа А4-ПРИНТ</title><style>*{margin:0;padding:0;box-sizing:border-box;}body{font-family:'Times New Roman','Arial',sans-serif;background:white;padding:0;margin:0;}.order-blank{max-width:210mm;margin:0 auto;padding:15mm;background:white;color:black;}.order-blank-header{text-align:center;margin-bottom:20px;padding-bottom:10px;border-bottom:2px solid #000;}.order-blank-header h2{font-size:24px;margin-bottom:5px;}.order-blank-header p{font-size:12px;color:#555;}.order-blank-recipient{margin-bottom:20px;padding:10px;background:#f9f9f9;border:1px solid #ddd;}.order-blank-recipient table{border:none;}.order-blank-recipient td{border:none !important;padding:4px;}.order-blank-table{width:100%;border-collapse:collapse;margin-bottom:20px;}.order-blank-table th,.order-blank-table td{border:1px solid #000;padding:10px;text-align:left;vertical-align:top;}.order-blank-table th{background:#f0f0f0;font-weight:bold;text-align:center;}.order-blank-totals{width:100%;margin-bottom:20px;border:none;}.order-blank-totals td{border:none;padding:5px;}.order-blank-signatures{margin-top:30px;display:flex;justify-content:space-between;}.order-blank-footer{margin-top:30px;text-align:center;font-size:10px;color:#888;border-top:1px solid #ccc;padding-top:10px;}@media print{body{margin:0;padding:0;}.order-blank{padding:10mm;}@page{size:A4;margin:10mm;}}</style></head><body>${html}<script>window.onload=function(){setTimeout(function(){window.print();setTimeout(function(){window.close();},500);},100);};<\/script></body></html>`);
+        printWindow.document.close();
+    }
+
+    // Остальные функции (renderServices, renderGoods, addToCart, addFastService, addNewGoods, renderCart, applyDiscount, completeOrder, getMyOrders, renderHistory, openEditOrder, renderEditItems, updateEditTotals, addItemToEdit, saveEditedOrder, getOperatorsStats, renderOperatorsStats, exportStatsExcel, calculateSalaryForMonth, showSalaryReport, exportSalaryPayslip, renderShiftsHistory, renderAdmin, showReportChoice, reportTodayExcel, reportFullExcel, reportShiftsExcel, reportTodayPdf, reportFullPdf, initTabs, initAdminTabs, initSearch, initYearSelect, showSyncStatus, toggleTheme, login, logout, escapeHtml, initBurger)
     function renderServices(f=null) { const g=document.getElementById("servicesGrid"); const d=f!==null?f:services; g.innerHTML=""; d.forEach(s=>{ let c=document.createElement("div"); c.className="service-card"; c.innerHTML=`<div class="item-name">${escapeHtml(s.name)}</div><div class="item-price">${s.price} ₽</div><div class="qty-control"><input type="number" id="qty_srv_${s.id}" value="0" min="0" step="1" placeholder="кол-во"></div><button class="add-btn" data-type="service" data-id="${s.id}">➕ Добавить</button>`; g.appendChild(c); }); document.querySelectorAll(".add-btn").forEach(btn=>btn.onclick=()=>{ let type=btn.getAttribute("data-type"); let id=parseInt(btn.getAttribute("data-id")); addToCart(type,id); }); }
     function renderGoods(f=null) { const g=document.getElementById("goodsGrid"); const d=f!==null?f:goods; g.innerHTML=""; d.forEach(gd=>{ let low=gd.stock<=3; let c=document.createElement("div"); c.className="goods-card"; c.innerHTML=`<div class="item-name">${escapeHtml(gd.name)}</div><div class="item-price">${gd.price} ₽</div><div class="item-stock ${low?'low':''}">📦 Остаток: ${gd.stock} ${gd.unit||'шт'}${low?' <span class="stock-warning">мало</span>':''}</div><div class="qty-control"><input type="number" id="qty_goods_${gd.id}" value="0" min="0" max="${gd.stock}" step="1" placeholder="кол-во"></div><button class="add-btn" data-type="goods" data-id="${gd.id}">➕ В корзину</button>`; g.appendChild(c); }); document.querySelectorAll(".add-btn").forEach(btn=>btn.onclick=()=>{ let type=btn.getAttribute("data-type"); let id=parseInt(btn.getAttribute("data-id")); addToCart(type,id); }); }
-    function addToCart(type,id){ let qi=document.getElementById(`qty_${type==='service'?'srv':'goods'}_${id}`); let q=parseInt(qi?.value)||1; if(q<=0) q=1; if(type==='service'){ let s=services.find(sv=>sv.id===id); if(!s) return; let ex=cart.find(i=>i.type==='service'&&i.id===id); if(ex) ex.qty+=q; else cart.push({type:'service',id:id,name:s.name,price:s.price,qty:q,expense:0}); } else if(type==='goods'){ let gd=goods.find(g=>g.id===id); if(!gd) return; if(q>gd.stock){ alert(`На складе только ${gd.stock} шт.`); return; } let ex=cart.find(i=>i.type==='goods'&&i.id===id); if(ex) ex.qty+=q; else cart.push({type:'goods',id:id,name:gd.name,price:gd.price,qty:q,expense:Math.round(gd.price*0.7)}); } if(qi) qi.value="0"; renderCart(); updateCartTotals(); }
-    function addFastService(){ let n=document.getElementById("fastServiceName").value.trim(); let p=parseFloat(document.getElementById("fastServicePrice").value); if(!n){ alert("Введите название"); return; } if(isNaN(p)||p<=0){ alert("Введите цену"); return; } cart.push({type:'service',id:Date.now(),name:n,price:p,qty:1,isFast:true,expense:0}); document.getElementById("fastServiceName").value=""; document.getElementById("fastServicePrice").value=""; renderCart(); updateCartTotals(); }
+    function addToCart(type,id){ let qi=document.getElementById(`qty_${type==='service'?'srv':'goods'}_${id}`); let q=parseInt(qi?.value)||1; if(q<=0) q=1; if(type==='service'){ let s=services.find(sv=>sv.id===id); if(!s) return; let ex=cart.find(i=>i.type==='service'&&i.id===id); if(ex) ex.qty+=q; else cart.push({type:'service',id:id,name:s.name,price:s.price,qty:q}); } else if(type==='goods'){ let gd=goods.find(g=>g.id===id); if(!gd) return; if(q>gd.stock){ alert(`На складе только ${gd.stock} шт.`); return; } let ex=cart.find(i=>i.type==='goods'&&i.id===id); if(ex) ex.qty+=q; else cart.push({type:'goods',id:id,name:gd.name,price:gd.price,qty:q}); } if(qi) qi.value="0"; renderCart(); updateCartTotals(); }
+    function addFastService(){ let n=document.getElementById("fastServiceName").value.trim(); let p=parseFloat(document.getElementById("fastServicePrice").value); if(!n){ alert("Введите название"); return; } if(isNaN(p)||p<=0){ alert("Введите цену"); return; } cart.push({type:'service',id:Date.now(),name:n,price:p,qty:1,isFast:true}); document.getElementById("fastServiceName").value=""; document.getElementById("fastServicePrice").value=""; renderCart(); updateCartTotals(); }
     function addNewGoods(){ let n=document.getElementById("newGoodsName").value.trim(); let p=parseFloat(document.getElementById("newGoodsPrice").value); let st=parseInt(document.getElementById("newGoodsStock").value); if(!n){ alert("Введите название"); return; } if(isNaN(p)||p<=0){ alert("Введите цену"); return; } if(isNaN(st)||st<0) st=0; goods.push({id:Date.now(),name:n,price:p,stock:st,unit:"шт"}); saveGoods(); renderGoods(); showSyncStatus(`✅ Товар "${n}" добавлен`); document.getElementById("newGoodsName").value=""; document.getElementById("newGoodsPrice").value=""; document.getElementById("newGoodsStock").value=""; }
     function renderCart(){ let cont=document.getElementById("cartList"); let html=""; cart.forEach((item,idx)=>{ let sum=item.price*item.qty; let icon=item.type==='service'?'📋':'🛍️'; html+=`<div class="cart-item"><div class="cart-item-info"><div class="cart-item-name">${icon} ${escapeHtml(item.name)}</div><div class="cart-item-detail">${item.qty} шт × ${item.price} ₽</div></div><div class="cart-item-price">${sum} ₽</div><button class="remove-btn" data-idx="${idx}">Удалить</button></div>`; }); cont.innerHTML=html||"<div style='padding:30px;text-align:center;color:var(--gray-500);'>Корзина пуста</div>"; document.querySelectorAll(".remove-btn").forEach(btn=>btn.onclick=()=>{ let idx=parseInt(btn.getAttribute("data-idx")); cart.splice(idx,1); renderCart(); updateCartTotals(); }); updateCartTotals(); }
     function applyDiscount(){ discountPct=parseFloat(document.getElementById("discountPercent").value)||0; discountAmt=parseFloat(document.getElementById("discountAmount").value)||0; if(discountPct>0&&discountAmt>0) alert("Выберите один тип скидки"); updateCartTotals(); }
-    async function completeOrder(){ if(cart.length===0){ alert("Корзина пуста"); return; } if(!shiftOpen||shiftClose){ alert("Смена не открыта!"); return; } for(let it of cart){ if(it.type==='goods'){ let gd=goods.find(g=>g.id===it.id); if(gd&&gd.stock<it.qty){ alert(`Недостаточно товара: ${gd.name}. Доступно: ${gd.stock}`); return; } } } for(let it of cart){ if(it.type==='goods'){ let gd=goods.find(g=>g.id===it.id); if(gd){ gd.stock-=it.qty; if(gd.stock<0) gd.stock=0; } } } saveGoods(); renderGoods(); let client=document.getElementById("clientName").value.trim()||"Клиент"; let phone=document.getElementById("clientPhone").value.trim(); let comment=document.getElementById("orderComment").value; let payment=document.querySelector('input[name="payment"]:checked').value; const totals=getCartTotals(); let order={id:Date.now(),client,phone,items:cart.map(i=>({type:i.type,name:i.name,price:i.price,qty:i.qty,expense:i.expense||0})),subtotal:totals.subtotal,discount:totals.discount,discountPercent:discountPct,finalTotal:totals.finalTotal,orderExpense:totals.orderExpense,profit:totals.profit,paymentMethod:payment,comment,date:new Date().toLocaleString(),operator:currentUser.name,shiftOpen:shiftOpen}; allOrders.push(order); saveOrders(); cart=[]; discountPct=0; discountAmt=0; document.getElementById("discountPercent").value=0; document.getElementById("discountAmount").value=0; document.getElementById("clientName").value=""; document.getElementById("clientPhone").value=""; document.getElementById("orderComment").value=""; document.getElementById("orderExpense").value="0"; renderCart(); renderHistory(); updateShiftFinanceDisplay(); await autoSyncAfterOrder(); alert(`✅ Заказ №${order.id} на ${order.finalTotal} ₽\n💸 Расход: ${totals.orderExpense} ₽\n📊 Прибыль: ${totals.profit} ₽`); }
+    async function completeOrder(){ if(cart.length===0){ alert("Корзина пуста"); return; } if(!shiftOpen||shiftClose){ alert("Смена не открыта!"); return; } for(let it of cart){ if(it.type==='goods'){ let gd=goods.find(g=>g.id===it.id); if(gd&&gd.stock<it.qty){ alert(`Недостаточно товара: ${gd.name}. Доступно: ${gd.stock}`); return; } } } for(let it of cart){ if(it.type==='goods'){ let gd=goods.find(g=>g.id===it.id); if(gd){ gd.stock-=it.qty; if(gd.stock<0) gd.stock=0; } } } saveGoods(); renderGoods(); let client=document.getElementById("clientName").value.trim()||"Клиент"; let phone=document.getElementById("clientPhone").value.trim(); let comment=document.getElementById("orderComment").value; let payment=document.querySelector('input[name="payment"]:checked').value; const totals=getCartTotals(); let order={id:Date.now(),client,phone,items:cart.map(i=>({type:i.type,name:i.name,price:i.price,qty:i.qty})),subtotal:totals.subtotal,discount:totals.discount,discountPercent:discountPct,finalTotal:totals.finalTotal,orderExpense:totals.orderExpense,profit:totals.profit,paymentMethod:payment,comment,date:new Date().toLocaleString(),operator:currentUser.name,shiftOpen:shiftOpen}; allOrders.push(order); saveOrders(); cart=[]; discountPct=0; discountAmt=0; document.getElementById("discountPercent").value=0; document.getElementById("discountAmount").value=0; document.getElementById("clientName").value=""; document.getElementById("clientPhone").value=""; document.getElementById("orderComment").value=""; document.getElementById("orderExpense").value="0"; renderCart(); renderHistory(); updateShiftFinanceDisplay(); await autoSyncAfterOrder(); alert(`✅ Заказ №${order.id} на ${order.finalTotal} ₽\n💸 Расход: ${totals.orderExpense} ₽\n📊 Прибыль: ${totals.profit} ₽`); }
     function getMyOrders(){ return currentUser.role==="admin"?allOrders:allOrders.filter(o=>o.operator===currentUser.name); }
     function renderHistory(){ let my=getMyOrders(); let cont=document.getElementById("historyList"); if(!my.length){ cont.innerHTML="<div style='padding:40px;text-align:center;color:var(--gray-500);'>Нет заказов</div>"; return; } let html=""; [...my].reverse().forEach(o=>{ html+=`<div class="history-item"><div><strong>${escapeHtml(o.client)}</strong> ${o.phone?`📞 ${escapeHtml(o.phone)}`:""} | ${o.date} | <strong>${o.finalTotal} ₽</strong> | 💸 расход: ${o.orderExpense||0} ₽ | <span class="history-profit">💰 прибыль: ${o.profit||0} ₽</span></div><div style="font-size:12px; margin-top:6px;">${o.items.map(i=>`${i.name} x${i.qty}`).join(", ")}</div><div style="font-size:11px; margin-top:4px; color:var(--gray-500);">${o.comment?"📝 "+o.comment:""}</div><div style="margin-top:8px; display:flex; gap:8px;"><button class="edit-order" data-id="${o.id}" style="background:var(--orange); border:none; border-radius:8px; padding:5px 14px; color:white; font-size:11px;">✏️ Редактировать</button><button class="delete-order" data-id="${o.id}" style="background:var(--red); border:none; border-radius:8px; padding:5px 14px; color:white; font-size:11px;">🗑 Удалить</button></div></div>`; }); cont.innerHTML=html; document.querySelectorAll(".delete-order").forEach(btn=>btn.onclick=()=>{ let id=parseInt(btn.getAttribute("data-id")); allOrders=allOrders.filter(o=>o.id!==id); saveOrders(); renderHistory(); updateShiftFinanceDisplay(); }); document.querySelectorAll(".edit-order").forEach(btn=>btn.onclick=()=>{ let id=parseInt(btn.getAttribute("data-id")); let order=allOrders.find(o=>o.id===id); if(order) openEditOrder(order); }); }
     function openEditOrder(o){ editOrderId=o.id; tempEditOrder=JSON.parse(JSON.stringify(o)); document.getElementById("editOrderId").innerText=o.id; document.getElementById("editClientName").value=o.client; document.getElementById("editClientPhone").value=o.phone||""; document.getElementById("editComment").value=o.comment||""; document.getElementById("editOrderExpense").value=o.orderExpense||0; document.getElementById("editDiscountPercent").value=o.discountPercent||0; document.getElementById("editDiscountAmount").value=0; document.querySelector(`input[name="editPayment"][value="${o.paymentMethod}"]`).checked=true; const sel=document.getElementById("editAddItemSelect"); sel.innerHTML='<option value="">— Выберите услугу/товар —</option>'; [...services,...goods].forEach(it=>{ let type=it.id>=1000?'goods':'service'; let opt=document.createElement("option"); opt.value=JSON.stringify({type:type,id:it.id,name:it.name,price:it.price}); opt.textContent=`${it.name} — ${it.price} ₽`; sel.appendChild(opt); }); renderEditItems(); updateEditTotals(); document.getElementById("editOrderModal").style.display="flex"; }
@@ -445,7 +614,6 @@
     function exportSalaryPayslip(){ if(!window._currentSalaryData){ alert("Сначала рассчитайте зарплату"); return; } let {m,y,sm,total}=window._currentSalaryData; if(sm.size===0){ alert("Нет данных"); return; } let mn=["Январь","Февраль","Март","Апрель","Май","Июнь","Июль","Август","Сентябрь","Октябрь","Ноябрь","Декабрь"]; let data=[["Оператор","Роль","Смен","Часов","Ставка","Итого"]]; for(let [login,info] of sm){ let rate=info.role==="admin"?2500:2000; data.push([info.name,info.role==="admin"?"Администратор":"Оператор",info.count,info.hours,`${rate} ₽`,`${info.total} ₽`]); } data.push(["","","","","ОБЩИЙ ИТОГ:",`${Math.round(total)} ₽`]); let ws=XLSX.utils.aoa_to_sheet(data); let wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,`Зарплата_${mn[m-1]}_${y}`); XLSX.writeFile(wb,`A4print_Зарплата_${mn[m-1]}_${y}.xlsx`); showSyncStatus("✅ Экспорт зарплаты"); }
     function renderShiftsHistory(){ const cont=document.getElementById("shiftsHistoryList"); if(!cont) return; if(allShifts.length===0){ cont.innerHTML="<div style='padding:20px;text-align:center;'>Нет завершённых смен</div>"; return; } let html=""; [...allShifts].reverse().slice(0,50).forEach(s=>{ const h=calculateHoursWorked(s); const sal=calculateSalaryForShift(s); html+=`<div style="background:var(--gray-50);border-radius:10px;padding:12px;border-left:3px solid var(--purple);margin-bottom:10px;"><div><strong>${escapeHtml(s.name)}</strong> (${s.role==="admin"?"Админ":"Оператор"})</div><div>🟢 Открыта: ${s.open}</div><div>🔴 Закрыта: ${s.close||"—"}</div><div>⏱️ Часы: ${h} ч.</div><div>💰 Начислено: ${sal} ₽</div>${s.openComment?`<div>📝 ${escapeHtml(s.openComment)}</div>`:""}${s.closeComment?`<div>📝 ${escapeHtml(s.closeComment)}</div>`:""}</div>`; }); cont.innerHTML=html; }
     function renderAdmin(){ if(currentUser.role!=="admin"){ alert("Доступно только администратору"); return; } renderOperatorsStats(); renderShiftsHistory(); let servDiv=document.getElementById("adminServicesList"); servDiv.innerHTML=""; services.forEach(s=>{ servDiv.innerHTML+=`<div style="display:flex; gap:12px; margin-bottom:12px;"><span style="flex:2;">${s.name}</span><input type="number" id="price_${s.id}" value="${s.price}" style="width:90px;"><button class="updateService" data-id="${s.id}" class="btn-primary">💾</button><button class="deleteService" data-id="${s.id}" class="btn-danger">🗑</button></div>`; }); document.querySelectorAll(".updateService").forEach(btn=>btn.onclick=()=>{ let id=parseInt(btn.getAttribute("data-id")); let s=services.find(x=>x.id===id); if(s){ s.price=parseInt(document.getElementById(`price_${id}`).value); saveServices(); renderServices(); renderAdmin(); } }); document.querySelectorAll(".deleteService").forEach(btn=>btn.onclick=()=>{ let id=parseInt(btn.getAttribute("data-id")); if(services.length<=1) return alert("Нельзя удалить последнюю услугу"); services=services.filter(x=>x.id!==id); saveServices(); renderServices(); renderAdmin(); }); let goodsDiv=document.getElementById("adminGoodsList"); goodsDiv.innerHTML=""; goods.forEach(g=>{ goodsDiv.innerHTML+=`<div style="display:flex; gap:12px; margin-bottom:12px;"><span style="flex:2;">${g.name}</span><span>${g.price} ₽</span><input type="number" id="stock_${g.id}" value="${g.stock}" style="width:80px;"><button class="updateGoodsStock" data-id="${g.id}" class="btn-primary">📦</button><button class="updateGoodsPrice" data-id="${g.id}" class="btn-primary" style="background:var(--orange);">💰</button><button class="deleteGoods" data-id="${g.id}" class="btn-danger">🗑</button></div>`; }); document.querySelectorAll(".updateGoodsStock").forEach(btn=>btn.onclick=()=>{ let id=parseInt(btn.getAttribute("data-id")); let g=goods.find(x=>x.id===id); if(g){ g.stock=parseInt(document.getElementById(`stock_${id}`).value); if(g.stock<0) g.stock=0; saveGoods(); renderGoods(); renderAdmin(); showSyncStatus("✅ Склад обновлён"); } }); document.querySelectorAll(".updateGoodsPrice").forEach(btn=>btn.onclick=()=>{ let id=parseInt(btn.getAttribute("data-id")); let np=prompt("Новая цена:"); if(np && !isNaN(parseFloat(np))){ let g=goods.find(x=>x.id===id); if(g){ g.price=parseFloat(np); saveGoods(); renderGoods(); renderAdmin(); showSyncStatus("✅ Цена обновлена"); } } }); document.querySelectorAll(".deleteGoods").forEach(btn=>btn.onclick=()=>{ let id=parseInt(btn.getAttribute("data-id")); if(confirm("Удалить товар?")){ goods=goods.filter(x=>x.id!==id); saveGoods(); renderGoods(); renderAdmin(); } }); }
-    function printOrderBlank(){ if(cart.length===0){ alert("Корзина пуста"); return; } let client=document.getElementById("clientName").value.trim()||"Клиент"; let phone=document.getElementById("clientPhone").value.trim(); let comment=document.getElementById("orderComment").value; let payment=document.querySelector('input[name="payment"]:checked').value; const totals=getCartTotals(); let itemsHtml=cart.map(i=>`<tr><td style="border:1px solid #d1d5db; padding:8px;">${escapeHtml(i.name)}</td><td style="border:1px solid #d1d5db; text-align:center">${i.qty}</td><td style="border:1px solid #d1d5db; text-align:center">${i.price} ₽</td><td style="border:1px solid #d1d5db; text-align:right">${i.price*i.qty} ₽</td>`).join(''); let cont=document.getElementById("printBlankContainer"); cont.innerHTML=`<div class="blank-page" style="padding:20mm; background:white; color:black; font-family:monospace;"><div style="text-align:center;"><h2>A4-ПРИНТ</h2><p>Копировальный центр</p></div><div><strong>№ заказа:</strong> ${Date.now()}</div><div><strong>Дата:</strong> ${new Date().toLocaleString()}</div><div><strong>Оператор:</strong> ${currentUser.name}</div><div><strong>Клиент:</strong> ${escapeHtml(client)}</div>${phone?`<div><strong>Телефон:</strong> ${escapeHtml(phone)}</div>`:""}<div><strong>Оплата:</strong> ${payment==="cash"?"Наличные":"Карта"}</div><table border="1" cellpadding="5" cellspacing="0" style="width:100%; margin:15px 0; border-color:#d1d5db;"><thead><tr><th>Наименование</th><th>Кол-во</th><th>Цена</th><th>Сумма</th></tr></thead><tbody>${itemsHtml}</tbody><tfoot><tr><td colspan="3"><strong>Итого к оплате:</strong></td><td><strong>${totals.finalTotal} ₽</strong></td></tr><tr><td colspan="3"><strong>Расход по заказу:</strong></td><td>${totals.orderExpense} ₽</td></tr><tr style="background:#d1fae5;"><td colspan="3"><strong>📊 Чистая прибыль:</strong></td><td><strong>${totals.profit} ₽</strong></td></tr></tfoot></table>${comment?`<div>Комментарий: ${escapeHtml(comment)}</div>`:""}<div style="margin-top:30px; text-align:center;">Спасибо за заказ!</div></div>`; window.print(); setTimeout(()=>cont.innerHTML="",1000); }
     function showReportChoice(){ document.getElementById("reportChoiceModal").style.display="flex"; }
     function reportTodayExcel(){ const today=new Date().toLocaleDateString(); const my=getMyOrders(); const td=my.filter(o=>o.date.includes(today)); if(td.length===0){ alert("За сегодня нет заказов"); return; } exportToExcel(td,`Отчёт_за_${today.replace(/\./g,'-')}`,false); document.getElementById("reportChoiceModal").style.display="none"; }
     function reportFullExcel(){ const my=getMyOrders(); if(my.length===0){ alert("Нет заказов"); return; } exportToExcel(my,"Полный_отчёт",false); document.getElementById("reportChoiceModal").style.display="none"; }
@@ -464,8 +632,7 @@
     function initBurger(){ let btn=document.getElementById("burgerBtn"),menu=document.getElementById("burgerMenu"); if(btn&&menu){ btn.onclick=(e)=>{ e.stopPropagation(); menu.classList.toggle("show"); }; document.addEventListener("click",(e)=>{ if(!menu.contains(e.target)&&!btn.contains(e.target)) menu.classList.remove("show"); }); } document.getElementById("burgerThemeToggle").onclick=()=>{ toggleTheme(); if(menu) menu.classList.remove("show"); }; document.getElementById("burgerAdminBtn").onclick=()=>{ if(currentUser?.role==="admin"){ renderAdmin(); document.getElementById("adminModal").style.display="flex"; }else alert("Доступно только администратору"); if(menu) menu.classList.remove("show"); }; document.getElementById("burgerShiftBtn").onclick=()=>{ toggleShiftWithComment(); if(menu) menu.classList.remove("show"); }; document.getElementById("burgerReportBtn").onclick=()=>{ showReportChoice(); if(menu) menu.classList.remove("show"); }; document.getElementById("burgerSyncBtn").onclick=()=>{ syncAllToGoogle(); if(menu) menu.classList.remove("show"); }; document.getElementById("burgerPrintBtn").onclick=()=>{ printOrderBlank(); if(menu) menu.classList.remove("show"); }; document.getElementById("burgerLogoutBtn").onclick=()=>{ logout(); if(menu) menu.classList.remove("show"); }; }
 
     document.addEventListener("DOMContentLoaded",()=>{
-        let saved=localStorage.getItem("a4print_current_user");
-        let theme=localStorage.getItem("a4print_theme");
+        let saved=localStorage.getItem("a4print_current_user"); let theme=localStorage.getItem("a4print_theme");
         if(theme==="dark") document.body.classList.add("dark");
         initYearSelect();
         if(saved){ try{ currentUser=JSON.parse(saved); if(operators[currentUser.username]){ document.getElementById("loginOverlay").style.display="none"; document.getElementById("mainContent").style.display="block"; loadData(); initBurger(); initTabs(); initSearch(); initAdminTabs(); }else logout(); }catch(e){ logout(); } }else{ initBurger(); initTabs(); initSearch(); initAdminTabs(); }
@@ -515,19 +682,7 @@
         document.getElementById("cancelInvoiceBtn").onclick=()=>document.getElementById("invoiceModal").style.display="none";
         document.getElementById("saveInvoiceBtn").onclick=saveInvoice;
         document.getElementById("invoiceAddItemBtn").onclick=addInvoiceItem;
-        document.getElementById("previewInvoiceBtn").onclick=()=>{
-            if(currentInvoiceItems.length===0){ alert("Добавьте позиции"); return; }
-            const vatRate=parseFloat(document.getElementById("invoiceVatRate").value);
-            const subtotal=currentInvoiceItems.reduce((s,i)=>s+i.price*i.qty,0);
-            const vat=subtotal*vatRate/100;
-            const total=subtotal+vat;
-            const preview={number:document.getElementById("invoiceNumber").value,date:document.getElementById("invoiceDate").value,dueDate:document.getElementById("invoiceDueDate").value,contract:document.getElementById("invoiceContract").value,clientId:parseInt(document.getElementById("invoiceClientSelect").value),items:currentInvoiceItems,subtotal,vat,total,vatRate};
-            const client=clients.find(c=>c.id==preview.clientId);
-            const itemsHtml=preview.items.map(it=>`<tr><td style="border:1px solid #ddd; padding:8px;">${escapeHtml(it.name)}</td><td style="text-align:center">${it.qty}</td><td style="text-align:center">${it.price.toLocaleString()} ₽</td><td style="text-align:right">${(it.price*it.qty).toLocaleString()} ₽</td>`).join('');
-            const html=`<div style="font-family:'Times New Roman',serif;"><div style="text-align:center;margin-bottom:30px;"><h2>A4-ПРИНТ</h2><p>Копировальный центр</p></div><div style="margin-bottom:30px;"><h3>СЧЕТ НА ОПЛАТУ №${preview.number} от ${preview.date}</h3><p><strong>Плательщик:</strong> ${client?escapeHtml(client.name):"—"}</p><p><strong>ИНН/КПП:</strong> ${client?client.inn:"—"} / ${client?.kpp||"—"}</p>${preview.contract?`<p><strong>Основание:</strong> ${escapeHtml(preview.contract)}</p>`:""}</div><table style="width:100%;border-collapse:collapse;"><thead><tr><th>Наименование</th><th>Кол-во</th><th>Цена</th><th>Сумма</th></tr></thead><tbody>${itemsHtml}</tbody><tfoot><tr><td colspan="3"><strong>Сумма без НДС:</strong></td><td>${preview.subtotal.toLocaleString()} ₽</td></tr><tr><td colspan="3"><strong>НДС ${preview.vatRate}%:</strong></td><td>${preview.vat.toLocaleString()} ₽</td></tr><tr style="background:#d1fae5;"><td colspan="3"><strong>ИТОГО к оплате:</strong></td><td><strong>${preview.total.toLocaleString()} ₽</strong></td></tr></tfoot></table></div>`;
-            document.getElementById("invoicePreviewContent").innerHTML=html;
-            document.getElementById("invoicePreviewModal").style.display="flex";
-        };
+        document.getElementById("previewInvoiceBtn").onclick=()=>{ if(currentInvoiceItems.length===0){ alert("Добавьте позиции"); return; } const vatRate=parseFloat(document.getElementById("invoiceVatRate").value); const subtotal=currentInvoiceItems.reduce((s,i)=>s+i.price*i.qty,0); const vat=subtotal*vatRate/100; const total=subtotal+vat; const preview={number:document.getElementById("invoiceNumber").value,date:document.getElementById("invoiceDate").value,dueDate:document.getElementById("invoiceDueDate").value,contract:document.getElementById("invoiceContract").value,clientId:parseInt(document.getElementById("invoiceClientSelect").value),items:currentInvoiceItems,subtotal,vat,total,vatRate}; const client=clients.find(c=>c.id==preview.clientId); const itemsHtml=preview.items.map(it=>`<tr><td style="border:1px solid #ddd; padding:8px;">${escapeHtml(it.name)}</td><td style="text-align:center">${it.qty}</td><td style="text-align:center">${it.price.toLocaleString()} ₽</td><td style="text-align:right">${(it.price*it.qty).toLocaleString()} ₽</td>`).join(''); const html=`<div style="font-family:'Times New Roman',serif;"><div style="text-align:center;margin-bottom:30px;"><h2>A4-ПРИНТ</h2><p>Копировальный центр</p></div><div style="margin-bottom:30px;"><h3>СЧЕТ НА ОПЛАТУ №${preview.number} от ${preview.date}</h3><p><strong>Плательщик:</strong> ${client?escapeHtml(client.name):"—"}</p><p><strong>ИНН/КПП:</strong> ${client?client.inn:"—"} / ${client?.kpp||"—"}</p>${preview.contract?`<p><strong>Основание:</strong> ${escapeHtml(preview.contract)}</p>`:""}</div><table style="width:100%;border-collapse:collapse;"><thead><tr><th>Наименование</th><th>Кол-во</th><th>Цена</th><th>Сумма</th></table></thead><tbody>${itemsHtml}</tbody><tfoot><tr><td colspan="3"><strong>Сумма без НДС:</strong></td><td style="text-align:right">${preview.subtotal.toLocaleString()} ₽</td></tr><tr><td colspan="3"><strong>НДС ${preview.vatRate}%:</strong></td><td style="text-align:right">${preview.vat.toLocaleString()} ₽</td></tr><tr style="background:#d1fae5;"><td colspan="3"><strong>ИТОГО к оплате:</strong></td><td style="text-align:right"><strong>${preview.total.toLocaleString()} ₽</strong></td></tr></tfoot></table></div>`; document.getElementById("invoicePreviewContent").innerHTML=html; document.getElementById("invoicePreviewModal").style.display="flex"; };
         document.getElementById("closePreviewModal").onclick=()=>document.getElementById("invoicePreviewModal").style.display="none";
         document.getElementById("closePreviewModalBtn").onclick=()=>document.getElementById("invoicePreviewModal").style.display="none";
         document.getElementById("printInvoiceBtn").onclick=printInvoice;
