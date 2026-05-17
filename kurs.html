@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>А4-Принт | Обучение оператора + анкета кандидата</title>
+    <title>А4-Принт | Обучение + анкета кандидата (с сохранением данных)</title>
     <style>
         * {
             margin: 0;
@@ -102,6 +102,7 @@
             border-radius: 16px;
             border: 1px solid #cbd5e1;
             font-size: 1rem;
+            background: white;
         }
         .questionnaire-field textarea { min-height: 80px; resize: vertical; }
         .radio-group { display: flex; gap: 20px; flex-wrap: wrap; margin-top: 8px; }
@@ -116,10 +117,9 @@
         
         @media print {
             body { background: white; padding: 0; }
-            .nav-tabs, .header-buttons, .btn, .nav-btn { display: none; }
+            .nav-tabs, .header-buttons, .btn, .nav-btn, .print-hide, .no-print { display: none; }
             .content-pane { display: block !important; }
             .study-answer { max-height: none !important; display: block !important; }
-            .print-hide { display: none; }
         }
         footer { text-align: center; padding: 20px; color: #6c8ea0; font-size: 0.8rem; }
         .article-link {
@@ -137,7 +137,7 @@
     <div class="header">
         <div>
             <h1>📚 А4‑ПРИНТ | Система обучения оператора</h1>
-            <p>База знаний + экзамен + анкета кандидата</p>
+            <p>База знаний + экзамен + анкета кандидата (с сохранением данных)</p>
         </div>
         <div class="header-buttons">
             <button class="btn" onclick="window.print();">🖨️ Распечатать текущую вкладку</button>
@@ -154,44 +154,44 @@
     <!-- Панель изучения -->
     <div id="paneStudy" class="content-pane active">
         <h2>📖 Банк вопросов для подготовки</h2>
-        <p>Нажмите на любой вопрос, чтобы увидеть ответ с пояснением. Всего 29 вопросов (техника, стандарты, работа с клиентом).</p>
+        <p>Нажмите на любой вопрос, чтобы увидеть ответ с пояснением.</p>
         <div id="questionsContainer" class="question-list"></div>
     </div>
 
-    <!-- Панель экзамена (как в предыдущей версии) -->
+    <!-- Панель экзамена (краткая версия) -->
     <div id="paneExam" class="content-pane">
-        <h2>✍️ Экзамен (случайные 10 вопросов из 29)</h2>
+        <h2>✍️ Экзамен (случайные 10 вопросов)</h2>
         <div style="background: #fef9e6; border-radius: 20px; padding: 15px; margin-bottom: 20px;">
             <label>👤 ФИО оператора / стажёра: <input type="text" id="examName" placeholder="Иванов Иван Иванович" style="padding:6px 12px; border-radius:20px; border:1px solid #ccc; width:250px;"></label>
             <button class="btn-primary" id="startExamBtn" style="margin-left:15px; padding:6px 20px;">Начать / сбросить экзамен</button>
         </div>
         <div class="exam-header" style="display:flex; justify-content: space-between; flex-wrap:wrap;">
-            <div class="timer-box" id="timerDisplay">⏱️ 15:00</div>
-            <div class="exam-stats" id="examStats">📊 Результат: 0 / 10</div>
+            <div class="timer-box" id="timerDisplay" style="background:#0a2f3f; color:white; padding:8px 20px; border-radius:50px;">⏱️ 15:00</div>
+            <div class="exam-stats" style="background:#0a2f3f; color:white; padding:8px 20px; border-radius:50px;">📊 Результат: 0 / 10</div>
         </div>
         <div id="examContainer"></div>
         <div style="text-align: center; margin-top: 20px;">
-            <button class="btn btn-primary" id="submitExamBtn" style="background:#2ecc71;">✅ ЗАВЕРШИТЬ ЭКЗАМЕН И ПОЛУЧИТЬ ОТЧЁТ (PDF)</button>
+            <button class="btn btn-primary" id="submitExamBtn" style="background:#2ecc71;">✅ ЗАВЕРШИТЬ ЭКЗАМЕН</button>
         </div>
     </div>
 
-    <!-- Панель со статьёй и АНКЕТОЙ КАНДИДАТА -->
+    <!-- Панель со статьёй и АНКЕТОЙ КАНДИДАТА (исправленная, с сохранением данных) -->
     <div id="paneArticle" class="content-pane">
         <h2>📰 Важная информация для оператора</h2>
         <div class="article-link">
             📌 <strong>Актуальные требования к фото на паспорт РФ (2021 г. и позже):</strong><br>
             <a href="https://www.pskov.kp.ru/daily/27233.5/4360198/" target="_blank">«Даже прыщик «замазать» нельзя? В псковских фотосалонах рассказали, как обойти новые запреты к фото на паспорт»</a><br>
-            <span style="font-size:0.85rem;">Обязательно к прочтению: ретушь запрещена, строгие правила анфас, одежда, очки, выражение лица. Оператор должен знать и объяснять клиентам.</span>
+            <span style="font-size:0.85rem;">Обязательно к прочтению: ретушь запрещена, строгие правила анфас, одежда, очки, выражение лица.</span>
         </div>
 
-        <!-- АНКЕТА КАНДИДАТА -->
+        <!-- АНКЕТА КАНДИДАТА с корректным сбором данных -->
         <div class="questionnaire" id="candidateQuestionnaire">
             <h2>📋 АНКЕТА КАНДИДАТА НА ДОЛЖНОСТЬ ОПЕРАТОРА</h2>
-            <p style="margin-bottom:20px;">Заполните, пожалуйста, все поля. Анкету можно распечатать (кнопка в шапке).</p>
+            <p style="margin-bottom:20px;">Заполните все поля. <strong>Введённые данные сохранятся</strong> и попадут в PDF/печать.</p>
             
             <div class="questionnaire-field">
                 <label>ФИО полностью:</label>
-                <input type="text" id="qFullname" placeholder="Иванова Анна Петровна">
+                <input type="text" id="qFullname" placeholder="Иванова Анна Петровна" value="">
             </div>
             <div class="questionnaire-field">
                 <label>Дата заполнения:</label>
@@ -201,11 +201,11 @@
             <h3>🔧 Знание оборудования и программ</h3>
             <div class="questionnaire-field">
                 <label>1. С каким МФУ / принтерами вы работали ранее? (перечислите модели)</label>
-                <textarea id="q1" placeholder="Например: Xerox WorkCentre, Epson L805, Canon и т.д."></textarea>
+                <textarea id="q1" placeholder="Например: Xerox WorkCentre, Epson L805..."></textarea>
             </div>
             <div class="questionnaire-field">
                 <label>2. Работали ли с программой Studio (фото на документы) или аналогами?</label>
-                <div class="radio-group">
+                <div class="radio-group" id="studioGroup">
                     <label><input type="radio" name="studio" value="Да, уверенно"> Да, уверенно</label>
                     <label><input type="radio" name="studio" value="Да, немного"> Да, немного</label>
                     <label><input type="radio" name="studio" value="Нет, но готов обучиться"> Нет, но готов(а) обучиться</label>
@@ -218,7 +218,7 @@
             </div>
             <div class="questionnaire-field">
                 <label>4. Умеете ли менять картриджи / доливать чернила на Epson L805?</label>
-                <div class="radio-group"><label><input type="radio" name="cartridge" value="Да, легко"> Да</label><label><input type="radio" name="cartridge" value="Теоретически знаю"> Теоретически знаю</label><label><input type="radio" name="cartridge" value="Нет"> Нет</label></div>
+                <div class="radio-group"><label><input type="radio" name="cartridge" value="Да, легко"> Да, легко</label><label><input type="radio" name="cartridge" value="Теоретически знаю"> Теоретически знаю</label><label><input type="radio" name="cartridge" value="Нет"> Нет</label></div>
             </div>
             
             <h3>🧠 Психология и работа с клиентом</h3>
@@ -232,15 +232,15 @@
             </div>
             <div class="questionnaire-field">
                 <label>7. Опишите, как вы «настраиваете» нервного клиента перед съёмкой на документы?</label>
-                <textarea id="q7" placeholder="Например: предложу сесть удобнее, успокою, расскажу про требования..."></textarea>
+                <textarea id="q7" placeholder="Например: предложу сесть удобнее, успокою..."></textarea>
             </div>
             <div class="questionnaire-field">
-                <label>8. Конфликтная ситуация: клиент кричит, что в прошлый раз у вас была ошибка в печати, хотя вы его не помните. Ваш план действий?</label>
+                <label>8. Конфликтная ситуация: клиент кричит, что в прошлый раз у вас была ошибка. Ваш план действий?</label>
                 <textarea id="q8" placeholder="Извиниться, предложить скидку, привлечь администратора..."></textarea>
             </div>
             <div class="questionnaire-field">
                 <label>9. Как вы порекомендуете клиенту дополнительную услугу (апселл) тактично?</label>
-                <textarea id="q9" placeholder="Например: «Кстати, к вашему заказу часто заказывают ламинацию — хотите, покажу образец?»"></textarea>
+                <textarea id="q9" placeholder="Например: «Кстати, к вашему заказу часто заказывают ламинацию...»"></textarea>
             </div>
             
             <h3>📌 Технический тест (ответы без цен)</h3>
@@ -257,10 +257,11 @@
                 <textarea id="q12" placeholder="Перечислите основные пункты (можно ссылаться на статью)"></textarea>
             </div>
             
-            <div style="margin-top: 30px; text-align: center;">
-                <button class="btn btn-primary" id="printQuestionnaireBtn" style="background:#2c6e4f;">🖨️ Распечатать анкету</button>
-                <button class="btn" id="resetQuestionnaireBtn">Очистить анкету</button>
+            <div style="margin-top: 30px; text-align: center; display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+                <button class="btn btn-primary" id="saveQuestionnairePdfBtn" style="background:#2c6e4f;">📄 Сохранить анкету в PDF (с моими ответами)</button>
+                <button class="btn" id="resetQuestionnaireBtn">🗑️ Очистить все поля</button>
             </div>
+            <p style="margin-top: 15px; font-size:0.8rem; text-align:center;">* При нажатии на «Сохранить в PDF» откроется окно с заполненной анкетой — сохраните или распечатайте его.</p>
         </div>
     </div>
 
@@ -268,35 +269,17 @@
     <div id="paneCheats" class="content-pane">
         <h2>📋 Быстрые шпаргалки для оператора</h2>
         <div class="grid-2">
-            <div class="card">
-                <h3>🖨️ Epson L805</h3>
-                <p>✅ Фото на документы: Premium Glossy + Best Photo + Fix Photo ВКЛ + Borderless ВЫКЛ</p>
-                <p>✅ Полосы → Проверка сопел → Очистка головы</p>
-            </div>
-            <div class="card">
-                <h3>📠 Xerox 7220</h3>
-                <p>✅ Копия паспорта: Копир. удостовер. → Тип: Фото → Яркость +1</p>
-                <p>✅ Сканер на флешку: USB → Сканировать → PDF → Старт</p>
-            </div>
-            <div class="card">
-                <h3>📷 Фото на документы (ГОСТ)</h3>
-                <p>❌ Ретушь запрещена (прыщи, морщины) — только реальность</p>
-                <p>✅ Анфас, нейтральное лицо, уши открыты, без головного убора (кроме религии)</p>
-                <p>✅ Очки без тонировки, глаза видны</p>
-            </div>
-            <div class="card">
-                <h3>💬 Психология</h3>
-                <p>🔹 Спокойный тон, улыбка, объяснять правила до съёмки</p>
-                <p>🔹 Если клиент нервничает: «Сделаем несколько кадров, выберем лучший»</p>
-                <p>🔹 При отказе в ретуши: «К сожалению, новые правила запрещают даже минимальные правки, иначе паспорт не примут»</p>
-            </div>
+            <div class="card"><h3>🖨️ Epson L805</h3><p>✅ Фото на документы: Premium Glossy + Best Photo + Fix Photo ВКЛ<br>✅ Полосы → Проверка сопел → Очистка головы</p></div>
+            <div class="card"><h3>📠 Xerox 7220</h3><p>✅ Копия паспорта: Копир. удостовер. → Тип: Фото → Яркость +1<br>✅ Сканер на флешку: USB → Сканировать → PDF</p></div>
+            <div class="card"><h3>📷 Фото на документы (ГОСТ)</h3><p>❌ Ретушь запрещена<br>✅ Анфас, уши открыты, нейтральное лицо</p></div>
+            <div class="card"><h3>💬 Психология</h3><p>🔹 Спокойный тон, объяснять правила до съёмки<br>🔹 При отказе в ретуши — ссылаться на правила</p></div>
         </div>
     </div>
-    <footer>Система обучения оператора А4-Принт • Анкета кандидата + экзамен на время</footer>
+    <footer>Анкета собирает введённые данные — подсказки (placeholder) не попадают в финальный документ.</footer>
 </div>
 
 <script>
-    // ========= БАЗА ВОПРОСОВ (29 штук, технические + клиентские, без цен) =========
+    // ========= БАЗА ВОПРОСОВ (29 вопросов) =========
     const allQuestions = [
         { text: "Какой режим в Xerox WorkCentre 7220 используется для копирования двух страниц паспорта на один лист?", options: ["Обычное копирование", "Копир. удостовер. (ID Card Copy)", "Сканирование в PDF", "Двусторонняя печать"], correct: "Копир. удостовер. (ID Card Copy)", explanation: "ID Card Copy автоматически размещает лицевую и оборотную сторону." },
         { text: "В программе Studio что нужно сделать после наведения рамки кадрирования (РК) на лицо?", options: ["Нажать Отменить", "Дважды щелкнуть левой кнопкой внутри рамки", "Нажать Поворот", "Выбрать Пакетная печать"], correct: "Дважды щелкнуть левой кнопкой внутри рамки", explanation: "Двойной щелчок обрезает изображение по рамке." },
@@ -304,32 +287,32 @@
         { text: "Для чего в Studio используется рамка кадрирования с прицелом?", options: ["Печать на CD", "Точное соблюдение пропорций лица (паспорт РФ)", "Поворот фото", "Изменение контраста"], correct: "Точное соблюдение пропорций лица (паспорт РФ)", explanation: "Прицел для стандарта паспорта РФ." },
         { text: "Клиент хочет фото 10×15 без полей. Настройка в драйвере Epson?", options: ["Borderless", "Fix Photo", "Best Photo", "Матовая бумага"], correct: "Borderless", explanation: "Borderless = печать без полей." },
         { text: "Как увеличить яркость копии на Xerox 7220?", options: ["Нажать Старт дважды", "Качество изобр. → Светлее/Темнее", "Выбрать А3", "Включить автоподатчик"], correct: "Качество изобр. → Светлее/Темнее", explanation: "Ползунок яркости." },
-        { text: "Что делать, если клиент говорит «дорого» на визитки?", options: ["Послать клиента", "Предложить скидку за объём или ламинацию в подарок", "Ничего", "Сказать что это не ваша проблема"], correct: "Предложить скидку за объём или ламинацию в подарок", explanation: "Отработка возражений." },
+        { text: "Что делать, если клиент говорит «дорого»?", options: ["Послать клиента", "Предложить скидку за объём или бонус", "Ничего", "Сказать что не проблема"], correct: "Предложить скидку за объём или бонус", explanation: "Отработка возражений." },
         { text: "В программе Studio что делает кнопка «Накопить»?", options: ["Печатает сразу", "Откладывает блок в пакетную печать", "Сохраняет фото", "Отменяет кадрирование"], correct: "Откладывает блок в пакетную печать", explanation: "Для массовой печати." },
-        { text: "Можно ли печатать на самоклеющейся бумаге в Xerox 7220?", options: ["Да, любой тип", "Только через ручную подачу", "Нет, только Epson", "Только ч/б"], correct: "Нет, только Epson", explanation: "Самоклейка для струйного." },
-        { text: "Как проверить уровень чернил на Epson L805?", options: ["Программой Epson Status Monitor", "Открыть крышку", "Понюхать", "Напечатать тест"], correct: "Программой Epson Status Monitor", explanation: "Драйвер показывает уровень." },
-        { text: "Что означает ошибка «Replace waste ink pad» на Epson?", options: ["Закончилась бумага", "Переполнен контейнер отработанных чернил", "Сбилась калибровка", "Нет связи с ПК"], correct: "Переполнен контейнер отработанных чернил", explanation: "Требуется сброс счетчика." },
+        { text: "Можно ли печатать на самоклеющейся бумаге в Xerox 7220?", options: ["Да", "Только ручная подача", "Нет, только Epson", "Только ч/б"], correct: "Нет, только Epson", explanation: "Самоклейка для струйного." },
+        { text: "Как проверить уровень чернил на Epson L805?", options: ["Epson Status Monitor", "Открыть крышку", "Понюхать", "Напечатать тест"], correct: "Epson Status Monitor", explanation: "Драйвер показывает уровень." },
+        { text: "Что означает ошибка «Replace waste ink pad» на Epson?", options: ["Нет бумаги", "Переполнен контейнер отработанных чернил", "Сбилась калибровка", "Нет связи"], correct: "Переполнен контейнер отработанных чернил", explanation: "Требуется сброс счетчика." },
         { text: "Какая бумага лучше для визиток?", options: ["80 г/м²", "300-350 г/м²", "Калька", "Газетная"], correct: "300-350 г/м²", explanation: "Плотная." },
-        { text: "Как называется функция в Xerox для сканирования разворота книги без разлома?", options: ["Подавление фона", "Книжный режим", "ID Copy", "Сшивание"], correct: "Книжный режим", explanation: "Обрабатывает разворот." },
-        { text: "Клиент просит открыть файл с флешки на Xerox: формат не поддерживается. Ваши действия?", options: ["Сказать что не можете", "Открыть на ПК и распечатать", "Выгнать клиента", "Отправить к другому"], correct: "Открыть на ПК и распечатать", explanation: "Через компьютер." },
-        { text: "Как часто нужно чистить сопла Epson L805?", options: ["Раз в год", "При появлении полос или раз в 2 недели", "Никогда", "Каждый день"], correct: "При появлении полос или раз в 2 недели", explanation: "Профилактика." },
-        { text: "Разрешена ли ретушь (удаление прыщика) на фото для паспорта РФ по новым правилам?", options: ["Да, можно", "Нет, категорически запрещена", "Только с согласия клиента", "Только ч/б"], correct: "Нет, категорически запрещена", explanation: "Статья: даже минимальная ретушь запрещена." },
-        { text: "Что нужно сделать, если клиент нервничает перед съёмкой на документы?", options: ["Сказать «потерпите»", "Посадить удобнее, объяснить процесс, сделать тестовые кадры", "Сфоткать как сидит", "Выгнать"], correct: "Посадить удобнее, объяснить процесс, сделать тестовые кадры", explanation: "Психологический подход." },
-        { text: "Какое выражение лица обязательно для фото на паспорт РФ?", options: ["Улыбка до ушей", "Нейтральное, рот закрыт", "Сердитое", "С открытым ртом"], correct: "Нейтральное, рот закрыт", explanation: "ГОСТ." },
-        { text: "Можно ли фотографироваться для паспорта в очках с тонированными стёклами?", options: ["Да", "Нет", "Только если с диоптриями", "Разрешено"], correct: "Нет", explanation: "Стёкла должны быть прозрачными." },
-        { text: "Как правильно предложить клиенту дополнительную услугу (апселл)?", options: ["«Доплатите ещё!»", "«Кстати, к вашему заказу советую ламинацию — надёжнее и выглядит дорого»", "Молчать", "«Это обязательно»"], correct: "«Кстати, к вашему заказу советую ламинацию — надёжнее и выглядит дорого»", explanation: "Тактичная рекомендация." },
-        { text: "Что делать, если клиент утверждает, что в прошлый раз у вас была ошибка, а вы его не помните?", options: ["Поспорить", "Извиниться, предложить скидку 15%, позвать администратора", "Игнорировать", "Обвинить клиента"], correct: "Извиниться, предложить скидку 15%, позвать администратора", explanation: "Решение конфликта." },
-        { text: "Как выровнять фото по уровню в Studio?", options: ["Кнопка 90°", "Рамка кадрирования + поворот стрелками", "Автоматически", "Нельзя"], correct: "Рамка кадрирования + поворот стрелками", explanation: "Стрелки для точной подстройки." },
-        { text: "Допустимо ли фотографироваться в головном уборе для паспорта?", options: ["Да, всегда", "Только по религиозным убеждениям и если не скрывает овал лица", "Никогда", "Любой головной убор"], correct: "Только по религиозным убеждениям и если не скрывает овал лица", explanation: "Исключение." },
-        { text: "Какой главный секрет хорошего фото на документы от фотографа из статьи?", options: ["Дорогая камера", "Настрой клиента (90% психология)", "Мощный компьютер", "Долгий монтаж"], correct: "Настрой клиента (90% психология)", explanation: "Важно душевное состояние клиента." },
-        { text: "Что означает услуга «резка в формат»?", options: ["Обрезка до нужного размера", "Ламинирование", "Брошюровка", "Сканирование"], correct: "Обрезка до нужного размера", explanation: "20₽ за рез." },
-        { text: "Что такое пакетная печать в Studio?", options: ["Печать одного фото", "Накопление блоков для массовой печати", "Печать с двух сторон", "Печать на диске"], correct: "Накопление блоков для массовой печати", explanation: "Экономит время." },
-        { text: "Какая минимальная ретушь разрешена на паспорт?", options: ["Любая", "Только светокоррекция", "Никакая", "Удаление родинок"], correct: "Никакая", explanation: "Строгий запрет." },
-        { text: "Какой главный принцип общения с конфликтным клиентом?", options: ["Крикнуть в ответ", "Спокойствие, активное слушание, предложение решения", "Вызвать полицию", "Уйти"], correct: "Спокойствие, активное слушание, предложение решения", explanation: "Soft skills." },
-        { text: "Какую фразу лучше сказать клиенту, который просит скидку просто так?", options: ["«Нет»", "«Я могу дать скидку 5% по нашей программе лояльности»", "«Идите в другое место»", "«Мне всё равно»"], correct: "«Я могу дать скидку 5% по нашей программе лояльности»", explanation: "Конструктивно." }
+        { text: "Как называется функция в Xerox для сканирования разворота книги?", options: ["Подавление фона", "Книжный режим", "ID Copy", "Сшивание"], correct: "Книжный режим", explanation: "Обрабатывает разворот." },
+        { text: "Клиент просит открыть файл с флешки на Xerox: формат не поддерживается.", options: ["Отказать", "Открыть на ПК и распечатать", "Выгнать", "Отправить к другому"], correct: "Открыть на ПК и распечатать", explanation: "Через компьютер." },
+        { text: "Как часто чистить сопла Epson L805?", options: ["Раз в год", "При появлении полос или раз в 2 недели", "Никогда", "Каждый день"], correct: "При появлении полос или раз в 2 недели", explanation: "Профилактика." },
+        { text: "Разрешена ли ретушь на фото для паспорта РФ?", options: ["Да", "Нет, категорически запрещена", "Только с согласия", "Только ч/б"], correct: "Нет, категорически запрещена", explanation: "Статья: даже минимальная ретушь запрещена." },
+        { text: "Что сделать, если клиент нервничает перед съёмкой?", options: ["Сказать «потерпите»", "Посадить удобнее, объяснить процесс", "Сфоткать как сидит", "Выгнать"], correct: "Посадить удобнее, объяснить процесс", explanation: "Психологический подход." },
+        { text: "Выражение лица для паспорта РФ?", options: ["Улыбка", "Нейтральное, рот закрыт", "Сердитое", "С открытым ртом"], correct: "Нейтральное, рот закрыт", explanation: "ГОСТ." },
+        { text: "Можно ли фотографироваться в очках с тонированными стёклами?", options: ["Да", "Нет", "Только с диоптриями", "Разрешено"], correct: "Нет", explanation: "Стёкла прозрачные." },
+        { text: "Как тактично предложить допуслугу?", options: ["«Доплатите!»", "«Кстати, советую ламинацию — надёжнее»", "Молчать", "«Это обязательно»"], correct: "«Кстати, советую ламинацию — надёжнее»", explanation: "Тактичная рекомендация." },
+        { text: "Что делать, если клиент утверждает, что в прошлый раз была ошибка?", options: ["Поспорить", "Извиниться, предложить скидку, позвать администратора", "Игнорировать", "Обвинить клиента"], correct: "Извиниться, предложить скидку, позвать администратора", explanation: "Решение конфликта." },
+        { text: "Как выровнять фото по уровню в Studio?", options: ["Кнопка 90°", "Рамка + поворот стрелками", "Автоматически", "Нельзя"], correct: "Рамка + поворот стрелками", explanation: "Стрелки для точной подстройки." },
+        { text: "Допустим ли головной убор для паспорта?", options: ["Да, всегда", "Только по религии и если не скрывает овал", "Никогда", "Любой"], correct: "Только по религии и если не скрывает овал", explanation: "Исключение." },
+        { text: "Главный секрет хорошего фото на документы?", options: ["Дорогая камера", "Настрой клиента (90% психология)", "Мощный ПК", "Долгий монтаж"], correct: "Настрой клиента (90% психология)", explanation: "Важно душевное состояние." },
+        { text: "Что означает услуга «резка в формат»?", options: ["Обрезка до нужного размера", "Ламинация", "Брошюровка", "Сканирование"], correct: "Обрезка до нужного размера", explanation: "20₽ за рез." },
+        { text: "Что такое пакетная печать в Studio?", options: ["Печать одного фото", "Накопление блоков для массовой печати", "С двух сторон", "На диск"], correct: "Накопление блоков для массовой печати", explanation: "Экономит время." },
+        { text: "Какая ретушь разрешена на паспорт?", options: ["Любая", "Только светокоррекция", "Никакая", "Удаление родинок"], correct: "Никакая", explanation: "Строгий запрет." },
+        { text: "Главный принцип общения с конфликтным клиентом?", options: ["Крикнуть", "Спокойствие, слушание, решение", "Вызвать полицию", "Уйти"], correct: "Спокойствие, слушание, решение", explanation: "Soft skills." },
+        { text: "Фраза для скидки просто так?", options: ["«Нет»", "«Могу дать скидку 5% по программе лояльности»", "«Идите в другое место»", "«Мне всё равно»"], correct: "«Могу дать скидку 5% по программе лояльности»", explanation: "Конструктивно." }
     ];
 
-    // Экзаменационная логика (сокращённая, как в прошлый раз, но вопросы уже без цен)
+    // === Экзаменационная логика ===
     let currentExamQuestions = [], userAnswers = [], questionStatus = [], timerInterval = null, timeSeconds = 15*60, examActive = true;
     function shuffleExam() {
         if(timerInterval) clearInterval(timerInterval);
@@ -343,28 +326,119 @@
     }
     function startTimer(){if(timerInterval)clearInterval(timerInterval);timerInterval=setInterval(()=>{if(!examActive)return;if(timeSeconds<=0){clearInterval(timerInterval);alert("Время вышло!");finishExam();}else{timeSeconds--;updateTimerDisplay();}},1000);}
     function updateTimerDisplay(){let mins=Math.floor(timeSeconds/60),secs=timeSeconds%60;let td=document.getElementById('timerDisplay');if(td)td.innerText=`⏱️ ${mins.toString().padStart(2,'0')}:${secs.toString().padStart(2,'0')}`;}
-    function renderExam(){let container=document.getElementById('examContainer');if(!container)return;container.innerHTML='';currentExamQuestions.forEach((q,idx)=>{let div=document.createElement('div');div.className='exam-question';div.innerHTML=`<strong>${idx+1}. ${q.text}</strong>`;let opts=document.createElement('div');opts.className='options';q.options.forEach(opt=>{let label=document.createElement('label');label.className='option';let radio=document.createElement('input');radio.type='radio';radio.name=`q${idx}`;radio.value=opt;radio.onchange=()=>{userAnswers[idx]=opt;questionStatus[idx]=(opt.toLowerCase().trim()===q.correct.toLowerCase().trim());renderExam();updateExamStats();};label.appendChild(radio);label.appendChild(document.createTextNode(opt));opts.appendChild(label);});div.appendChild(opts);let custom=document.createElement('div');custom.className='custom-answer';let inp=document.createElement('input');inp.placeholder='Или свой ответ';let btn=document.createElement('button');btn.innerText='Ответить';btn.className='check-btn';btn.onclick=()=>{let val=inp.value.trim();if(val){userAnswers[idx]=val;questionStatus[idx]=(val.toLowerCase().trim()===q.correct.toLowerCase().trim());renderExam();updateExamStats();}};custom.appendChild(inp);custom.appendChild(btn);div.appendChild(custom);container.appendChild(div);});updateExamStats();}
+    function renderExam(){let container=document.getElementById('examContainer');if(!container)return;container.innerHTML='';currentExamQuestions.forEach((q,idx)=>{let div=document.createElement('div');div.className='exam-question';div.style.border='2px solid #e2e8f0';div.style.borderRadius='24px';div.style.padding='20px';div.style.marginBottom='24px';div.innerHTML=`<strong>${idx+1}. ${q.text}</strong>`;let opts=document.createElement('div');opts.style.margin='15px 0';q.options.forEach(opt=>{let label=document.createElement('label');label.style.display='flex';label.style.alignItems='center';label.style.gap='10px';label.style.margin='8px 0';let radio=document.createElement('input');radio.type='radio';radio.name=`q${idx}`;radio.value=opt;radio.onchange=()=>{userAnswers[idx]=opt;questionStatus[idx]=(opt.toLowerCase().trim()===q.correct.toLowerCase().trim());renderExam();updateExamStats();};label.appendChild(radio);label.appendChild(document.createTextNode(opt));opts.appendChild(label);});div.appendChild(opts);container.appendChild(div);});updateExamStats();}
     function updateExamStats(){let correct=questionStatus.filter(s=>s===true).length;let st=document.getElementById('examStats');if(st)st.innerText=`📊 Результат: ${correct} / 10`;}
     function finishExam(){let correct=questionStatus.filter(s=>s===true).length;alert(`Экзамен завершён. Результат: ${correct}/10. ${correct>=8?'Сдан':'Не сдан'}`);}
     document.getElementById('startExamBtn')?.addEventListener('click',()=>shuffleExam());
     document.getElementById('submitExamBtn')?.addEventListener('click',()=>finishExam());
 
-    // Инициализация изучения
+    // === Панель изучения ===
     function renderStudy(){
         let container=document.getElementById('questionsContainer');
         if(!container)return; container.innerHTML='';
         allQuestions.forEach((q,idx)=>{let item=document.createElement('div');item.className='study-item';let qDiv=document.createElement('div');qDiv.className='study-question';qDiv.innerHTML=`<span>${idx+1}. ${q.text}</span> <span class="badge-cat">нажми для ответа</span>`;let ansDiv=document.createElement('div');ansDiv.className='study-answer';ansDiv.innerHTML=`<strong>✅ Ответ:</strong> ${q.correct}<br><strong>📖 Пояснение:</strong> ${q.explanation}`;qDiv.onclick=()=>ansDiv.classList.toggle('show');item.appendChild(qDiv);item.appendChild(ansDiv);container.appendChild(item);});
     }
-    // Установка даты в анкете
-    let today=new Date().toLocaleDateString('ru-RU');
-    let dateField=document.getElementById('qDate'); if(dateField) dateField.value=today;
-    // Печать анкеты
-    document.getElementById('printQuestionnaireBtn')?.addEventListener('click',()=>{let content=document.getElementById('candidateQuestionnaire').cloneNode(true);content.querySelectorAll('.btn').forEach(b=>b.remove());let w=window.open('','_blank');w.document.write('<html><head><title>Анкета кандидата А4-Принт</title><style>body{font-family:Arial;padding:20px;} .btn{display:none;}</style></head><body>'+content.innerHTML+'</body></html>');w.document.close();w.print();});
-    document.getElementById('resetQuestionnaireBtn')?.addEventListener('click',()=>{document.querySelectorAll('#candidateQuestionnaire input, #candidateQuestionnaire textarea').forEach(f=>{if(f.type!='radio' && f.type!='checkbox') f.value='';});document.querySelectorAll('#candidateQuestionnaire input[type="radio"]').forEach(r=>r.checked=false);});
+
+    // === АНКЕТА: сохранение в PDF с реальными данными ===
+    function getFormData() {
+        let fullname = document.getElementById('qFullname')?.value.trim() || "не указано";
+        let date = document.getElementById('qDate')?.value.trim() || new Date().toLocaleDateString('ru-RU');
+        let q1 = document.getElementById('q1')?.value.trim() || "—";
+        let studioRadio = document.querySelector('input[name="studio"]:checked');
+        let studio = studioRadio ? studioRadio.value : "не выбрано";
+        let q3 = document.getElementById('q3')?.value.trim() || "—";
+        let cartridgeRadio = document.querySelector('input[name="cartridge"]:checked');
+        let cartridge = cartridgeRadio ? cartridgeRadio.value : "не выбрано";
+        let q5 = document.getElementById('q5')?.value.trim() || "—";
+        let q6 = document.getElementById('q6')?.value.trim() || "—";
+        let q7 = document.getElementById('q7')?.value.trim() || "—";
+        let q8 = document.getElementById('q8')?.value.trim() || "—";
+        let q9 = document.getElementById('q9')?.value.trim() || "—";
+        let q10 = document.getElementById('q10')?.value.trim() || "—";
+        let q11 = document.getElementById('q11')?.value.trim() || "—";
+        let q12 = document.getElementById('q12')?.value.trim() || "—";
+        return { fullname, date, q1, studio, q3, cartridge, q5, q6, q7, q8, q9, q10, q11, q12 };
+    }
+
+    function generateQuestionnaireHTML(data) {
+        return `
+        <!DOCTYPE html>
+        <html>
+        <head><meta charset="UTF-8"><title>Анкета кандидата А4-Принт</title>
+        <style>
+            body { font-family: 'Segoe UI', Arial, sans-serif; padding: 30px; max-width: 1000px; margin: 0 auto; }
+            h1 { color: #0a2f3f; border-bottom: 2px solid #f39c12; }
+            h3 { margin-top: 25px; color: #1e5a74; border-left: 3px solid #f39c12; padding-left: 12px; }
+            .field { margin-bottom: 15px; }
+            .label { font-weight: bold; display: inline-block; min-width: 250px; }
+            .value { margin-top: 5px; background: #f8fafc; padding: 8px 12px; border-radius: 12px; white-space: pre-wrap; }
+            hr { margin: 20px 0; }
+        </style>
+        </head>
+        <body>
+        <h1>📋 АНКЕТА КАНДИДАТА НА ДОЛЖНОСТЬ ОПЕРАТОРА</h1>
+        <p><strong>Дата заполнения:</strong> ${data.date}</p>
+        <p><strong>ФИО:</strong> ${data.fullname}</p>
+        <h3>🔧 Знание оборудования и программ</h3>
+        <div class="field"><div class="label">1. МФУ / принтеры (опыт):</div><div class="value">${data.q1}</div></div>
+        <div class="field"><div class="label">2. Программа Studio:</div><div class="value">${data.studio}</div></div>
+        <div class="field"><div class="label">3. Кадрирование / растушёвка:</div><div class="value">${data.q3}</div></div>
+        <div class="field"><div class="label">4. Заправка / картриджи Epson:</div><div class="value">${data.cartridge}</div></div>
+        <h3>🧠 Психология и работа с клиентом</h3>
+        <div class="field"><div class="label">5. Клиент недоволен фото (усталый/полный):</div><div class="value">${data.q5}</div></div>
+        <div class="field"><div class="label">6. Отказ в ретуши (прыщик):</div><div class="value">${data.q6}</div></div>
+        <div class="field"><div class="label">7. Настройка нервного клиента:</div><div class="value">${data.q7}</div></div>
+        <div class="field"><div class="label">8. Конфликт (кричит про прошлую ошибку):</div><div class="value">${data.q8}</div></div>
+        <div class="field"><div class="label">9. Тактичный апселл:</div><div class="value">${data.q9}</div></div>
+        <h3>📌 Технический тест</h3>
+        <div class="field"><div class="label">10. Полосы на Epson L805:</div><div class="value">${data.q10}</div></div>
+        <div class="field"><div class="label">11. Режим «Копир. удостовер.» в Xerox:</div><div class="value">${data.q11}</div></div>
+        <div class="field"><div class="label">12. Требования к фото на паспорт РФ:</div><div class="value">${data.q12}</div></div>
+        <hr>
+        <p><em>Анкета заполнена кандидатом и распечатана в системе обучения А4-Принт.</em></p>
+        </body>
+        </html>
+        `;
+    }
+
+    document.getElementById('saveQuestionnairePdfBtn')?.addEventListener('click', () => {
+        const data = getFormData();
+        const html = generateQuestionnaireHTML(data);
+        const blob = new Blob([html], { type: 'text/html' });
+        const url = URL.createObjectURL(blob);
+        const win = window.open(url, '_blank');
+        setTimeout(() => {
+            win.print();
+            setTimeout(() => URL.revokeObjectURL(url), 100);
+        }, 500);
+    });
+
+    document.getElementById('resetQuestionnaireBtn')?.addEventListener('click', () => {
+        document.querySelectorAll('#candidateQuestionnaire input, #candidateQuestionnaire textarea').forEach(f => {
+            if(f.type !== 'radio' && f.type !== 'checkbox') f.value = '';
+        });
+        document.querySelectorAll('#candidateQuestionnaire input[type="radio"]').forEach(r => r.checked = false);
+        document.getElementById('qDate').value = new Date().toLocaleDateString('ru-RU');
+    });
+
+    // Установка даты по умолчанию
+    let today = new Date().toLocaleDateString('ru-RU');
+    let dateField = document.getElementById('qDate');
+    if(dateField && !dateField.value) dateField.value = today;
 
     // Навигация
-    let navs=document.querySelectorAll('.nav-btn');
-    navs.forEach(btn=>{btn.addEventListener('click',()=>{let target=btn.getAttribute('data-pane');document.querySelectorAll('.content-pane').forEach(p=>p.classList.remove('active'));document.getElementById(target).classList.add('active');navs.forEach(b=>b.classList.remove('active'));btn.classList.add('active');if(target=='paneStudy') renderStudy();if(target=='paneExam' && currentExamQuestions.length==0) shuffleExam();});});
+    let navs = document.querySelectorAll('.nav-btn');
+    navs.forEach(btn => {
+        btn.addEventListener('click', () => {
+            let target = btn.getAttribute('data-pane');
+            document.querySelectorAll('.content-pane').forEach(p => p.classList.remove('active'));
+            document.getElementById(target).classList.add('active');
+            navs.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            if(target === 'paneStudy') renderStudy();
+            if(target === 'paneExam' && currentExamQuestions.length === 0) shuffleExam();
+        });
+    });
     renderStudy();
     shuffleExam();
 </script>
