@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>А4-Принт | Анкета для кандидата на должность оператора</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+            background: #eef2f8;
+            color: #1e2a3a;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 32px;
+            box-shadow: 0 20px 35px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #0a2f3f 0%, #1a5a6e 100%);
+            color: white;
+            padding: 25px 32px;
+            text-align: center;
+        }
+        .header h1 { font-size: 1.8rem; margin-bottom: 8px; }
+        .header p { opacity: 0.9; }
+        
+        .content {
+            padding: 30px 35px;
+        }
+        
+        h2 {
+            color: #0a2f3f;
+            border-left: 6px solid #f39c12;
+            padding-left: 18px;
+            margin: 25px 0 20px 0;
+        }
+        h2:first-of-type { margin-top: 0; }
+        
+        h3 {
+            margin: 20px 0 12px;
+            color: #1e5a74;
+            font-size: 1.2rem;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #0a2f3f;
+        }
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 16px;
+            border: 1px solid #cbd5e1;
+            font-size: 1rem;
+            background: white;
+            transition: 0.2s;
+        }
+        .form-group input:focus, .form-group textarea:focus {
+            outline: none;
+            border-color: #f39c12;
+            box-shadow: 0 0 0 3px rgba(243,156,18,0.1);
+        }
+        .form-group textarea { min-height: 80px; resize: vertical; }
+        
+        .radio-group {
+            display: flex;
+            gap: 25px;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }
+        .radio-group label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: normal;
+            cursor: pointer;
+        }
+        .radio-group input {
+            width: auto;
+            margin-right: 5px;
+        }
+        
+        .required-star {
+            color: #e74c3c;
+            margin-left: 4px;
+        }
+        
+        .btn {
+            background: #f39c12;
+            color: #1e2a3a;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.2s;
+            display: inline-block;
+        }
+        .btn:hover {
+            background: #e67e22;
+            transform: scale(1.02);
+        }
+        .btn-secondary {
+            background: #1e5a74;
+            color: white;
+        }
+        .btn-secondary:hover {
+            background: #0a2f3f;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin: 30px 0 20px;
+            flex-wrap: wrap;
+        }
+        
+        .info-box {
+            background: #fef9e6;
+            border-left: 5px solid #f39c12;
+            padding: 15px 20px;
+            border-radius: 16px;
+            margin: 20px 0;
+            font-size: 0.9rem;
+        }
+        
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 12px 20px;
+            border-radius: 16px;
+            margin: 15px 0;
+            display: none;
+        }
+        
+        footer {
+            background: #eef2f5;
+            text-align: center;
+            padding: 16px;
+            font-size: 0.75rem;
+            color: #6c8ea0;
+        }
+        
+        hr {
+            margin: 20px 0;
+            border-color: #e2edf2;
+        }
+        
+        @media (max-width: 700px) {
+            .content { padding: 20px; }
+            .action-buttons { flex-direction: column; align-items: stretch; }
+            .btn { text-align: center; }
+        }
+        
+        @media print {
+            body { background: white; padding: 0; }
+            .action-buttons, .info-box { display: none; }
+            .container { box-shadow: none; }
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>📋 А4‑ПРИНТ</h1>
+        <p>Анкета для кандидата на должность <strong>оператора копировального центра</strong></p>
+        <p style="font-size: 0.85rem; margin-top: 8px;">Заполните все поля, затем сохраните анкету в PDF и отправьте нам на почту</p>
+    </div>
+    
+    <div class="content">
+        <div class="info-box">
+            📌 <strong>Как пройти отбор:</strong><br>
+            1. Заполните все поля анкеты честно и развёрнуто.<br>
+            2. Нажмите кнопку <strong>«Сохранить анкету в PDF»</strong> — файл сгенерируется автоматически.<br>
+            3. Отправьте полученный PDF-файл на нашу почту: <strong>hr@a4-print.ru</strong> (кнопка ниже откроет письмо с файлом).<br>
+            4. После проверки анкеты мы свяжемся с вами для приглашения на собеседование.
+        </div>
+        
+        <div id="successMessage" class="success-message"></div>
+        
+        <form id="candidateForm">
+            <h2>📌 Личные данные</h2>
+            
+            <div class="form-group">
+                <label>ФИО полностью <span class="required-star">*</span></label>
+                <input type="text" id="fullname" placeholder="Иванов Иван Иванович" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Телефон (для связи) <span class="required-star">*</span></label>
+                <input type="tel" id="phone" placeholder="+7 999 123-45-67" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Email <span class="required-star">*</span></label>
+                <input type="email" id="email" placeholder="ivanov@example.com" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Город проживания</label>
+                <input type="text" id="city" placeholder="Москва, Санкт-Петербург...">
+            </div>
+            
+            <div class="form-group">
+                <label>Откуда узнали о вакансии?</label>
+                <select id="source">
+                    <option value="">Выберите...</option>
+                    <option value="Авито">Авито</option>
+                    <option value="HH.ru">HH.ru</option>
+                    <option value="Работа.ру">Работа.ру</option>
+                    <option value="Друзья/знакомые">Друзья/знакомые</option>
+                    <option value="Другое">Другое</option>
+                </select>
+            </div>
+            
+            <h2>🖨️ Опыт работы и технические навыки</h2>
+            
+            <div class="form-group">
+                <label>1. С каким оборудованием вы работали ранее? (МФУ, принтеры, плоттеры)</label>
+                <textarea id="expEquipment" placeholder="Например: Xerox WorkCentre 7220, Epson L805, Canon, HP..."></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label>2. Работали ли с программой Studio (фото на документы) или аналогами?</label>
+                <div class="radio-group">
+                    <label><input type="radio" name="studio" value="Да, профессионально"> Да, профессионально</label>
+                    <label><input type="radio" name="studio" value="Да, немного"> Да, немного</label>
+                    <label><input type="radio" name="studio" value="Нет, но быстро учусь"> Нет, но быстро учусь</label>
+                    <label><input type="radio" name="studio" value="Нет опыта"> Нет опыта</label>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>3. Что такое «кадрирование» и «растушёвка» в фоторедакторе?</label>
+                <textarea id="cropBlur" placeholder="Напишите своими словами..."></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label>4. Умеете ли заправлять/чистить принтер или менять картриджи?</label>
+                <div class="radio-group">
+                    <label><input type="radio" name="cartridge" value="Да, уверенно"> Да, уверенно</label>
+                    <label><input type="radio" name="cartridge" value="Теоретически знаю"> Теоретически знаю</label>
+                    <label><input type="radio" name="cartridge" value="Нет, но готов научиться"> Нет, но готов(а) научиться</label>
+                </div>
+            </div>
+            
+            <h2>🧠 Психологические вопросы (работа с клиентами)</h2>
+            
+            <div class="form-group">
+                <label>5. Клиент недоволен своим фото на документы («я выгляжу усталым/полным»). Ваши действия?</label>
+                <textarea id="psycho1" placeholder="Опишите вашу реакцию и фразы..."></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label>6. Клиент просит «подретушировать» прыщик на фото, хотя по правилам ретушь запрещена. Как объясните отказ?</label>
+                <textarea id="psycho2" placeholder="Напишите аргументы..."></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label>7. В копировальный центр приходит очень нервный клиент, который торопится. Как вы его успокоите и организуете работу?</label>
+                <textarea id="psycho3" placeholder="Опишите ваш алгоритм действий..."></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label>8. Конфликтная ситуация: клиент кричит, что в прошлый раз у вас испортили документы, хотя вы его не помните. Ваш план действий?</label>
+                <textarea id="psycho4" placeholder="Извиниться? Предложить скидку? Позвать администратора?..."></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label>9. Как вы тактично предложите клиенту дополнительную услугу (например, ламинацию или второй комплект фото)?</label>
+                <textarea id="psycho5" placeholder="Напишите пример фразы..."></textarea>
+            </div>
+            
+            <h2>📌 Короткий технический тест</h2>
+            
+            <div class="form-group">
+                <label>10. Что делать, если на принтере Epson L805 появились полосы при печати?</label>
+                <textarea id="tech1" placeholder="Ваш ответ..."></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label>11. Для чего в Xerox WorkCentre 7220 используется режим «Копир. удостовер.» (ID Card Copy)?</label>
+                <textarea id="tech2" placeholder="Ваш ответ..."></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label>12. Перечислите основные требования к фотографии на паспорт РФ (анфас, ретушь, очки, головной убор).</label>
+                <textarea id="tech3" placeholder="Перечислите..."></textarea>
+            </div>
+            
+            <h2>📝 Дополнительно</h2>
+            
+            <div class="form-group">
+                <label>13. Почему вы хотите работать у нас? Что вас привлекает в должности оператора копировального центра?</label>
+                <textarea id="motivation" placeholder="Расскажите о себе..."></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label>14. Ваши ожидания по зарплате (в месяц, на руки):</label>
+                <input type="text" id="salary" placeholder="например: от 70 000 ₽">
+            </div>
+            
+            <div class="form-group">
+                <label>15. Когда готовы приступить к работе?</label>
+                <input type="text" id="readyDate" placeholder="например: с 1 июня, через 2 недели">
+            </div>
+            
+            <hr>
+            
+            <div class="action-buttons">
+                <button type="button" class="btn" id="savePdfBtn">📄 Сохранить анкету в PDF</button>
+                <button type="button" class="btn btn-secondary" id="sendEmailBtn">📧 Отправить PDF на почту hr@a4-print.ru</button>
+            </div>
+            
+            <div class="info-box" style="margin-top: 0;">
+                💡 <strong>После сохранения PDF:</strong> нажмите на вторую кнопку — откроется письмо с уже прикреплённым файлом. Останется только нажать «Отправить».
+            </div>
+        </form>
+    </div>
+    <footer>
+        А4‑ПРИНТ • Заполняя анкету, вы даёте согласие на обработку персональных данных для рассмотрения вашей кандидатуры.
+    </footer>
+</div>
+
+<script>
+    // Функция для сбора всех данных из формы
+    function getFormData() {
+        return {
+            fullname: document.getElementById('fullname')?.value.trim() || "не указано",
+            phone: document.getElementById('phone')?.value.trim() || "не указано",
+            email: document.getElementById('email')?.value.trim() || "не указано",
+            city: document.getElementById('city')?.value.trim() || "не указано",
+            source: document.getElementById('source')?.value || "не выбрано",
+            expEquipment: document.getElementById('expEquipment')?.value.trim() || "—",
+            studio: document.querySelector('input[name="studio"]:checked')?.value || "не выбрано",
+            cropBlur: document.getElementById('cropBlur')?.value.trim() || "—",
+            cartridge: document.querySelector('input[name="cartridge"]:checked')?.value || "не выбрано",
+            psycho1: document.getElementById('psycho1')?.value.trim() || "—",
+            psycho2: document.getElementById('psycho2')?.value.trim() || "—",
+            psycho3: document.getElementById('psycho3')?.value.trim() || "—",
+            psycho4: document.getElementById('psycho4')?.value.trim() || "—",
+            psycho5: document.getElementById('psycho5')?.value.trim() || "—",
+            tech1: document.getElementById('tech1')?.value.trim() || "—",
+            tech2: document.getElementById('tech2')?.value.trim() || "—",
+            tech3: document.getElementById('tech3')?.value.trim() || "—",
+            motivation: document.getElementById('motivation')?.value.trim() || "—",
+            salary: document.getElementById('salary')?.value.trim() || "не указано",
+            readyDate: document.getElementById('readyDate')?.value.trim() || "не указано"
+        };
+    }
+    
+    // Проверка обязательных полей
+    function validateRequiredFields() {
+        let fullname = document.getElementById('fullname')?.value.trim();
+        let phone = document.getElementById('phone')?.value.trim();
+        let email = document.getElementById('email')?.value.trim();
+        
+        if (!fullname) { alert("Пожалуйста, укажите ФИО"); return false; }
+        if (!phone) { alert("Пожалуйста, укажите телефон для связи"); return false; }
+        if (!email) { alert("Пожалуйста, укажите Email"); return false; }
+        return true;
+    }
+    
+    // Генерация HTML для PDF
+    function generateReportHTML(data) {
+        const currentDate = new Date().toLocaleString('ru-RU');
+        return `
+        <!DOCTYPE html>
+        <html>
+        <head><meta charset="UTF-8"><title>Анкета кандидата ${data.fullname}</title>
+        <style>
+            body { font-family: 'Segoe UI', Arial, sans-serif; padding: 30px; max-width: 1000px; margin: 0 auto; }
+            h1 { color: #0a2f3f; border-bottom: 2px solid #f39c12; }
+            h3 { margin-top: 25px; color: #1e5a74; border-left: 3px solid #f39c12; padding-left: 12px; }
+            .field { margin-bottom: 15px; }
+            .label { font-weight: bold; display: inline-block; min-width: 220px; }
+            .value { margin-top: 5px; background: #f8fafc; padding: 8px 12px; border-radius: 12px; white-space: pre-wrap; }
+            hr { margin: 20px 0; }
+            .header-info { background: #eef2f5; padding: 15px; border-radius: 16px; margin-bottom: 20px; }
+        </style>
+        </head>
+        <body>
+        <h1>📋 АНКЕТА КАНДИДАТА</h1>
+        <div class="header-info">
+            <p><strong>Дата заполнения:</strong> ${currentDate}</p>
+            <p><strong>ФИО:</strong> ${data.fullname}</p>
+            <p><strong>Телефон:</strong> ${data.phone}</p>
+            <p><strong>Email:</strong> ${data.email}</p>
+            <p><strong>Город:</strong> ${data.city}</p>
+            <p><strong>Источник:</strong> ${data.source}</p>
+        </div>
+        
+        <h3>🖨️ Опыт работы и технические навыки</h3>
+        <div class="field"><div class="label">Оборудование (опыт):</div><div class="value">${data.expEquipment}</div></div>
+        <div class="field"><div class="label">Программа Studio:</div><div class="value">${data.studio}</div></div>
+        <div class="field"><div class="label">Кадрирование / растушёвка:</div><div class="value">${data.cropBlur}</div></div>
+        <div class="field"><div class="label">Заправка / чистка принтера:</div><div class="value">${data.cartridge}</div></div>
+        
+        <h3>🧠 Работа с клиентами (психология)</h3>
+        <div class="field"><div class="label">Клиент недоволен фото:</div><div class="value">${data.psycho1}</div></div>
+        <div class="field"><div class="label">Отказ в ретуши:</div><div class="value">${data.psycho2}</div></div>
+        <div class="field"><div class="label">Нервный клиент:</div><div class="value">${data.psycho3}</div></div>
+        <div class="field"><div class="label">Конфликтная ситуация:</div><div class="value">${data.psycho4}</div></div>
+        <div class="field"><div class="label">Тактичный апселл:</div><div class="value">${data.psycho5}</div></div>
+        
+        <h3>📌 Технический тест</h3>
+        <div class="field"><div class="label">Полосы на Epson L805:</div><div class="value">${data.tech1}</div></div>
+        <div class="field"><div class="label">Режим «Копир. удостовер.» в Xerox:</div><div class="value">${data.tech2}</div></div>
+        <div class="field"><div class="label">Требования к фото на паспорт РФ:</div><div class="value">${data.tech3}</div></div>
+        
+        <h3>📝 Дополнительная информация</h3>
+        <div class="field"><div class="label">Мотивация:</div><div class="value">${data.motivation}</div></div>
+        <div class="field"><div class="label">Ожидания по зарплате:</div><div class="value">${data.salary}</div></div>
+        <div class="field"><div class="label">Готовность приступить:</div><div class="value">${data.readyDate}</div></div>
+        
+        <hr>
+        <p><em>Анкета заполнена кандидатом самостоятельно. Достоверность информации проверяется на собеседовании.</em></p>
+        </body>
+        </html>
+        `;
+    }
+    
+    // Сохранение в PDF и возврат Blob
+    async function generatePdfBlob() {
+        if (!validateRequiredFields()) return null;
+        
+        const data = getFormData();
+        const html = generateReportHTML(data);
+        
+        // Создаём временный элемент для рендера PDF
+        const tempDiv = document.createElement('div');
+        tempDiv.style.position = 'absolute';
+        tempDiv.style.left = '-9999px';
+        tempDiv.innerHTML = html;
+        document.body.appendChild(tempDiv);
+        
+        try {
+            const opt = {
+                margin: [0.5, 0.5, 0.5, 0.5],
+                filename: `Анкета_${data.fullname.replace(/\s+/g, '_')}.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, useCORS: false },
+                jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
+            };
+            const pdfBlob = await html2pdf().set(opt).from(tempDiv).outputPdf('blob');
+            document.body.removeChild(tempDiv);
+            return pdfBlob;
+        } catch (error) {
+            console.error('PDF generation error:', error);
+            document.body.removeChild(tempDiv);
+            alert('Ошибка при создании PDF. Попробуйте ещё раз.');
+            return null;
+        }
+    }
+    
+    // Кнопка "Сохранить в PDF" — скачивает файл на компьютер кандидата
+    document.getElementById('savePdfBtn')?.addEventListener('click', async () => {
+        const blob = await generatePdfBlob();
+        if (blob) {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            const data = getFormData();
+            a.href = url;
+            a.download = `Анкета_${data.fullname.replace(/\s+/g, '_')}.pdf`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            const successDiv = document.getElementById('successMessage');
+            successDiv.style.display = 'block';
+            successDiv.innerHTML = '✅ PDF-файл сохранён на ваш компьютер! Теперь нажмите кнопку ниже, чтобы отправить его нам на почту.';
+            setTimeout(() => {
+                successDiv.style.display = 'none';
+            }, 5000);
+        }
+    });
+    
+    // Кнопка "Отправить на почту" — открывает письмо с уже прикреплённым PDF
+    document.getElementById('sendEmailBtn')?.addEventListener('click', async () => {
+        const blob = await generatePdfBlob();
+        if (!blob) return;
+        
+        const data = getFormData();
+        const fileName = `Анкета_${data.fullname.replace(/\s+/g, '_')}.pdf`;
+        
+        // Создаём временную ссылку для вложения (через data URI не получится, используем FileReader)
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const base64 = e.target.result.split(',')[1];
+            // Формируем mailto: с вложением (только в некоторых почтовых клиентах работает)
+            // Более надёжный способ: открыть письмо с инструкцией, а файл кандидат прикрепит сам.
+            // Но сделаем максимально удобно: откроем письмо с темой и телом, а файл кандидат прикрепит из скачанного.
+            const subject = encodeURIComponent(`Анкета кандидата: ${data.fullname}`);
+            const body = encodeURIComponent(
+                `Здравствуйте!\n\nЯ, ${data.fullname}, направляю заполненную анкету на должность оператора копировального центра.\n\n` +
+                `Мой телефон: ${data.phone}\n` +
+                `Мой email: ${data.email}\n\n` +
+                `Файл с анкетой прикреплён к этому письму (сохраните его предварительно на компьютер).\n\n` +
+                `С уважением, ${data.fullname}`
+            );
+            window.location.href = `mailto:hr@a4-print.ru?subject=${subject}&body=${body}`;
+            
+            const successDiv = document.getElementById('successMessage');
+            successDiv.style.display = 'block';
+            successDiv.innerHTML = '📧 Открыто окно почтовой программы! Прикрепите к письму сохранённый ранее PDF-файл и нажмите "Отправить".<br><br>✅ Если файл ещё не сохранён — нажмите сначала первую кнопку.';
+            setTimeout(() => {
+                successDiv.style.display = 'none';
+            }, 8000);
+        };
+        reader.readAsDataURL(blob);
+    });
+    
+    // Установка даты по умолчанию для полей (необязательно)
+    // Можно добавить placeholder для readyDate
+    const readyDateInput = document.getElementById('readyDate');
+    if (readyDateInput && !readyDateInput.value) {
+        // можно оставить пустым
+    }
+</script>
+</body>
+</html>
