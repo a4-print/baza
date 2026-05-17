@@ -20,7 +20,6 @@
             max-width: 1400px;
             margin: 0 auto;
         }
-        /* Header */
         .header {
             background: linear-gradient(135deg, #0a2f3f 0%, #1a5a6e 100%);
             color: white;
@@ -31,14 +30,8 @@
             align-items: center;
             flex-wrap: wrap;
         }
-        .header h1 {
-            font-size: 1.8rem;
-        }
-        .header-buttons {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
+        .header h1 { font-size: 1.8rem; }
+        .header-buttons { display: flex; gap: 12px; flex-wrap: wrap; }
         .btn {
             background: rgba(255,255,255,0.2);
             border: none;
@@ -49,20 +42,10 @@
             cursor: pointer;
             transition: 0.2s;
         }
-        .btn-primary {
-            background: #f39c12;
-            color: #1e2a3a;
-        }
-        .btn-primary:hover {
-            background: #e67e22;
-        }
-        .btn-danger {
-            background: #e74c3c;
-        }
-        .btn:hover {
-            background: rgba(255,255,255,0.3);
-        }
-        /* Navigation */
+        .btn-primary { background: #f39c12; color: #1e2a3a; }
+        .btn-primary:hover { background: #e67e22; }
+        .btn-danger { background: #e74c3c; }
+        .btn:hover { background: rgba(255,255,255,0.3); }
         .nav-tabs {
             display: flex;
             background: white;
@@ -80,12 +63,7 @@
             color: #4a6a7a;
             transition: 0.2s;
         }
-        .nav-btn.active {
-            color: #f39c12;
-            border-bottom: 3px solid #f39c12;
-            margin-bottom: -1px;
-        }
-        /* Content */
+        .nav-btn.active { color: #f39c12; border-bottom: 3px solid #f39c12; margin-bottom: -1px; }
         .content-pane {
             display: none;
             background: white;
@@ -93,36 +71,12 @@
             border-radius: 0 0 28px 28px;
             animation: fade 0.2s;
         }
-        .content-pane.active {
-            display: block;
-        }
-        @keyframes fade {
-            from { opacity: 0; transform: translateY(8px);}
-            to { opacity: 1; transform: translateY(0);}
-        }
-        h2 {
-            color: #0a2f3f;
-            border-left: 6px solid #f39c12;
-            padding-left: 18px;
-            margin-bottom: 24px;
-        }
-        h3 {
-            margin: 20px 0 12px;
-            color: #1e5a74;
-        }
-        .card {
-            background: #f8fafc;
-            border-radius: 20px;
-            padding: 20px;
-            margin: 20px 0;
-            border: 1px solid #e2edf2;
-        }
-        .grid-2 {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-        }
-        /* Timer & Stats */
+        .content-pane.active { display: block; }
+        @keyframes fade { from { opacity: 0; transform: translateY(8px);} to { opacity: 1; transform: translateY(0);} }
+        h2 { color: #0a2f3f; border-left: 6px solid #f39c12; padding-left: 18px; margin-bottom: 24px; }
+        h3 { margin: 20px 0 12px; color: #1e5a74; }
+        .card { background: #f8fafc; border-radius: 20px; padding: 20px; margin: 20px 0; border: 1px solid #e2edf2; }
+        .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
         .exam-header {
             display: flex;
             justify-content: space-between;
@@ -132,149 +86,64 @@
             background: #f1f5f9;
             padding: 15px 20px;
             border-radius: 40px;
+            gap: 15px;
         }
-        .timer-box {
-            background: #0a2f3f;
-            color: white;
-            padding: 8px 20px;
-            border-radius: 50px;
-            font-size: 1.6rem;
-            font-weight: bold;
-            font-family: monospace;
-        }
-        .exam-stats {
-            background: #0a2f3f;
-            color: white;
-            padding: 8px 20px;
-            border-radius: 50px;
-            font-weight: bold;
-        }
-        .question-list {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-        .study-item {
-            background: #ffffff;
-            border: 1px solid #e0e8f0;
-            border-radius: 20px;
-            overflow: hidden;
-        }
-        .study-question {
-            background: #f1f5f9;
-            padding: 16px 20px;
-            font-weight: 700;
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .study-answer {
-            padding: 0 20px;
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease;
-            background: #fef9ef;
-        }
-        .study-answer.show {
-            padding: 16px 20px;
-            max-height: 500px;
-            border-top: 1px solid #ffe0b5;
-        }
-        .badge-cat {
-            background: #f39c12;
-            padding: 4px 12px;
-            border-radius: 30px;
-            font-size: 0.7rem;
-            color: #1e2a3a;
-            font-weight: bold;
-        }
-        /* Экзамен */
-        .exam-question {
-            background: white;
-            border: 2px solid #e2e8f0;
+        .timer-box { background: #0a2f3f; color: white; padding: 8px 20px; border-radius: 50px; font-size: 1.6rem; font-weight: bold; font-family: monospace; }
+        .exam-stats { background: #0a2f3f; color: white; padding: 8px 20px; border-radius: 50px; font-weight: bold; }
+        .user-info-panel {
+            background: #fef9e6;
+            border: 1px solid #f39c12;
             border-radius: 24px;
             padding: 20px;
-            margin-bottom: 24px;
-        }
-        .exam-question.correct {
-            border-left: 8px solid #2ecc71;
-            background: #f0fff4;
-        }
-        .exam-question.wrong {
-            border-left: 8px solid #e74c3c;
-            background: #fff5f5;
-        }
-        .options {
+            margin-bottom: 25px;
             display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin: 15px 0;
-        }
-        .option {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 8px 12px;
-            background: #f8fafc;
-            border-radius: 14px;
-            cursor: pointer;
-        }
-        .custom-answer {
-            margin-top: 12px;
-            display: flex;
-            gap: 12px;
             flex-wrap: wrap;
+            gap: 20px;
+            align-items: flex-end;
         }
-        .custom-answer input {
+        .user-info-panel .field {
             flex: 1;
+            min-width: 180px;
+        }
+        .user-info-panel label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: #0a2f3f;
+        }
+        .user-info-panel input {
+            width: 100%;
             padding: 10px 14px;
             border-radius: 30px;
             border: 1px solid #cbd5e1;
+            font-size: 1rem;
         }
-        .check-btn {
-            background: #1e5a74;
-            color: white;
-            border: none;
-            padding: 8px 20px;
-            border-radius: 30px;
-            cursor: pointer;
-        }
-        .feedback {
-            margin-top: 14px;
-            padding: 10px 14px;
-            border-radius: 16px;
-            display: none;
-        }
+        .study-item { background: #ffffff; border: 1px solid #e0e8f0; border-radius: 20px; overflow: hidden; margin-bottom: 12px; }
+        .study-question { background: #f1f5f9; padding: 16px 20px; font-weight: 700; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+        .study-answer { padding: 0 20px; max-height: 0; overflow: hidden; transition: max-height 0.3s ease; background: #fef9ef; }
+        .study-answer.show { padding: 16px 20px; max-height: 500px; border-top: 1px solid #ffe0b5; }
+        .badge-cat { background: #f39c12; padding: 4px 12px; border-radius: 30px; font-size: 0.7rem; color: #1e2a3a; font-weight: bold; }
+        .exam-question { background: white; border: 2px solid #e2e8f0; border-radius: 24px; padding: 20px; margin-bottom: 24px; }
+        .exam-question.correct { border-left: 8px solid #2ecc71; background: #f0fff4; }
+        .exam-question.wrong { border-left: 8px solid #e74c3c; background: #fff5f5; }
+        .options { display: flex; flex-direction: column; gap: 10px; margin: 15px 0; }
+        .option { display: flex; align-items: center; gap: 12px; padding: 8px 12px; background: #f8fafc; border-radius: 14px; cursor: pointer; }
+        .custom-answer { margin-top: 12px; display: flex; gap: 12px; flex-wrap: wrap; }
+        .custom-answer input { flex: 1; padding: 10px 14px; border-radius: 30px; border: 1px solid #cbd5e1; }
+        .check-btn { background: #1e5a74; color: white; border: none; padding: 8px 20px; border-radius: 30px; cursor: pointer; }
+        .feedback { margin-top: 14px; padding: 10px 14px; border-radius: 16px; display: none; }
         .feedback.correct-feedback { background: #d4edda; color: #155724; display: block; }
         .feedback.wrong-feedback { background: #f8d7da; color: #721c24; display: block; }
         @media print {
             body { background: white; padding: 0; }
-            .nav-tabs, .header-buttons, .check-btn, .custom-answer, .option input, .reset-exam, .timer-box, .btn, .nav-btn { display: none; }
+            .nav-tabs, .header-buttons, .check-btn, .custom-answer, .option input, .reset-exam, .timer-box, .btn, .nav-btn, .user-info-panel input { display: none; }
             .content-pane { display: block !important; }
             .study-answer { max-height: none !important; display: block !important; }
             .feedback { display: block !important; }
         }
-        footer {
-            text-align: center;
-            padding: 20px;
-            color: #6c8ea0;
-            font-size: 0.8rem;
-        }
-        .progress-bar {
-            height: 8px;
-            background: #e2e8f0;
-            border-radius: 10px;
-            overflow: hidden;
-            margin: 10px 0;
-        }
-        .progress-fill {
-            height: 100%;
-            background: #f39c12;
-            width: 0%;
-        }
+        footer { text-align: center; padding: 20px; color: #6c8ea0; font-size: 0.8rem; }
     </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 <body>
 <div class="container">
@@ -285,7 +154,6 @@
         </div>
         <div class="header-buttons">
             <button class="btn" onclick="window.print();">🖨️ Распечатать всё</button>
-            <button class="btn btn-primary" id="printExamBtn">📄 Сохранить отчёт (PDF)</button>
         </div>
     </div>
 
@@ -302,9 +170,23 @@
         <div id="questionsContainer" class="question-list"></div>
     </div>
 
-    <!-- Панель экзамена с таймером -->
+    <!-- Панель экзамена с таймером и полями для оператора -->
     <div id="paneExam" class="content-pane">
         <h2>✍️ Экзамен (случайные 10 вопросов из 29)</h2>
+        <div class="user-info-panel">
+            <div class="field">
+                <label>👤 ФИО оператора / стажёра / конкурсанта:</label>
+                <input type="text" id="operatorName" placeholder="Иванов Иван Иванович" autocomplete="off">
+            </div>
+            <div class="field">
+                <label>📌 Должность (кто проходит):</label>
+                <input type="text" id="operatorRole" placeholder="Стажёр / Оператор / Конкурсант" autocomplete="off" value="Оператор">
+            </div>
+            <div class="field">
+                <label>📅 Дата экзамена:</label>
+                <input type="text" id="examDate" placeholder="дд.мм.гггг" value="">
+            </div>
+        </div>
         <div class="exam-header">
             <div class="timer-box" id="timerDisplay">⏱️ 15:00</div>
             <div class="exam-stats" id="examStats">📊 Результат: 0 / 10</div>
@@ -312,7 +194,7 @@
         </div>
         <div id="examContainer"></div>
         <div style="text-align: center; margin-top: 20px;">
-            <button class="btn btn-primary" id="submitExamBtn" style="background:#2ecc71; font-size:1.2rem;">✅ ЗАВЕРШИТЬ ЭКЗАМЕН И ПОЛУЧИТЬ ОТЧЁТ</button>
+            <button class="btn btn-primary" id="submitExamBtn" style="background:#2ecc71; font-size:1.2rem;">✅ ЗАВЕРШИТЬ ЭКЗАМЕН И ПОЛУЧИТЬ ОТЧЁТ (PDF)</button>
         </div>
     </div>
 
@@ -347,7 +229,7 @@
 </div>
 
 <script>
-    // ===================== БАЗА ВОПРОСОВ (29 штук, удалён вопрос про пароль) =====================
+    // ========= БАЗА ВОПРОСОВ (29 штук, вопрос про пароль УДАЛЁН) =========
     const allQuestions = [
         { text: "Какой режим в Xerox WorkCentre 7220 используется для копирования двух страниц паспорта на один лист?", options: ["Обычное копирование", "Копир. удостовер. (ID Card Copy)", "Сканирование в PDF", "Двусторонняя печать"], correct: "Копир. удостовер. (ID Card Copy)", explanation: "ID Card Copy автоматически размещает лицевую и оборотную сторону на одном листе." },
         { text: "В программе Studio что нужно сделать после наведения рамки кадрирования (РК) на лицо?", options: ["Нажать Отменить", "Дважды щелкнуть левой кнопкой внутри рамки", "Нажать Поворот", "Выбрать Пакетная печать"], correct: "Дважды щелкнуть левой кнопкой внутри рамки", explanation: "Двойной щелчок обрезает изображение по рамке." },
@@ -380,7 +262,13 @@
         { text: "Можно ли дать скидку 25% без администратора, если клиент ругается?", options: ["Да", "Нет, только до 30% с обязательной фиксацией причины и согласованием", "Можно 50%", "Никак"], correct: "Нет, только до 30% с обязательной фиксацией причины и согласованием", explanation: "Скидка более 30% — только администратор." }
     ];
 
-    // Отображение всех вопросов для изучения
+    let currentExamQuestions = [];
+    let userAnswers = [];
+    let questionStatus = [];
+    let timerInterval = null;
+    let timeSeconds = 15 * 60;
+    let examActive = true;
+
     function renderStudy() {
         const container = document.getElementById('questionsContainer');
         if (!container) return;
@@ -393,21 +281,13 @@
             qDiv.innerHTML = `<span>${idx+1}. ${q.text}</span> <span class="badge-cat">нажми для ответа</span>`;
             const answerDiv = document.createElement('div');
             answerDiv.className = 'study-answer';
-            answerDiv.innerHTML = `<strong>✅ Ответ:</strong> ${q.correct}<br><strong>📖 Пояснение:</strong> ${q.explanation || 'Правильный ответ по стандарту А4-Принт.'}`;
+            answerDiv.innerHTML = `<strong>✅ Ответ:</strong> ${q.correct}<br><strong>📖 Пояснение:</strong> ${q.explanation || ''}`;
             qDiv.addEventListener('click', () => answerDiv.classList.toggle('show'));
             item.appendChild(qDiv);
             item.appendChild(answerDiv);
             container.appendChild(item);
         });
     }
-
-    // ----- Экзамен с таймером -----
-    let currentExamQuestions = [];
-    let userAnswers = [];
-    let questionStatus = [];
-    let timerInterval = null;
-    let timeSeconds = 15 * 60; // 15 минут
-    let examActive = true;
 
     function shuffleAndPick() {
         if (timerInterval) clearInterval(timerInterval);
@@ -446,8 +326,8 @@
         const secs = timeSeconds % 60;
         const timerDiv = document.getElementById('timerDisplay');
         if (timerDiv) timerDiv.innerText = `⏱️ ${mins.toString().padStart(2,'0')}:${secs.toString().padStart(2,'0')}`;
-        if (timeSeconds <= 60) timerDiv.style.background = "#e74c3c";
-        else timerDiv.style.background = "#0a2f3f";
+        if (timeSeconds <= 60 && timerDiv) timerDiv.style.background = "#e74c3c";
+        else if (timerDiv) timerDiv.style.background = "#0a2f3f";
     }
 
     function renderExam() {
@@ -474,13 +354,7 @@
                     radio.name = `exam_q${idx}`;
                     radio.value = opt;
                     if (userAnswers[idx] === opt) radio.checked = true;
-                    radio.addEventListener('change', () => {
-                        if (!examActive) return;
-                        userAnswers[idx] = opt;
-                        checkSingleAnswer(idx);
-                        renderExam();
-                        updateExamStats();
-                    });
+                    radio.addEventListener('change', () => { if (!examActive) return; userAnswers[idx] = opt; checkSingleAnswer(idx); renderExam(); updateExamStats(); });
                     label.appendChild(radio);
                     label.appendChild(document.createTextNode(opt));
                     optionsDiv.appendChild(label);
@@ -494,16 +368,7 @@
             const customBtn = document.createElement('button');
             customBtn.innerText = 'Ответить';
             customBtn.className = 'check-btn';
-            customBtn.addEventListener('click', () => {
-                if (!examActive) return;
-                const val = customInput.value.trim();
-                if (val) {
-                    userAnswers[idx] = val;
-                    checkSingleAnswer(idx);
-                    renderExam();
-                    updateExamStats();
-                }
-            });
+            customBtn.addEventListener('click', () => { if (!examActive) return; const val = customInput.value.trim(); if (val) { userAnswers[idx] = val; checkSingleAnswer(idx); renderExam(); updateExamStats(); } });
             customDiv.appendChild(customInput);
             customDiv.appendChild(customBtn);
             qDiv.appendChild(customDiv);
@@ -511,13 +376,8 @@
             feedbackDiv.className = 'feedback';
             if (userAnswers[idx] !== null) {
                 const isCorrect = (userAnswers[idx].toLowerCase().trim() === q.correct.toLowerCase().trim());
-                if (isCorrect) {
-                    feedbackDiv.className = 'feedback correct-feedback';
-                    feedbackDiv.innerHTML = `✅ Верно! ${q.correct}<br><small>${q.explanation || ''}</small>`;
-                } else {
-                    feedbackDiv.className = 'feedback wrong-feedback';
-                    feedbackDiv.innerHTML = `❌ Неверно. Правильно: ${q.correct}<br><small>${q.explanation || ''}</small>`;
-                }
+                if (isCorrect) { feedbackDiv.className = 'feedback correct-feedback'; feedbackDiv.innerHTML = `✅ Верно! ${q.correct}<br><small>${q.explanation || ''}</small>`; } 
+                else { feedbackDiv.className = 'feedback wrong-feedback'; feedbackDiv.innerHTML = `❌ Неверно. Правильно: ${q.correct}<br><small>${q.explanation || ''}</small>`; }
             }
             qDiv.appendChild(feedbackDiv);
             container.appendChild(qDiv);
@@ -525,19 +385,8 @@
         updateExamStats();
     }
 
-    function checkSingleAnswer(idx) {
-        const ans = userAnswers[idx];
-        if (!ans) { questionStatus[idx] = false; return; }
-        const isMatch = (ans.toLowerCase().trim() === currentExamQuestions[idx].correct.toLowerCase().trim());
-        questionStatus[idx] = isMatch;
-    }
-
-    function updateExamStats() {
-        const answered = userAnswers.filter(a => a !== null).length;
-        const correct = questionStatus.filter(s => s === true).length;
-        const statsDiv = document.getElementById('examStats');
-        if (statsDiv) statsDiv.innerHTML = `📊 Результат: ${correct} / 10 (отвечено ${answered})`;
-    }
+    function checkSingleAnswer(idx) { const ans = userAnswers[idx]; if (!ans) { questionStatus[idx] = false; return; } questionStatus[idx] = (ans.toLowerCase().trim() === currentExamQuestions[idx].correct.toLowerCase().trim()); }
+    function updateExamStats() { const correct = questionStatus.filter(s => s === true).length; const statsDiv = document.getElementById('examStats'); if (statsDiv) statsDiv.innerHTML = `📊 Результат: ${correct} / 10`; }
 
     function finishExamAndGenerateReport(isTimeout = false) {
         if (!examActive && !isTimeout) return;
@@ -545,51 +394,69 @@
         if (timerInterval) clearInterval(timerInterval);
         const correctCount = questionStatus.filter(s => s === true).length;
         const passed = correctCount >= 8;
-        const reportDiv = document.createElement('div');
-        reportDiv.id = "tempReportForPDF";
-        reportDiv.style.padding = "20px";
-        reportDiv.style.fontFamily = "Arial";
-        const now = new Date();
-        reportDiv.innerHTML = `
-            <h1 style="color:#0a2f3f;">📄 Отчёт об экзамене оператора А4-Принт</h1>
-            <p><strong>Дата и время:</strong> ${now.toLocaleString()}</p>
-            <p><strong>Результат:</strong> ${correctCount} / 10 правильных ответов (${Math.round(correctCount/10*100)}%)</p>
-            <p><strong>Статус:</strong> ${passed ? '✅ ЭКЗАМЕН СДАН' : '❌ ЭКЗАМЕН НЕ СДАН (нужно 8 из 10)'}</p>
-            <p><strong>Затраченное время:</strong> ${Math.floor((15*60 - timeSeconds)/60)} мин ${(15*60 - timeSeconds)%60} сек</p>
-            <hr>
-            <h3>Детали по вопросам:</h3>
-            <ol>${currentExamQuestions.map((q,i) => `
-                <li style="margin-bottom:12px;"><strong>${q.text}</strong><br>
-                Ваш ответ: ${userAnswers[i] || 'не дан'} ${questionStatus[i] === true ? '✓ верно' : '✗ неверно'}<br>
-                Правильный ответ: ${q.correct}<br>
-                <span style="color:#555;">Пояснение: ${q.explanation}</span></li>
-            `).join('')}</ol>
-            <hr>
-            <p><em>Данный отчёт подтверждает прохождение обучения в А4-Принт.</em></p>
-        `;
-        document.body.appendChild(reportDiv);
-        html2pdf().from(reportDiv).set({ margin: 0.5, filename: `Экзамен_оператора_${now.toISOString().slice(0,19)}.pdf`, html2canvas: { scale: 2 }, jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' } }).save().then(() => {
-            document.body.removeChild(reportDiv);
-            alert(`Экзамен завершён! Результат: ${correctCount}/10. ${passed ? 'Поздравляем!' : 'Нужно подучить материал. Пересдача через день.'}`);
-        }).catch(() => {
-            alert("Ошибка при создании PDF, но результат: "+correctCount+"/10");
-        });
+        const operatorName = document.getElementById('operatorName')?.value.trim() || "Не указано";
+        const operatorRole = document.getElementById('operatorRole')?.value.trim() || "Оператор";
+        let examDate = document.getElementById('examDate')?.value.trim();
+        if (!examDate) { const now = new Date(); examDate = now.toLocaleDateString('ru-RU'); }
+        const minutesSpent = Math.floor((15 * 60 - timeSeconds) / 60);
+        const secondsSpent = (15 * 60 - timeSeconds) % 60;
+        
+        const reportHtml = `
+        <!DOCTYPE html>
+        <html>
+        <head><meta charset="UTF-8"><title>Отчёт об экзамене А4-Принт</title>
+        <style>
+            body { font-family: 'Segoe UI', Arial, sans-serif; padding: 30px; max-width: 1000px; margin: 0 auto; }
+            h1 { color: #0a2f3f; border-bottom: 2px solid #f39c12; }
+            .header-info { background: #f8fafc; padding: 15px; border-radius: 16px; margin: 20px 0; }
+            .result-badge { font-size: 1.2rem; font-weight: bold; }
+            .correct { color: #2ecc71; }
+            .wrong { color: #e74c3c; }
+            .question-item { margin-bottom: 20px; border-bottom: 1px solid #ddd; padding-bottom: 12px; }
+        </style>
+        </head>
+        <body>
+        <h1>📄 Отчёт об экзамене оператора</h1>
+        <div class="header-info">
+            <p><strong>👤 ФИО:</strong> ${operatorName}</p>
+            <p><strong>📌 Должность:</strong> ${operatorRole}</p>
+            <p><strong>📅 Дата:</strong> ${examDate}</p>
+            <p><strong>⏱️ Затраченное время:</strong> ${minutesSpent} мин ${secondsSpent} сек</p>
+            <p><strong>📊 Результат:</strong> ${correctCount} / 10 (${Math.round(correctCount/10*100)}%)</p>
+            <p class="result-badge">${passed ? '✅ ЭКЗАМЕН СДАН' : '❌ ЭКЗАМЕН НЕ СДАН (нужно 8 из 10)'}</p>
+        </div>
+        <h3>Детали по вопросам:</h3>
+        ${currentExamQuestions.map((q, i) => `
+            <div class="question-item">
+                <strong>${i+1}. ${q.text}</strong><br>
+                Ответ оператора: ${userAnswers[i] || '❌ не дан'}<br>
+                <span class="${questionStatus[i] === true ? 'correct' : 'wrong'}">${questionStatus[i] === true ? '✓ Верно' : '✗ Неверно'}</span><br>
+                <span style="color:#2c6e4f;">Правильный ответ: ${q.correct}</span><br>
+                <small>Пояснение: ${q.explanation}</small>
+            </div>
+        `).join('')}
+        <hr>
+        <p><em>Данный отчёт сгенерирован автоматически в системе обучения А4-Принт.</em></p>
+        </body>
+        </html>`;
+        
+        const blob = new Blob([reportHtml], { type: 'text/html' });
+        const url = URL.createObjectURL(blob);
+        const win = window.open(url, '_blank');
+        setTimeout(() => {
+            win.print();
+            setTimeout(() => { URL.revokeObjectURL(url); }, 100);
+        }, 500);
+        alert(`Экзамен завершён! Результат: ${correctCount}/10. ${passed ? 'Поздравляем!' : 'Нужно подучить материал. Пересдача через день.'}\nОтчёт открылся в новом окне — сохраните или распечатайте его.`);
     }
 
-    document.getElementById('resetExamBtn')?.addEventListener('click', () => {
-        if (timerInterval) clearInterval(timerInterval);
-        shuffleAndPick();
-    });
-    document.getElementById('submitExamBtn')?.addEventListener('click', () => {
-        if (!examActive) return;
-        finishExamAndGenerateReport(false);
-    });
-    document.getElementById('printExamBtn')?.addEventListener('click', () => {
-        if (currentExamQuestions.length === 0) { alert("Сначала перейдите на вкладку экзамена."); return; }
-        finishExamAndGenerateReport(false);
-    });
+    document.getElementById('resetExamBtn')?.addEventListener('click', () => { if (timerInterval) clearInterval(timerInterval); shuffleAndPick(); });
+    document.getElementById('submitExamBtn')?.addEventListener('click', () => { if (!examActive) return; finishExamAndGenerateReport(false); });
+    document.getElementById('operatorDate')?.setAttribute('value', new Date().toLocaleDateString('ru-RU'));
+    const today = new Date().toLocaleDateString('ru-RU');
+    const dateInput = document.getElementById('examDate');
+    if(dateInput) dateInput.value = today;
 
-    // Навигация
     const navBtns = document.querySelectorAll('.nav-btn');
     navBtns.forEach(btn => {
         btn.addEventListener('click', () => {
@@ -604,6 +471,7 @@
     });
     renderStudy();
     shuffleAndPick();
+    if(dateInput && !dateInput.value) dateInput.value = new Date().toLocaleDateString('ru-RU');
 </script>
 </body>
 </html>
