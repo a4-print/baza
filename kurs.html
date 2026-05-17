@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>А4-Принт | Обучение оператора с таймером и отчётом</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+            background: #eef2f8;
+            color: #1e2a3a;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #0a2f3f 0%, #1a5a6e 100%);
+            color: white;
+            padding: 25px 32px;
+            border-radius: 28px 28px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .header h1 {
+            font-size: 1.8rem;
+        }
+        .header-buttons {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            padding: 8px 20px;
+            border-radius: 40px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .btn-primary {
+            background: #f39c12;
+            color: #1e2a3a;
+        }
+        .btn-primary:hover {
+            background: #e67e22;
+        }
+        .btn-danger {
+            background: #e74c3c;
+        }
+        .btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        /* Navigation */
+        .nav-tabs {
+            display: flex;
+            background: white;
+            gap: 4px;
+            padding: 0 20px;
+            border-bottom: 1px solid #dce5ec;
+        }
+        .nav-btn {
+            background: transparent;
+            border: none;
+            padding: 14px 28px;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            color: #4a6a7a;
+            transition: 0.2s;
+        }
+        .nav-btn.active {
+            color: #f39c12;
+            border-bottom: 3px solid #f39c12;
+            margin-bottom: -1px;
+        }
+        /* Content */
+        .content-pane {
+            display: none;
+            background: white;
+            padding: 28px 34px;
+            border-radius: 0 0 28px 28px;
+            animation: fade 0.2s;
+        }
+        .content-pane.active {
+            display: block;
+        }
+        @keyframes fade {
+            from { opacity: 0; transform: translateY(8px);}
+            to { opacity: 1; transform: translateY(0);}
+        }
+        h2 {
+            color: #0a2f3f;
+            border-left: 6px solid #f39c12;
+            padding-left: 18px;
+            margin-bottom: 24px;
+        }
+        h3 {
+            margin: 20px 0 12px;
+            color: #1e5a74;
+        }
+        .card {
+            background: #f8fafc;
+            border-radius: 20px;
+            padding: 20px;
+            margin: 20px 0;
+            border: 1px solid #e2edf2;
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        /* Timer & Stats */
+        .exam-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 25px;
+            background: #f1f5f9;
+            padding: 15px 20px;
+            border-radius: 40px;
+        }
+        .timer-box {
+            background: #0a2f3f;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-size: 1.6rem;
+            font-weight: bold;
+            font-family: monospace;
+        }
+        .exam-stats {
+            background: #0a2f3f;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-weight: bold;
+        }
+        .question-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .study-item {
+            background: #ffffff;
+            border: 1px solid #e0e8f0;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+        .study-question {
+            background: #f1f5f9;
+            padding: 16px 20px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .study-answer {
+            padding: 0 20px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            background: #fef9ef;
+        }
+        .study-answer.show {
+            padding: 16px 20px;
+            max-height: 500px;
+            border-top: 1px solid #ffe0b5;
+        }
+        .badge-cat {
+            background: #f39c12;
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            color: #1e2a3a;
+            font-weight: bold;
+        }
+        /* Экзамен */
+        .exam-question {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 24px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+        .exam-question.correct {
+            border-left: 8px solid #2ecc71;
+            background: #f0fff4;
+        }
+        .exam-question.wrong {
+            border-left: 8px solid #e74c3c;
+            background: #fff5f5;
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        .option {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 12px;
+            background: #f8fafc;
+            border-radius: 14px;
+            cursor: pointer;
+        }
+        .custom-answer {
+            margin-top: 12px;
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .custom-answer input {
+            flex: 1;
+            padding: 10px 14px;
+            border-radius: 30px;
+            border: 1px solid #cbd5e1;
+        }
+        .check-btn {
+            background: #1e5a74;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+        }
+        .feedback {
+            margin-top: 14px;
+            padding: 10px 14px;
+            border-radius: 16px;
+            display: none;
+        }
+        .feedback.correct-feedback { background: #d4edda; color: #155724; display: block; }
+        .feedback.wrong-feedback { background: #f8d7da; color: #721c24; display: block; }
+        @media print {
+            body { background: white; padding: 0; }
+            .nav-tabs, .header-buttons, .check-btn, .custom-answer, .option input, .reset-exam, .timer-box, .btn, .nav-btn { display: none; }
+            .content-pane { display: block !important; }
+            .study-answer { max-height: none !important; display: block !important; }
+            .feedback { display: block !important; }
+        }
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #6c8ea0;
+            font-size: 0.8rem;
+        }
+        .progress-bar {
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        .progress-fill {
+            height: 100%;
+            background: #f39c12;
+            width: 0%;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <div>
+            <h1>📚 А4‑ПРИНТ | Система обучения оператора</h1>
+            <p>База знаний + экзамен на время с PDF-отчётом</p>
+        </div>
+        <div class="header-buttons">
+            <button class="btn" onclick="window.print();">🖨️ Распечатать всё</button>
+            <button class="btn btn-primary" id="printExamBtn">📄 Сохранить отчёт (PDF)</button>
+        </div>
+    </div>
+
+    <div class="nav-tabs">
+        <button class="nav-btn active" data-pane="paneStudy">📖 Изучение (29 вопросов)</button>
+        <button class="nav-btn" data-pane="paneExam">⏱️ Сдать экзамен (на время)</button>
+        <button class="nav-btn" data-pane="paneCheats">📋 Шпаргалки</button>
+    </div>
+
+    <!-- Панель изучения -->
+    <div id="paneStudy" class="content-pane active">
+        <h2>📖 Банк вопросов для подготовки</h2>
+        <p>Нажмите на любой вопрос, чтобы увидеть ответ с пояснением. Всего 29 вопросов.</p>
+        <div id="questionsContainer" class="question-list"></div>
+    </div>
+
+    <!-- Панель экзамена с таймером -->
+    <div id="paneExam" class="content-pane">
+        <h2>✍️ Экзамен (случайные 10 вопросов из 29)</h2>
+        <div class="exam-header">
+            <div class="timer-box" id="timerDisplay">⏱️ 15:00</div>
+            <div class="exam-stats" id="examStats">📊 Результат: 0 / 10</div>
+            <button class="btn btn-danger" id="resetExamBtn" style="background:#e67e22;">🔄 Новый экзамен</button>
+        </div>
+        <div id="examContainer"></div>
+        <div style="text-align: center; margin-top: 20px;">
+            <button class="btn btn-primary" id="submitExamBtn" style="background:#2ecc71; font-size:1.2rem;">✅ ЗАВЕРШИТЬ ЭКЗАМЕН И ПОЛУЧИТЬ ОТЧЁТ</button>
+        </div>
+    </div>
+
+    <!-- Панель шпаргалок -->
+    <div id="paneCheats" class="content-pane">
+        <h2>📋 Быстрые шпаргалки для оператора</h2>
+        <div class="grid-2">
+            <div class="card">
+                <h3>🖨️ Epson L805</h3>
+                <p>✅ Фото на документы: Premium Glossy + Best Photo + Fix Photo ВКЛ + Borderless ВЫКЛ</p>
+                <p>✅ Полосы → Проверка сопел → Очистка головы</p>
+            </div>
+            <div class="card">
+                <h3>📠 Xerox 7220</h3>
+                <p>✅ Копия паспорта: Копир. удостовер. → Тип: Фото → Яркость +1</p>
+                <p>✅ Сканер на флешку: USB → Сканировать → PDF → Старт</p>
+            </div>
+            <div class="card">
+                <h3>💰 Цены топ</h3>
+                <p>📷 Фото на паспорт 400₽ (второй комплект 250₽)<br>
+                📄 А4 ч/б 25₽ | 🎨 цвет 55₽<br>
+                🛡️ Ламинация А4 150₽ | 📚 Брошюровка от 300₽<br>
+                🌍 Нотариальный перевод 1700₽</p>
+            </div>
+            <div class="card">
+                <h3>💸 Скидки оператора</h3>
+                <p>🔹 от 1000₽ → 5%<br>🔹 от 3000₽ → 10%<br>🔹 Брак/рекламация → до 30%</p>
+            </div>
+        </div>
+    </div>
+    <footer>Система обучения оператора А4-Принт • Для сдачи экзамена нужно набрать 8 из 10 правильных ответов за 15 минут</footer>
+</div>
+
+<script>
+    // ===================== БАЗА ВОПРОСОВ (29 штук, удалён вопрос про пароль) =====================
+    const allQuestions = [
+        { text: "Какой режим в Xerox WorkCentre 7220 используется для копирования двух страниц паспорта на один лист?", options: ["Обычное копирование", "Копир. удостовер. (ID Card Copy)", "Сканирование в PDF", "Двусторонняя печать"], correct: "Копир. удостовер. (ID Card Copy)", explanation: "ID Card Copy автоматически размещает лицевую и оборотную сторону на одном листе." },
+        { text: "В программе Studio что нужно сделать после наведения рамки кадрирования (РК) на лицо?", options: ["Нажать Отменить", "Дважды щелкнуть левой кнопкой внутри рамки", "Нажать Поворот", "Выбрать Пакетная печать"], correct: "Дважды щелкнуть левой кнопкой внутри рамки", explanation: "Двойной щелчок обрезает изображение по рамке." },
+        { text: "На Epson L805 появились полосы при печати. Ваши действия?", options: ["Заменить бумагу", "Обслуживание → Проверка сопел → Очистка головы", "Выключить принтер", "Увеличить яркость"], correct: "Обслуживание → Проверка сопел → Очистка головы", explanation: "Полосы — засохшие чернила в дюзах, нужна прочистка." },
+        { text: "Сколько стоит дополнительный (второй) комплект фото на документы (4 шт)?", options: ["400 ₽", "250 ₽", "100 ₽", "350 ₽"], correct: "250 ₽", explanation: "Второй комплект продаём как выгодный апселл." },
+        { text: "Какую максимальную скидку оператор может дать без согласования при заказе на 2500₽ (без жалоб)?", options: ["5%", "10%", "15%", "20%"], correct: "5%", explanation: "До 1000₽ — 0%, от 1000 до 3000₽ — 5%, от 3000₽ — 10%." },
+        { text: "Для чего в Studio используется рамка кадрирования с прицелом?", options: ["Печать на CD", "Точное соблюдение пропорций лица (паспорт РФ)", "Поворот фото", "Изменение контраста"], correct: "Точное соблюдение пропорций лица (паспорт РФ)", explanation: "Прицел помогает совместить глаза, нос, подбородок по ГОСТ." },
+        { text: "Клиент хочет фото 10×15 без полей. Настройка в драйвере Epson?", options: ["Borderless", "Fix Photo", "Best Photo", "Матовая бумага"], correct: "Borderless", explanation: "Borderless = печать без полей." },
+        { text: "Нотариальный перевод водительских прав (обычный) стоит:", options: ["1200 ₽", "1700 ₽", "2500 ₽", "350 ₽"], correct: "1700 ₽", explanation: "Фиксированная цена за личный документ." },
+        { text: "Как увеличить яркость копии на Xerox 7220?", options: ["Нажать Старт дважды", "Качество изобр. → Светлее/Темнее", "Выбрать А3", "Включить автоподатчик"], correct: "Качество изобр. → Светлее/Темнее", explanation: "Ползунок яркости помогает для бледных оригиналов." },
+        { text: "Назовите фразу для апселла (допродажи) перед закрытием заказа.", options: ["До свидания", "А вам не нужны ещё наклейки/календари? Сделаем со скидкой", "У нас дорого", "Я не знаю"], correct: "А вам не нужны ещё наклейки/календари? Сделаем со скидкой", explanation: "Апселл увеличивает средний чек." },
+        { text: "Сколько стоит ламинация А4 100 мкр (розница)?", options: ["100 ₽", "150 ₽", "200 ₽", "300 ₽"], correct: "150 ₽", explanation: "Скидка от 31 пакета — 130₽." },
+        { text: "Какая минимальная стоимость твёрдого переплёта MetalBind?", options: ["500 ₽", "800 ₽", "1000 ₽", "1200 ₽"], correct: "800 ₽", explanation: "До 150 листов — 800₽, более — 900₽." },
+        { text: "Что делать, если клиент говорит «дорого» на визитки?", options: ["Послать клиента", "Предложить скидку за объём или ламинацию в подарок", "Ничего", "Сказать что это не ваша проблема"], correct: "Предложить скидку за объём или ламинацию в подарок", explanation: "Отработка возражений = увеличение продаж." },
+        { text: "В программе Studio что делает кнопка «Накопить»?", options: ["Печатает сразу", "Откладывает блок в пакетную печать", "Сохраняет фото", "Отменяет кадрирование"], correct: "Откладывает блок в пакетную печать", explanation: "Для печати нескольких заказов одним тиражом." },
+        { text: "Можно ли печатать на самоклеющейся бумаге в Xerox 7220?", options: ["Да, любой тип", "Только через ручную подачу", "Нет, только Epson", "Только ч/б"], correct: "Нет, только Epson", explanation: "Самоклейка — для струйного принтера." },
+        { text: "Как проверить уровень чернил на Epson L805?", options: ["Программой Epson Status Monitor", "Открыть крышку", "Понюхать", "Напечатать тест"], correct: "Программой Epson Status Monitor", explanation: "Драйвер показывает уровень." },
+        { text: "Срочный нотариальный перевод (за 2,5 часа): наценка?", options: ["100 ₽", "350 ₽", "500 ₽", "1000 ₽"], correct: "350 ₽", explanation: "Срочность +350₽ к базовой цене." },
+        { text: "Что означает ошибка «Replace waste ink pad» на Epson?", options: ["Закончилась бумага", "Переполнен контейнер отработанных чернил", "Сбилась калибровка", "Нет связи с ПК"], correct: "Переполнен контейнер отработанных чернил", explanation: "Требуется сброс счетчика отходов." },
+        { text: "Какая бумага лучше для визиток?", options: ["80 г/м²", "300-350 г/м²", "Калька", "Газетная"], correct: "300-350 г/м²", explanation: "Плотная бумага не мнётся, солидный вид." },
+        { text: "Сколько стоит дизайн визитки 4+4?", options: ["500 ₽", "800 ₽", "1200 ₽", "2000 ₽"], correct: "1200 ₽", explanation: "Полноцветный дизайн с двух сторон." },
+        { text: "Как называется функция в Xerox для сканирования разворота книги без разлома?", options: ["Подавление фона", "Книжный режим", "ID Copy", "Сшивание"], correct: "Книжный режим", explanation: "Книжный режим обрабатывает разворот как одну картинку." },
+        { text: "Что такое «пакетная печать» в Studio?", options: ["Печать одного фото", "Накопление блоков для массовой печати", "Печать с двух сторон", "Печать на диске"], correct: "Накопление блоков для массовой печати", explanation: "Экономит время оператора." },
+        { text: "Сколько фото 35×45 помещается на лист А4?", options: ["2", "4-6", "10", "1"], correct: "4-6", explanation: "Стандартная верстка для документов." },
+        { text: "Что означает услуга «резка в формат»?", options: ["Обрезка до нужного размера", "Ламинирование", "Брошюровка", "Сканирование"], correct: "Обрезка до нужного размера", explanation: "Цена 20₽ за рез." },
+        { text: "Клиент просит открыть файл с флешки на Xerox: формат не поддерживается. Ваши действия?", options: ["Сказать что не можете", "Открыть на ПК и распечатать", "Выгнать клиента", "Отправить к другому"], correct: "Открыть на ПК и распечатать", explanation: "На Xerox ограниченный список форматов, проще через компьютер." },
+        { text: "Как часто нужно чистить сопла Epson L805?", options: ["Раз в год", "При появлении полос или раз в 2 недели", "Никогда", "Каждый день"], correct: "При появлении полос или раз в 2 недели", explanation: "Профилактика продлевает жизнь печатающей головы." },
+        { text: "Какая цена сканирования А4 (цветное, 1 страница)?", options: ["10 ₽", "25 ₽", "50 ₽", "Бесплатно"], correct: "25 ₽", explanation: "По прайсу." },
+        { text: "Что включено в твёрдый переплёт MetalBind за 800₽?", options: ["Обложка + пружина", "Сшивка на нить + кожа", "Твёрдая обложка, металлический канал", "Просто скоба"], correct: "Твёрдая обложка, металлический канал", explanation: "Профессиональный переплёт для дипломов." },
+        { text: "Можно ли дать скидку 25% без администратора, если клиент ругается?", options: ["Да", "Нет, только до 30% с обязательной фиксацией причины и согласованием", "Можно 50%", "Никак"], correct: "Нет, только до 30% с обязательной фиксацией причины и согласованием", explanation: "Скидка более 30% — только администратор." }
+    ];
+
+    // Отображение всех вопросов для изучения
+    function renderStudy() {
+        const container = document.getElementById('questionsContainer');
+        if (!container) return;
+        container.innerHTML = '';
+        allQuestions.forEach((q, idx) => {
+            const item = document.createElement('div');
+            item.className = 'study-item';
+            const qDiv = document.createElement('div');
+            qDiv.className = 'study-question';
+            qDiv.innerHTML = `<span>${idx+1}. ${q.text}</span> <span class="badge-cat">нажми для ответа</span>`;
+            const answerDiv = document.createElement('div');
+            answerDiv.className = 'study-answer';
+            answerDiv.innerHTML = `<strong>✅ Ответ:</strong> ${q.correct}<br><strong>📖 Пояснение:</strong> ${q.explanation || 'Правильный ответ по стандарту А4-Принт.'}`;
+            qDiv.addEventListener('click', () => answerDiv.classList.toggle('show'));
+            item.appendChild(qDiv);
+            item.appendChild(answerDiv);
+            container.appendChild(item);
+        });
+    }
+
+    // ----- Экзамен с таймером -----
+    let currentExamQuestions = [];
+    let userAnswers = [];
+    let questionStatus = [];
+    let timerInterval = null;
+    let timeSeconds = 15 * 60; // 15 минут
+    let examActive = true;
+
+    function shuffleAndPick() {
+        if (timerInterval) clearInterval(timerInterval);
+        const shuffled = [...allQuestions];
+        for (let i = shuffled.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+        }
+        currentExamQuestions = shuffled.slice(0, 10);
+        userAnswers = new Array(10).fill(null);
+        questionStatus = new Array(10).fill(false);
+        timeSeconds = 15 * 60;
+        examActive = true;
+        updateTimerDisplay();
+        startTimer();
+        renderExam();
+    }
+
+    function startTimer() {
+        if (timerInterval) clearInterval(timerInterval);
+        timerInterval = setInterval(() => {
+            if (!examActive) return;
+            if (timeSeconds <= 0) {
+                clearInterval(timerInterval);
+                alert("⏰ Время вышло! Экзамен будет автоматически завершён.");
+                finishExamAndGenerateReport(true);
+            } else {
+                timeSeconds--;
+                updateTimerDisplay();
+            }
+        }, 1000);
+    }
+
+    function updateTimerDisplay() {
+        const mins = Math.floor(timeSeconds / 60);
+        const secs = timeSeconds % 60;
+        const timerDiv = document.getElementById('timerDisplay');
+        if (timerDiv) timerDiv.innerText = `⏱️ ${mins.toString().padStart(2,'0')}:${secs.toString().padStart(2,'0')}`;
+        if (timeSeconds <= 60) timerDiv.style.background = "#e74c3c";
+        else timerDiv.style.background = "#0a2f3f";
+    }
+
+    function renderExam() {
+        const container = document.getElementById('examContainer');
+        if (!container) return;
+        container.innerHTML = '';
+        currentExamQuestions.forEach((q, idx) => {
+            const qDiv = document.createElement('div');
+            qDiv.className = 'exam-question';
+            if (questionStatus[idx] === true) qDiv.classList.add('correct');
+            else if (questionStatus[idx] === false && userAnswers[idx] !== null) qDiv.classList.add('wrong');
+            const qText = document.createElement('div');
+            qText.className = 'question-text';
+            qText.innerHTML = `<strong>${idx+1}. ${q.text}</strong>`;
+            qDiv.appendChild(qText);
+            const optionsDiv = document.createElement('div');
+            optionsDiv.className = 'options';
+            if (q.options && q.options.length) {
+                q.options.forEach(opt => {
+                    const label = document.createElement('label');
+                    label.className = 'option';
+                    const radio = document.createElement('input');
+                    radio.type = 'radio';
+                    radio.name = `exam_q${idx}`;
+                    radio.value = opt;
+                    if (userAnswers[idx] === opt) radio.checked = true;
+                    radio.addEventListener('change', () => {
+                        if (!examActive) return;
+                        userAnswers[idx] = opt;
+                        checkSingleAnswer(idx);
+                        renderExam();
+                        updateExamStats();
+                    });
+                    label.appendChild(radio);
+                    label.appendChild(document.createTextNode(opt));
+                    optionsDiv.appendChild(label);
+                });
+            }
+            qDiv.appendChild(optionsDiv);
+            const customDiv = document.createElement('div');
+            customDiv.className = 'custom-answer';
+            const customInput = document.createElement('input');
+            customInput.placeholder = 'Или напишите свой ответ...';
+            const customBtn = document.createElement('button');
+            customBtn.innerText = 'Ответить';
+            customBtn.className = 'check-btn';
+            customBtn.addEventListener('click', () => {
+                if (!examActive) return;
+                const val = customInput.value.trim();
+                if (val) {
+                    userAnswers[idx] = val;
+                    checkSingleAnswer(idx);
+                    renderExam();
+                    updateExamStats();
+                }
+            });
+            customDiv.appendChild(customInput);
+            customDiv.appendChild(customBtn);
+            qDiv.appendChild(customDiv);
+            const feedbackDiv = document.createElement('div');
+            feedbackDiv.className = 'feedback';
+            if (userAnswers[idx] !== null) {
+                const isCorrect = (userAnswers[idx].toLowerCase().trim() === q.correct.toLowerCase().trim());
+                if (isCorrect) {
+                    feedbackDiv.className = 'feedback correct-feedback';
+                    feedbackDiv.innerHTML = `✅ Верно! ${q.correct}<br><small>${q.explanation || ''}</small>`;
+                } else {
+                    feedbackDiv.className = 'feedback wrong-feedback';
+                    feedbackDiv.innerHTML = `❌ Неверно. Правильно: ${q.correct}<br><small>${q.explanation || ''}</small>`;
+                }
+            }
+            qDiv.appendChild(feedbackDiv);
+            container.appendChild(qDiv);
+        });
+        updateExamStats();
+    }
+
+    function checkSingleAnswer(idx) {
+        const ans = userAnswers[idx];
+        if (!ans) { questionStatus[idx] = false; return; }
+        const isMatch = (ans.toLowerCase().trim() === currentExamQuestions[idx].correct.toLowerCase().trim());
+        questionStatus[idx] = isMatch;
+    }
+
+    function updateExamStats() {
+        const answered = userAnswers.filter(a => a !== null).length;
+        const correct = questionStatus.filter(s => s === true).length;
+        const statsDiv = document.getElementById('examStats');
+        if (statsDiv) statsDiv.innerHTML = `📊 Результат: ${correct} / 10 (отвечено ${answered})`;
+    }
+
+    function finishExamAndGenerateReport(isTimeout = false) {
+        if (!examActive && !isTimeout) return;
+        examActive = false;
+        if (timerInterval) clearInterval(timerInterval);
+        const correctCount = questionStatus.filter(s => s === true).length;
+        const passed = correctCount >= 8;
+        const reportDiv = document.createElement('div');
+        reportDiv.id = "tempReportForPDF";
+        reportDiv.style.padding = "20px";
+        reportDiv.style.fontFamily = "Arial";
+        const now = new Date();
+        reportDiv.innerHTML = `
+            <h1 style="color:#0a2f3f;">📄 Отчёт об экзамене оператора А4-Принт</h1>
+            <p><strong>Дата и время:</strong> ${now.toLocaleString()}</p>
+            <p><strong>Результат:</strong> ${correctCount} / 10 правильных ответов (${Math.round(correctCount/10*100)}%)</p>
+            <p><strong>Статус:</strong> ${passed ? '✅ ЭКЗАМЕН СДАН' : '❌ ЭКЗАМЕН НЕ СДАН (нужно 8 из 10)'}</p>
+            <p><strong>Затраченное время:</strong> ${Math.floor((15*60 - timeSeconds)/60)} мин ${(15*60 - timeSeconds)%60} сек</p>
+            <hr>
+            <h3>Детали по вопросам:</h3>
+            <ol>${currentExamQuestions.map((q,i) => `
+                <li style="margin-bottom:12px;"><strong>${q.text}</strong><br>
+                Ваш ответ: ${userAnswers[i] || 'не дан'} ${questionStatus[i] === true ? '✓ верно' : '✗ неверно'}<br>
+                Правильный ответ: ${q.correct}<br>
+                <span style="color:#555;">Пояснение: ${q.explanation}</span></li>
+            `).join('')}</ol>
+            <hr>
+            <p><em>Данный отчёт подтверждает прохождение обучения в А4-Принт.</em></p>
+        `;
+        document.body.appendChild(reportDiv);
+        html2pdf().from(reportDiv).set({ margin: 0.5, filename: `Экзамен_оператора_${now.toISOString().slice(0,19)}.pdf`, html2canvas: { scale: 2 }, jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' } }).save().then(() => {
+            document.body.removeChild(reportDiv);
+            alert(`Экзамен завершён! Результат: ${correctCount}/10. ${passed ? 'Поздравляем!' : 'Нужно подучить материал. Пересдача через день.'}`);
+        }).catch(() => {
+            alert("Ошибка при создании PDF, но результат: "+correctCount+"/10");
+        });
+    }
+
+    document.getElementById('resetExamBtn')?.addEventListener('click', () => {
+        if (timerInterval) clearInterval(timerInterval);
+        shuffleAndPick();
+    });
+    document.getElementById('submitExamBtn')?.addEventListener('click', () => {
+        if (!examActive) return;
+        finishExamAndGenerateReport(false);
+    });
+    document.getElementById('printExamBtn')?.addEventListener('click', () => {
+        if (currentExamQuestions.length === 0) { alert("Сначала перейдите на вкладку экзамена."); return; }
+        finishExamAndGenerateReport(false);
+    });
+
+    // Навигация
+    const navBtns = document.querySelectorAll('.nav-btn');
+    navBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const target = btn.getAttribute('data-pane');
+            document.querySelectorAll('.content-pane').forEach(p => p.classList.remove('active'));
+            document.getElementById(target).classList.add('active');
+            navBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            if (target === 'paneExam' && currentExamQuestions.length === 0) shuffleAndPick();
+            if (target === 'paneStudy') renderStudy();
+        });
+    });
+    renderStudy();
+    shuffleAndPick();
+</script>
+</body>
+</html>
