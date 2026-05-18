@@ -190,7 +190,7 @@
             1. Заполните все поля анкеты честно и развёрнуто.<br>
             2. Нажмите кнопку <strong>«Сохранить анкету в PDF»</strong> — файл сгенерируется автоматически.<br>
             3. Сохраните PDF на свой компьютер.<br>
-            4. Отправьте полученный PDF-файл на нашу почту: <strong>hr@a4-print.ru</strong> (кнопка ниже поможет открыть письмо).<br>
+            4. Отправьте полученный PDF-файл на нашу почту: <strong>a4-print@bk.ru</strong> (кнопка ниже поможет открыть письмо).<br>
             5. После проверки анкеты мы свяжемся с вами для приглашения на собеседование.
         </div>
         
@@ -327,7 +327,7 @@
             
             <div class="action-buttons">
                 <button type="button" class="btn" id="savePdfBtn">📄 Сохранить анкету в PDF</button>
-                <button type="button" class="btn btn-secondary" id="sendEmailBtn">📧 Отправить PDF на почту hr@a4-print.ru</button>
+                <button type="button" class="btn btn-secondary" id="sendEmailBtn">📧 Отправить PDF на почту a4-print@bk.ru</button>
             </div>
             
             <div class="info-box" style="margin-top: 0;">
@@ -498,7 +498,7 @@
             `Файл с анкетой прикреплён к этому письму.\n\n` +
             `С уважением, ${data.fullname}`
         );
-        window.location.href = `mailto:hr@a4-print.ru?subject=${subject}&body=${body}`;
+        window.location.href = `mailto:a4-print@bk.ru?subject=${subject}&body=${body}`;
         
         const successDiv = document.getElementById('successMessage');
         successDiv.style.display = 'block';
