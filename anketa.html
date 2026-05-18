@@ -189,8 +189,9 @@
             📌 <strong>Как пройти отбор:</strong><br>
             1. Заполните все поля анкеты честно и развёрнуто.<br>
             2. Нажмите кнопку <strong>«Сохранить анкету в PDF»</strong> — файл сгенерируется автоматически.<br>
-            3. Отправьте полученный PDF-файл на нашу почту: <strong>hr@a4-print.ru</strong> (кнопка ниже откроет письмо с файлом).<br>
-            4. После проверки анкеты мы свяжемся с вами для приглашения на собеседование.
+            3. Сохраните PDF на свой компьютер.<br>
+            4. Отправьте полученный PDF-файл на нашу почту: <strong>hr@a4-print.ru</strong> (кнопка ниже поможет открыть письмо).<br>
+            5. После проверки анкеты мы свяжемся с вами для приглашения на собеседование.
         </div>
         
         <div id="successMessage" class="success-message"></div>
@@ -330,7 +331,7 @@
             </div>
             
             <div class="info-box" style="margin-top: 0;">
-                💡 <strong>После сохранения PDF:</strong> нажмите на вторую кнопку — откроется письмо с уже прикреплённым файлом. Останется только нажать «Отправить».
+                💡 <strong>После сохранения PDF:</strong> нажмите на вторую кнопку — откроется письмо. Прикрепите к нему сохранённый PDF-файл и отправьте.
             </div>
         </form>
     </div>
@@ -340,7 +341,6 @@
 </div>
 
 <script>
-    // Функция для сбора всех данных из формы
     function getFormData() {
         return {
             fullname: document.getElementById('fullname')?.value.trim() || "не указано",
@@ -366,7 +366,6 @@
         };
     }
     
-    // Проверка обязательных полей
     function validateRequiredFields() {
         let fullname = document.getElementById('fullname')?.value.trim();
         let phone = document.getElementById('phone')?.value.trim();
@@ -378,7 +377,6 @@
         return true;
     }
     
-    // Генерация HTML для PDF
     function generateReportHTML(data) {
         const currentDate = new Date().toLocaleString('ru-RU');
         return `
@@ -437,14 +435,12 @@
         `;
     }
     
-    // Сохранение в PDF и возврат Blob
     async function generatePdfBlob() {
         if (!validateRequiredFields()) return null;
         
         const data = getFormData();
         const html = generateReportHTML(data);
         
-        // Создаём временный элемент для рендера PDF
         const tempDiv = document.createElement('div');
         tempDiv.style.position = 'absolute';
         tempDiv.style.left = '-9999px';
@@ -470,7 +466,6 @@
         }
     }
     
-    // Кнопка "Сохранить в PDF" — скачивает файл на компьютер кандидата
     document.getElementById('savePdfBtn')?.addEventListener('click', async () => {
         const blob = await generatePdfBlob();
         if (blob) {
@@ -493,47 +488,25 @@
         }
     });
     
-    // Кнопка "Отправить на почту" — открывает письмо с уже прикреплённым PDF
     document.getElementById('sendEmailBtn')?.addEventListener('click', async () => {
-        const blob = await generatePdfBlob();
-        if (!blob) return;
-        
         const data = getFormData();
-        const fileName = `Анкета_${data.fullname.replace(/\s+/g, '_')}.pdf`;
+        const subject = encodeURIComponent(`Анкета кандидата: ${data.fullname}`);
+        const body = encodeURIComponent(
+            `Здравствуйте!\n\nЯ, ${data.fullname}, направляю заполненную анкету на должность оператора копировального центра.\n\n` +
+            `Мой телефон: ${data.phone}\n` +
+            `Мой email: ${data.email}\n\n` +
+            `Файл с анкетой прикреплён к этому письму.\n\n` +
+            `С уважением, ${data.fullname}`
+        );
+        window.location.href = `mailto:hr@a4-print.ru?subject=${subject}&body=${body}`;
         
-        // Создаём временную ссылку для вложения (через data URI не получится, используем FileReader)
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            const base64 = e.target.result.split(',')[1];
-            // Формируем mailto: с вложением (только в некоторых почтовых клиентах работает)
-            // Более надёжный способ: открыть письмо с инструкцией, а файл кандидат прикрепит сам.
-            // Но сделаем максимально удобно: откроем письмо с темой и телом, а файл кандидат прикрепит из скачанного.
-            const subject = encodeURIComponent(`Анкета кандидата: ${data.fullname}`);
-            const body = encodeURIComponent(
-                `Здравствуйте!\n\nЯ, ${data.fullname}, направляю заполненную анкету на должность оператора копировального центра.\n\n` +
-                `Мой телефон: ${data.phone}\n` +
-                `Мой email: ${data.email}\n\n` +
-                `Файл с анкетой прикреплён к этому письму (сохраните его предварительно на компьютер).\n\n` +
-                `С уважением, ${data.fullname}`
-            );
-            window.location.href = `mailto:hr@a4-print.ru?subject=${subject}&body=${body}`;
-            
-            const successDiv = document.getElementById('successMessage');
-            successDiv.style.display = 'block';
-            successDiv.innerHTML = '📧 Открыто окно почтовой программы! Прикрепите к письму сохранённый ранее PDF-файл и нажмите "Отправить".<br><br>✅ Если файл ещё не сохранён — нажмите сначала первую кнопку.';
-            setTimeout(() => {
-                successDiv.style.display = 'none';
-            }, 8000);
-        };
-        reader.readAsDataURL(blob);
+        const successDiv = document.getElementById('successMessage');
+        successDiv.style.display = 'block';
+        successDiv.innerHTML = '📧 Открыто окно почтовой программы! Прикрепите к письму сохранённый ранее PDF-файл и нажмите "Отправить".';
+        setTimeout(() => {
+            successDiv.style.display = 'none';
+        }, 8000);
     });
-    
-    // Установка даты по умолчанию для полей (необязательно)
-    // Можно добавить placeholder для readyDate
-    const readyDateInput = document.getElementById('readyDate');
-    if (readyDateInput && !readyDateInput.value) {
-        // можно оставить пустым
-    }
 </script>
 </body>
 </html>
