@@ -24,7 +24,6 @@
             box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
             overflow: hidden;
         }
-        /* Шапка с логотипом */
         .header {
             background: #ffffff;
             padding: 24px 32px 16px 32px;
@@ -47,12 +46,9 @@
             margin-top: 6px;
             font-size: 0.95rem;
         }
-        
         .content {
             padding: 28px 36px;
         }
-        
-        /* Стили для карточек и полей */
         h2 {
             color: #0f2b3d;
             font-size: 1.4rem;
@@ -64,7 +60,6 @@
         h2:first-of-type {
             margin-top: 0;
         }
-        
         .form-card {
             background: #ffffff;
             border: 1px solid #eef2f8;
@@ -76,7 +71,6 @@
         .form-card:hover {
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
         }
-        
         .form-group {
             margin-bottom: 20px;
         }
@@ -110,7 +104,6 @@
             min-height: 85px;
             resize: vertical;
         }
-        
         .radio-group {
             display: flex;
             gap: 24px;
@@ -130,12 +123,10 @@
             height: 18px;
             margin: 0;
         }
-        
         .required-star {
             color: #e74c3c;
             margin-left: 4px;
         }
-        
         .btn {
             border: none;
             padding: 12px 28px;
@@ -162,7 +153,6 @@
         .btn-secondary:hover {
             background: #e2e8f0;
         }
-        
         .action-buttons {
             display: flex;
             gap: 16px;
@@ -170,7 +160,6 @@
             margin: 32px 0 24px;
             flex-wrap: wrap;
         }
-        
         .info-box {
             background: #f8fafc;
             border-radius: 20px;
@@ -180,7 +169,6 @@
             border: 1px solid #eef2f8;
             color: #2c4c6c;
         }
-        
         .success-message {
             background: #e6f7e6;
             color: #2e6b2e;
@@ -190,7 +178,6 @@
             display: none;
             font-size: 0.9rem;
         }
-        
         footer {
             background: #fafcfc;
             text-align: center;
@@ -199,13 +186,11 @@
             color: #7e8c9e;
             border-top: 1px solid #eef2f8;
         }
-        
         hr {
             margin: 20px 0;
             border: none;
             border-top: 1px solid #eef2f8;
         }
-        
         @media (max-width: 700px) {
             .content {
                 padding: 20px;
@@ -221,7 +206,6 @@
                 text-align: center;
             }
         }
-        
         @media print {
             body {
                 background: white;
@@ -236,7 +220,6 @@
             }
         }
     </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 <body>
 <div class="container">
@@ -409,6 +392,19 @@
 
 <script>
     function getFormData() {
+        // Получаем выбранные значения radio групп
+        let studioValue = "не выбрано";
+        const studioRadios = document.querySelectorAll('input[name="studio"]');
+        for (let radio of studioRadios) {
+            if (radio.checked) { studioValue = radio.value; break; }
+        }
+        
+        let cartridgeValue = "не выбрано";
+        const cartridgeRadios = document.querySelectorAll('input[name="cartridge"]');
+        for (let radio of cartridgeRadios) {
+            if (radio.checked) { cartridgeValue = radio.value; break; }
+        }
+        
         return {
             fullname: document.getElementById('fullname')?.value.trim() || "не указано",
             phone: document.getElementById('phone')?.value.trim() || "не указано",
@@ -416,9 +412,9 @@
             city: document.getElementById('city')?.value.trim() || "не указано",
             source: document.getElementById('source')?.value || "не выбрано",
             expEquipment: document.getElementById('expEquipment')?.value.trim() || "—",
-            studio: document.querySelector('input[name="studio"]:checked')?.value || "не выбрано",
+            studio: studioValue,
             cropBlur: document.getElementById('cropBlur')?.value.trim() || "—",
-            cartridge: document.querySelector('input[name="cartridge"]:checked')?.value || "не выбрано",
+            cartridge: cartridgeValue,
             psycho1: document.getElementById('psycho1')?.value.trim() || "—",
             psycho2: document.getElementById('psycho2')?.value.trim() || "—",
             psycho3: document.getElementById('psycho3')?.value.trim() || "—",
@@ -473,27 +469,27 @@
         </div>
         
         <h3>🖨️ Опыт работы и технические навыки</h3>
-        <div class="field"><div class="label">Оборудование (опыт):</div><div class="value">${data.expEquipment}</div></div>
-        <div class="field"><div class="label">Программа Studio:</div><div class="value">${data.studio}</div></div>
-        <div class="field"><div class="label">Кадрирование / растушёвка:</div><div class="value">${data.cropBlur}</div></div>
-        <div class="field"><div class="label">Заправка / чистка принтера:</div><div class="value">${data.cartridge}</div></div>
+        <div class="field"><div class="label">Оборудование (опыт):</div><div class="value">${escapeHtml(data.expEquipment)}</div></div>
+        <div class="field"><div class="label">Программа Studio:</div><div class="value">${escapeHtml(data.studio)}</div></div>
+        <div class="field"><div class="label">Кадрирование / растушёвка:</div><div class="value">${escapeHtml(data.cropBlur)}</div></div>
+        <div class="field"><div class="label">Заправка / чистка принтера:</div><div class="value">${escapeHtml(data.cartridge)}</div></div>
         
         <h3>🧠 Работа с клиентами (психология)</h3>
-        <div class="field"><div class="label">Клиент недоволен фото:</div><div class="value">${data.psycho1}</div></div>
-        <div class="field"><div class="label">Отказ в ретуши:</div><div class="value">${data.psycho2}</div></div>
-        <div class="field"><div class="label">Нервный клиент:</div><div class="value">${data.psycho3}</div></div>
-        <div class="field"><div class="label">Конфликтная ситуация:</div><div class="value">${data.psycho4}</div></div>
-        <div class="field"><div class="label">Тактичный апселл:</div><div class="value">${data.psycho5}</div></div>
+        <div class="field"><div class="label">Клиент недоволен фото:</div><div class="value">${escapeHtml(data.psycho1)}</div></div>
+        <div class="field"><div class="label">Отказ в ретуши:</div><div class="value">${escapeHtml(data.psycho2)}</div></div>
+        <div class="field"><div class="label">Нервный клиент:</div><div class="value">${escapeHtml(data.psycho3)}</div></div>
+        <div class="field"><div class="label">Конфликтная ситуация:</div><div class="value">${escapeHtml(data.psycho4)}</div></div>
+        <div class="field"><div class="label">Тактичный апселл:</div><div class="value">${escapeHtml(data.psycho5)}</div></div>
         
         <h3>📌 Технический тест</h3>
-        <div class="field"><div class="label">Полосы на Epson L805:</div><div class="value">${data.tech1}</div></div>
-        <div class="field"><div class="label">Режим «Копир. удостовер.» в Xerox:</div><div class="value">${data.tech2}</div></div>
-        <div class="field"><div class="label">Требования к фото на паспорт РФ:</div><div class="value">${data.tech3}</div></div>
+        <div class="field"><div class="label">Полосы на Epson L805:</div><div class="value">${escapeHtml(data.tech1)}</div></div>
+        <div class="field"><div class="label">Режим «Копир. удостовер.» в Xerox:</div><div class="value">${escapeHtml(data.tech2)}</div></div>
+        <div class="field"><div class="label">Требования к фото на паспорт РФ:</div><div class="value">${escapeHtml(data.tech3)}</div></div>
         
         <h3>📝 Дополнительная информация</h3>
-        <div class="field"><div class="label">Мотивация:</div><div class="value">${data.motivation}</div></div>
-        <div class="field"><div class="label">Ожидания по зарплате:</div><div class="value">${data.salary}</div></div>
-        <div class="field"><div class="label">Готовность приступить:</div><div class="value">${data.readyDate}</div></div>
+        <div class="field"><div class="label">Мотивация:</div><div class="value">${escapeHtml(data.motivation)}</div></div>
+        <div class="field"><div class="label">Ожидания по зарплате:</div><div class="value">${escapeHtml(data.salary)}</div></div>
+        <div class="field"><div class="label">Готовность приступить:</div><div class="value">${escapeHtml(data.readyDate)}</div></div>
         
         <hr>
         <p><em>Анкета заполнена кандидатом самостоятельно. Достоверность информации проверяется на собеседовании.</em></p>
@@ -502,68 +498,66 @@
         `;
     }
     
-    async function generatePdfBlob() {
-        if (!validateRequiredFields()) return null;
-        
-        const data = getFormData();
-        const html = generateReportHTML(data);
-        
-        const tempDiv = document.createElement('div');
-        tempDiv.style.position = 'absolute';
-        tempDiv.style.left = '-9999px';
-        tempDiv.innerHTML = html;
-        document.body.appendChild(tempDiv);
-        
-        try {
-            const opt = {
-                margin: [0.5, 0.5, 0.5, 0.5],
-                filename: `Анкета_${data.fullname.replace(/\s+/g, '_')}.pdf`,
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2, useCORS: false },
-                jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
-            };
-            const pdfBlob = await html2pdf().set(opt).from(tempDiv).outputPdf('blob');
-            document.body.removeChild(tempDiv);
-            return pdfBlob;
-        } catch (error) {
-            console.error('PDF generation error:', error);
-            document.body.removeChild(tempDiv);
-            alert('Ошибка при создании PDF. Попробуйте ещё раз.');
-            return null;
-        }
+    // Функция для экранирования спецсимволов
+    function escapeHtml(str) {
+        if (!str) return "";
+        return str
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
     }
     
-    document.getElementById('savePdfBtn')?.addEventListener('click', async () => {
-        const blob = await generatePdfBlob();
-        if (blob) {
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            const data = getFormData();
-            a.href = url;
-            a.download = `Анкета_${data.fullname.replace(/\s+/g, '_')}.pdf`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-            
-            const successDiv = document.getElementById('successMessage');
-            successDiv.style.display = 'block';
-            successDiv.innerHTML = '✅ PDF-файл сохранён на ваш компьютер! Теперь нажмите кнопку ниже, чтобы отправить его нам на почту.';
-            setTimeout(() => {
-                successDiv.style.display = 'none';
-            }, 5000);
-        }
-    });
-    
-    document.getElementById('sendEmailBtn')?.addEventListener('click', async () => {
+    // Сохранение PDF с использованием iframe (более надёжный способ)
+    async function saveAsPDF() {
+        if (!validateRequiredFields()) return;
+        
         const data = getFormData();
-        const subject = encodeURIComponent(`Анкета кандидата: ${data.fullname}`);
+        const htmlContent = generateReportHTML(data);
+        
+        // Создаём Blob с HTML-содержимым
+        const blob = new Blob([htmlContent], { type: 'text/html' });
+        const url = URL.createObjectURL(blob);
+        
+        // Открываем в новом окне и вызываем печать (сохранение в PDF)
+        const printWindow = window.open(url, '_blank');
+        if (printWindow) {
+            printWindow.onload = function() {
+                setTimeout(() => {
+                    printWindow.print();
+                }, 500);
+            };
+        } else {
+            alert("Пожалуйста, разрешите всплывающие окна для этого сайта, чтобы сохранить PDF.");
+        }
+        
+        setTimeout(() => {
+            URL.revokeObjectURL(url);
+        }, 10000);
+        
+        const successDiv = document.getElementById('successMessage');
+        successDiv.style.display = 'block';
+        successDiv.innerHTML = '✅ Анкета открыта в новом окне! Нажмите "Сохранить как PDF" (Ctrl+P) и сохраните файл на компьютер.';
+        setTimeout(() => {
+            successDiv.style.display = 'none';
+        }, 6000);
+    }
+    
+    document.getElementById('savePdfBtn')?.addEventListener('click', saveAsPDF);
+    
+    document.getElementById('sendEmailBtn')?.addEventListener('click', () => {
+        const fullname = document.getElementById('fullname')?.value.trim() || "кандидат";
+        const phone = document.getElementById('phone')?.value.trim() || "";
+        const email = document.getElementById('email')?.value.trim() || "";
+        
+        const subject = encodeURIComponent(`Анкета кандидата: ${fullname}`);
         const body = encodeURIComponent(
-            `Здравствуйте!\n\nЯ, ${data.fullname}, направляю заполненную анкету на должность оператора копировального центра.\n\n` +
-            `Мой телефон: ${data.phone}\n` +
-            `Мой email: ${data.email}\n\n` +
+            `Здравствуйте!\n\nЯ, ${fullname}, направляю заполненную анкету на должность оператора копировального центра.\n\n` +
+            `Мой телефон: ${phone}\n` +
+            `Мой email: ${email}\n\n` +
             `Файл с анкетой прикреплён к этому письму.\n\n` +
-            `С уважением, ${data.fullname}`
+            `С уважением, ${fullname}`
         );
         window.location.href = `mailto:a4-print@bk.ru?subject=${subject}&body=${body}`;
         
