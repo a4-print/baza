@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>А4-Принт | Анкета для кандидата на должность оператора</title>
+    <title>А4-Принт | Анкета кандидата</title>
     <style>
         * {
             margin: 0;
@@ -11,44 +11,70 @@
             box-sizing: border-box;
         }
         body {
-            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
-            background: #eef2f8;
-            color: #1e2a3a;
-            padding: 20px;
+            font-family: 'Segoe UI', Roboto, system-ui, -apple-system, sans-serif;
+            background: #f5f7fa;
+            color: #1e293b;
+            padding: 24px;
         }
         .container {
             max-width: 1000px;
             margin: 0 auto;
-            background: white;
-            border-radius: 32px;
-            box-shadow: 0 20px 35px rgba(0,0,0,0.1);
+            background: #ffffff;
+            border-radius: 28px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
             overflow: hidden;
         }
+        /* Шапка с логотипом */
         .header {
-            background: linear-gradient(135deg, #0a2f3f 0%, #1a5a6e 100%);
-            color: white;
-            padding: 25px 32px;
+            background: #ffffff;
+            padding: 24px 32px 16px 32px;
             text-align: center;
+            border-bottom: 1px solid #eef2f8;
         }
-        .header h1 { font-size: 1.8rem; margin-bottom: 8px; }
-        .header p { opacity: 0.9; }
+        .logo {
+            max-width: 180px;
+            height: auto;
+            display: inline-block;
+        }
+        .header h1 {
+            font-size: 1.6rem;
+            color: #0f2b3d;
+            margin-top: 12px;
+            font-weight: 600;
+        }
+        .header p {
+            color: #5b6e8c;
+            margin-top: 6px;
+            font-size: 0.95rem;
+        }
         
         .content {
-            padding: 30px 35px;
+            padding: 28px 36px;
         }
         
+        /* Стили для карточек и полей */
         h2 {
-            color: #0a2f3f;
-            border-left: 6px solid #f39c12;
-            padding-left: 18px;
-            margin: 25px 0 20px 0;
+            color: #0f2b3d;
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin: 28px 0 18px 0;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #eef2f8;
         }
-        h2:first-of-type { margin-top: 0; }
+        h2:first-of-type {
+            margin-top: 0;
+        }
         
-        h3 {
-            margin: 20px 0 12px;
-            color: #1e5a74;
-            font-size: 1.2rem;
+        .form-card {
+            background: #ffffff;
+            border: 1px solid #eef2f8;
+            border-radius: 20px;
+            padding: 20px 24px;
+            margin-bottom: 24px;
+            transition: box-shadow 0.2s ease;
+        }
+        .form-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
         }
         
         .form-group {
@@ -56,29 +82,38 @@
         }
         .form-group label {
             display: block;
-            font-weight: 700;
+            font-weight: 600;
             margin-bottom: 8px;
-            color: #0a2f3f;
+            color: #1e2f44;
+            font-size: 0.9rem;
         }
-        .form-group input, .form-group textarea, .form-group select {
+        .form-group input, 
+        .form-group textarea, 
+        .form-group select {
             width: 100%;
             padding: 12px 16px;
-            border-radius: 16px;
-            border: 1px solid #cbd5e1;
-            font-size: 1rem;
-            background: white;
+            border-radius: 14px;
+            border: 1px solid #e2e8f0;
+            font-size: 0.95rem;
+            background: #ffffff;
             transition: 0.2s;
+            font-family: inherit;
         }
-        .form-group input:focus, .form-group textarea:focus {
+        .form-group input:focus, 
+        .form-group textarea:focus,
+        .form-group select:focus {
             outline: none;
-            border-color: #f39c12;
-            box-shadow: 0 0 0 3px rgba(243,156,18,0.1);
+            border-color: #f5a623;
+            box-shadow: 0 0 0 3px rgba(245, 166, 35, 0.08);
         }
-        .form-group textarea { min-height: 80px; resize: vertical; }
+        .form-group textarea {
+            min-height: 85px;
+            resize: vertical;
+        }
         
         .radio-group {
             display: flex;
-            gap: 25px;
+            gap: 24px;
             flex-wrap: wrap;
             margin-top: 8px;
         }
@@ -86,12 +121,14 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            font-weight: normal;
+            font-weight: 400;
             cursor: pointer;
+            font-size: 0.9rem;
         }
         .radio-group input {
-            width: auto;
-            margin-right: 5px;
+            width: 18px;
+            height: 18px;
+            margin: 0;
         }
         
         .required-star {
@@ -100,78 +137,103 @@
         }
         
         .btn {
-            background: #f39c12;
-            color: #1e2a3a;
             border: none;
-            padding: 14px 28px;
-            border-radius: 50px;
-            font-weight: bold;
-            font-size: 1rem;
+            padding: 12px 28px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.95rem;
             cursor: pointer;
             transition: 0.2s;
             display: inline-block;
+            text-align: center;
         }
-        .btn:hover {
-            background: #e67e22;
-            transform: scale(1.02);
+        .btn-primary {
+            background: #f5a623;
+            color: #1e2a3a;
+        }
+        .btn-primary:hover {
+            background: #e69518;
+            transform: translateY(-1px);
         }
         .btn-secondary {
-            background: #1e5a74;
-            color: white;
+            background: #eef2f8;
+            color: #1e5a74;
         }
         .btn-secondary:hover {
-            background: #0a2f3f;
+            background: #e2e8f0;
         }
         
         .action-buttons {
             display: flex;
-            gap: 15px;
+            gap: 16px;
             justify-content: center;
-            margin: 30px 0 20px;
+            margin: 32px 0 24px;
             flex-wrap: wrap;
         }
         
         .info-box {
-            background: #fef9e6;
-            border-left: 5px solid #f39c12;
-            padding: 15px 20px;
-            border-radius: 16px;
+            background: #f8fafc;
+            border-radius: 20px;
+            padding: 18px 22px;
             margin: 20px 0;
             font-size: 0.9rem;
+            border: 1px solid #eef2f8;
+            color: #2c4c6c;
         }
         
         .success-message {
-            background: #d4edda;
-            color: #155724;
+            background: #e6f7e6;
+            color: #2e6b2e;
             padding: 12px 20px;
             border-radius: 16px;
-            margin: 15px 0;
+            margin: 16px 0;
             display: none;
+            font-size: 0.9rem;
         }
         
         footer {
-            background: #eef2f5;
+            background: #fafcfc;
             text-align: center;
-            padding: 16px;
+            padding: 18px;
             font-size: 0.75rem;
-            color: #6c8ea0;
+            color: #7e8c9e;
+            border-top: 1px solid #eef2f8;
         }
         
         hr {
             margin: 20px 0;
-            border-color: #e2edf2;
+            border: none;
+            border-top: 1px solid #eef2f8;
         }
         
         @media (max-width: 700px) {
-            .content { padding: 20px; }
-            .action-buttons { flex-direction: column; align-items: stretch; }
-            .btn { text-align: center; }
+            .content {
+                padding: 20px;
+            }
+            .form-card {
+                padding: 16px;
+            }
+            .action-buttons {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .btn {
+                text-align: center;
+            }
         }
         
         @media print {
-            body { background: white; padding: 0; }
-            .action-buttons, .info-box { display: none; }
-            .container { box-shadow: none; }
+            body {
+                background: white;
+                padding: 0;
+            }
+            .action-buttons, .info-box, .btn {
+                display: none;
+            }
+            .container {
+                box-shadow: none;
+                border-radius: 0;
+            }
         }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -179,9 +241,9 @@
 <body>
 <div class="container">
     <div class="header">
-        <h1>📋 А4‑ПРИНТ</h1>
-        <p>Анкета для кандидата на должность <strong>оператора копировального центра</strong></p>
-        <p style="font-size: 0.85rem; margin-top: 8px;">Заполните все поля, затем сохраните анкету в PDF и отправьте нам на почту</p>
+        <img src="https://github.com/a4-print/baza/blob/bf38bc1ea16c1c1d41a879527b985fcdce52450b/images/logo_soc2.png?raw=true" alt="А4-Принт" class="logo">
+        <h1>Анкета кандидата</h1>
+        <p>Оператор копировального центра</p>
     </div>
     
     <div class="content">
@@ -198,135 +260,140 @@
         
         <form id="candidateForm">
             <h2>📌 Личные данные</h2>
-            
-            <div class="form-group">
-                <label>ФИО полностью <span class="required-star">*</span></label>
-                <input type="text" id="fullname" placeholder="Иванов Иван Иванович" required>
-            </div>
-            
-            <div class="form-group">
-                <label>Телефон (для связи) <span class="required-star">*</span></label>
-                <input type="tel" id="phone" placeholder="+7 999 123-45-67" required>
-            </div>
-            
-            <div class="form-group">
-                <label>Email <span class="required-star">*</span></label>
-                <input type="email" id="email" placeholder="ivanov@example.com" required>
-            </div>
-            
-            <div class="form-group">
-                <label>Город проживания</label>
-                <input type="text" id="city" placeholder="Москва, Санкт-Петербург...">
-            </div>
-            
-            <div class="form-group">
-                <label>Откуда узнали о вакансии?</label>
-                <select id="source">
-                    <option value="">Выберите...</option>
-                    <option value="Авито">Авито</option>
-                    <option value="HH.ru">HH.ru</option>
-                    <option value="Работа.ру">Работа.ру</option>
-                    <option value="Друзья/знакомые">Друзья/знакомые</option>
-                    <option value="Другое">Другое</option>
-                </select>
-            </div>
-            
-            <h2>🖨️ Опыт работы и технические навыки</h2>
-            
-            <div class="form-group">
-                <label>1. С каким оборудованием вы работали ранее? (МФУ, принтеры, плоттеры)</label>
-                <textarea id="expEquipment" placeholder="Например: Xerox WorkCentre 7220, Epson L805, Canon, HP..."></textarea>
-            </div>
-            
-            <div class="form-group">
-                <label>2. Работали ли с программой Studio (фото на документы) или аналогами?</label>
-                <div class="radio-group">
-                    <label><input type="radio" name="studio" value="Да, профессионально"> Да, профессионально</label>
-                    <label><input type="radio" name="studio" value="Да, немного"> Да, немного</label>
-                    <label><input type="radio" name="studio" value="Нет, но быстро учусь"> Нет, но быстро учусь</label>
-                    <label><input type="radio" name="studio" value="Нет опыта"> Нет опыта</label>
+            <div class="form-card">
+                <div class="form-group">
+                    <label>ФИО полностью <span class="required-star">*</span></label>
+                    <input type="text" id="fullname" placeholder="Иванов Иван Иванович" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Телефон (для связи) <span class="required-star">*</span></label>
+                    <input type="tel" id="phone" placeholder="+7 999 123-45-67" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Email <span class="required-star">*</span></label>
+                    <input type="email" id="email" placeholder="ivanov@example.com" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Город проживания</label>
+                    <input type="text" id="city" placeholder="Москва, Санкт-Петербург...">
+                </div>
+                
+                <div class="form-group">
+                    <label>Откуда узнали о вакансии?</label>
+                    <select id="source">
+                        <option value="">Выберите...</option>
+                        <option value="Авито">Авито</option>
+                        <option value="HH.ru">HH.ru</option>
+                        <option value="Работа.ру">Работа.ру</option>
+                        <option value="Друзья/знакомые">Друзья/знакомые</option>
+                        <option value="Другое">Другое</option>
+                    </select>
                 </div>
             </div>
             
-            <div class="form-group">
-                <label>3. Что такое «кадрирование» и «растушёвка» в фоторедакторе?</label>
-                <textarea id="cropBlur" placeholder="Напишите своими словами..."></textarea>
-            </div>
-            
-            <div class="form-group">
-                <label>4. Умеете ли заправлять/чистить принтер или менять картриджи?</label>
-                <div class="radio-group">
-                    <label><input type="radio" name="cartridge" value="Да, уверенно"> Да, уверенно</label>
-                    <label><input type="radio" name="cartridge" value="Теоретически знаю"> Теоретически знаю</label>
-                    <label><input type="radio" name="cartridge" value="Нет, но готов научиться"> Нет, но готов(а) научиться</label>
+            <h2>🖨️ Опыт работы и технические навыки</h2>
+            <div class="form-card">
+                <div class="form-group">
+                    <label>1. С каким оборудованием вы работали ранее? (МФУ, принтеры, плоттеры)</label>
+                    <textarea id="expEquipment" placeholder="Например: Xerox WorkCentre 7220, Epson L805, Canon, HP..."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>2. Работали ли с программой Studio (фото на документы) или аналогами?</label>
+                    <div class="radio-group">
+                        <label><input type="radio" name="studio" value="Да, профессионально"> Да, профессионально</label>
+                        <label><input type="radio" name="studio" value="Да, немного"> Да, немного</label>
+                        <label><input type="radio" name="studio" value="Нет, но быстро учусь"> Нет, но быстро учусь</label>
+                        <label><input type="radio" name="studio" value="Нет опыта"> Нет опыта</label>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>3. Что такое «кадрирование» и «растушёвка» в фоторедакторе?</label>
+                    <textarea id="cropBlur" placeholder="Напишите своими словами..."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>4. Умеете ли заправлять/чистить принтер или менять картриджи?</label>
+                    <div class="radio-group">
+                        <label><input type="radio" name="cartridge" value="Да, уверенно"> Да, уверенно</label>
+                        <label><input type="radio" name="cartridge" value="Теоретически знаю"> Теоретически знаю</label>
+                        <label><input type="radio" name="cartridge" value="Нет, но готов научиться"> Нет, но готов(а) научиться</label>
+                    </div>
                 </div>
             </div>
             
             <h2>🧠 Психологические вопросы (работа с клиентами)</h2>
-            
-            <div class="form-group">
-                <label>5. Клиент недоволен своим фото на документы («я выгляжу усталым/полным»). Ваши действия?</label>
-                <textarea id="psycho1" placeholder="Опишите вашу реакцию и фразы..."></textarea>
-            </div>
-            
-            <div class="form-group">
-                <label>6. Клиент просит «подретушировать» прыщик на фото, хотя по правилам ретушь запрещена. Как объясните отказ?</label>
-                <textarea id="psycho2" placeholder="Напишите аргументы..."></textarea>
-            </div>
-            
-            <div class="form-group">
-                <label>7. В копировальный центр приходит очень нервный клиент, который торопится. Как вы его успокоите и организуете работу?</label>
-                <textarea id="psycho3" placeholder="Опишите ваш алгоритм действий..."></textarea>
-            </div>
-            
-            <div class="form-group">
-                <label>8. Конфликтная ситуация: клиент кричит, что в прошлый раз у вас испортили документы, хотя вы его не помните. Ваш план действий?</label>
-                <textarea id="psycho4" placeholder="Извиниться? Предложить скидку? Позвать администратора?..."></textarea>
-            </div>
-            
-            <div class="form-group">
-                <label>9. Как вы тактично предложите клиенту дополнительную услугу (например, ламинацию или второй комплект фото)?</label>
-                <textarea id="psycho5" placeholder="Напишите пример фразы..."></textarea>
+            <div class="form-card">
+                <div class="form-group">
+                    <label>5. Клиент недоволен своим фото на документы («я выгляжу усталым/полным»). Ваши действия?</label>
+                    <textarea id="psycho1" placeholder="Опишите вашу реакцию и фразы..."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>6. Клиент просит «подретушировать» прыщик на фото, хотя по правилам ретушь запрещена. Как объясните отказ?</label>
+                    <textarea id="psycho2" placeholder="Напишите аргументы..."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>7. В копировальный центр приходит очень нервный клиент, который торопится. Как вы его успокоите и организуете работу?</label>
+                    <textarea id="psycho3" placeholder="Опишите ваш алгоритм действий..."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>8. Конфликтная ситуация: клиент кричит, что в прошлый раз у вас испортили документы, хотя вы его не помните. Ваш план действий?</label>
+                    <textarea id="psycho4" placeholder="Извиниться? Предложить скидку? Позвать администратора?..."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>9. Как вы тактично предложите клиенту дополнительную услугу (например, ламинацию или второй комплект фото)?</label>
+                    <textarea id="psycho5" placeholder="Напишите пример фразы..."></textarea>
+                </div>
             </div>
             
             <h2>📌 Короткий технический тест</h2>
-            
-            <div class="form-group">
-                <label>10. Что делать, если на принтере Epson L805 появились полосы при печати?</label>
-                <textarea id="tech1" placeholder="Ваш ответ..."></textarea>
-            </div>
-            
-            <div class="form-group">
-                <label>11. Для чего в Xerox WorkCentre 7220 используется режим «Копир. удостовер.» (ID Card Copy)?</label>
-                <textarea id="tech2" placeholder="Ваш ответ..."></textarea>
-            </div>
-            
-            <div class="form-group">
-                <label>12. Перечислите основные требования к фотографии на паспорт РФ (анфас, ретушь, очки, головной убор).</label>
-                <textarea id="tech3" placeholder="Перечислите..."></textarea>
+            <div class="form-card">
+                <div class="form-group">
+                    <label>10. Что делать, если на принтере Epson L805 появились полосы при печати?</label>
+                    <textarea id="tech1" placeholder="Ваш ответ..."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>11. Для чего в Xerox WorkCentre 7220 используется режим «Копир. удостовер.» (ID Card Copy)?</label>
+                    <textarea id="tech2" placeholder="Ваш ответ..."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>12. Перечислите основные требования к фотографии на паспорт РФ (анфас, ретушь, очки, головной убор).</label>
+                    <textarea id="tech3" placeholder="Перечислите..."></textarea>
+                </div>
             </div>
             
             <h2>📝 Дополнительно</h2>
-            
-            <div class="form-group">
-                <label>13. Почему вы хотите работать у нас? Что вас привлекает в должности оператора копировального центра?</label>
-                <textarea id="motivation" placeholder="Расскажите о себе..."></textarea>
-            </div>
-            
-            <div class="form-group">
-                <label>14. Ваши ожидания по зарплате (в месяц, на руки):</label>
-                <input type="text" id="salary" placeholder="например: от 70 000 ₽">
-            </div>
-            
-            <div class="form-group">
-                <label>15. Когда готовы приступить к работе?</label>
-                <input type="text" id="readyDate" placeholder="например: с 1 июня, через 2 недели">
+            <div class="form-card">
+                <div class="form-group">
+                    <label>13. Почему вы хотите работать у нас? Что вас привлекает в должности оператора копировального центра?</label>
+                    <textarea id="motivation" placeholder="Расскажите о себе..."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>14. Ваши ожидания по зарплате (в месяц, на руки):</label>
+                    <input type="text" id="salary" placeholder="например: от 70 000 ₽">
+                </div>
+                
+                <div class="form-group">
+                    <label>15. Когда готовы приступить к работе?</label>
+                    <input type="text" id="readyDate" placeholder="например: с 1 июня, через 2 недели">
+                </div>
             </div>
             
             <hr>
             
             <div class="action-buttons">
-                <button type="button" class="btn" id="savePdfBtn">📄 Сохранить анкету в PDF</button>
+                <button type="button" class="btn btn-primary" id="savePdfBtn">📄 Сохранить анкету в PDF</button>
                 <button type="button" class="btn btn-secondary" id="sendEmailBtn">📧 Отправить PDF на почту a4-print@bk.ru</button>
             </div>
             
@@ -385,8 +452,8 @@
         <head><meta charset="UTF-8"><title>Анкета кандидата ${data.fullname}</title>
         <style>
             body { font-family: 'Segoe UI', Arial, sans-serif; padding: 30px; max-width: 1000px; margin: 0 auto; }
-            h1 { color: #0a2f3f; border-bottom: 2px solid #f39c12; }
-            h3 { margin-top: 25px; color: #1e5a74; border-left: 3px solid #f39c12; padding-left: 12px; }
+            h1 { color: #0f2b3d; border-bottom: 2px solid #f5a623; }
+            h3 { margin-top: 25px; color: #1e5a74; border-left: 3px solid #f5a623; padding-left: 12px; }
             .field { margin-bottom: 15px; }
             .label { font-weight: bold; display: inline-block; min-width: 220px; }
             .value { margin-top: 5px; background: #f8fafc; padding: 8px 12px; border-radius: 12px; white-space: pre-wrap; }
