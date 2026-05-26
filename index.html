@@ -125,7 +125,7 @@
         .btn-success { background: #10b981; }
         .btn-warning { background: #f59e0b; }
         
-        /* Фильтр истории */
+        /* ФИЛЬТР ИСТОРИИ */
         .history-filter {
             background: #f9fafb;
             border: 1px solid #e5e7eb;
@@ -141,7 +141,7 @@
         }
         .filter-group {
             flex: 1;
-            min-width: 150px;
+            min-width: 140px;
         }
         .filter-group label {
             display: block;
@@ -153,14 +153,17 @@
             width: 100%;
             padding: 8px 10px;
             font-size: 13px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
         }
         .filter-stats {
             display: flex;
-            gap: 20px;
+            gap: 24px;
             margin-top: 12px;
             padding-top: 12px;
             border-top: 1px solid #e5e7eb;
             font-size: 13px;
+            flex-wrap: wrap;
         }
         .filter-stats span { font-weight: 700; color: #0066B3; }
         .clear-filter-btn {
@@ -452,9 +455,9 @@
                     <button id="clearFilterBtn" class="clear-filter-btn">✖️ Сбросить</button>
                 </div>
                 <div class="filter-stats" id="filterStats">
-                    Найдено: <span id="filteredCount">0</span> заказов | 
-                    Сумма: <span id="filteredTotal">0</span> ₽ | 
-                    Прибыль: <span id="filteredProfit">0</span> ₽
+                    <span>📊 Найдено: <span id="filteredCount">0</span> заказов</span>
+                    <span>💰 Сумма: <span id="filteredTotal">0</span> ₽</span>
+                    <span>📈 Прибыль: <span id="filteredProfit">0</span> ₽</span>
                 </div>
             </div>
             
@@ -547,6 +550,15 @@
     }
     
     // ========== ФИЛЬТРАЦИЯ ==========
+    function parseDateFromString(dateStr) {
+        // Формат даты в заказе: "26.05.2026, 14:11:25" или "26.05.2026"
+        const parts = dateStr.split(",")[0].split(".");
+        if (parts.length === 3) {
+            return new Date(parts[2], parts[1] - 1, parts[0]);
+        }
+        return null;
+    }
+    
     function filterOrders() {
         const searchText = document.getElementById("filterSearch")?.value.toLowerCase() || "";
         const dateFrom = document.getElementById("filterDateFrom")?.value;
@@ -559,23 +571,22 @@
             if (searchText) {
                 const itemsText = order.items.map(i => i.name.toLowerCase()).join(" ");
                 const matchText = order.client.toLowerCase().includes(searchText) ||
-                                 (order.phone && order.phone.includes(searchText)) ||
+                                 (order.phone && order.phone.toLowerCase().includes(searchText)) ||
                                  itemsText.includes(searchText);
                 if (!matchText) return false;
             }
             
-            // Фильтр по дате
-            if (dateFrom || dateTo) {
-                const orderDate = order.date.split(",")[0]; // берем только дату
-                const orderDateObj = new Date(orderDate.split(".").reverse().join("-"));
+            // Фильтр по дате (от и до)
+            const orderDate = parseDateFromString(order.date);
+            if (orderDate) {
                 if (dateFrom) {
                     const fromDate = new Date(dateFrom);
-                    if (orderDateObj < fromDate) return false;
+                    if (orderDate < fromDate) return false;
                 }
                 if (dateTo) {
                     const toDate = new Date(dateTo);
                     toDate.setHours(23, 59, 59);
-                    if (orderDateObj > toDate) return false;
+                    if (orderDate > toDate) return false;
                 }
             }
             
