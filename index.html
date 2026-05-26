@@ -10,6 +10,33 @@
             font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
             background: #f3f4f6;
             padding: 20px;
+            transition: background 0.3s;
+        }
+        body.dark {
+            background: #121826;
+            color: #e2e8f0;
+        }
+        body.dark .header,
+        body.dark .shift-bar,
+        body.dark .left-panel,
+        body.dark .cart-panel,
+        body.dark .history-section,
+        body.dark .modal-card {
+            background: #1e293b;
+            border-color: #334155;
+        }
+        body.dark .service-card,
+        body.dark .goods-card,
+        body.dark .cart-item,
+        body.dark .history-item,
+        body.dark .history-filter {
+            background: #0f172a;
+            border-color: #334155;
+        }
+        body.dark input, body.dark select, body.dark textarea {
+            background: #0f172a;
+            border-color: #334155;
+            color: #e2e8f0;
         }
         .container { max-width: 1400px; margin: 0 auto; }
         
@@ -26,6 +53,14 @@
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
         h1 { font-size: 24px; color: #0066B3; }
+        body.dark h1 { color: #60a5fa; }
+        
+        .user-bar {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
         
         .shift-bar {
             background: white;
@@ -40,6 +75,7 @@
         }
         .shift-stats { display: flex; gap: 24px; flex-wrap: wrap; }
         .stat-item { background: #f3f4f6; padding: 6px 14px; border-radius: 20px; }
+        body.dark .stat-item { background: #334155; }
         
         .dashboard {
             display: flex;
@@ -110,22 +146,29 @@
         button {
             background: #0066B3;
             border: none;
-            padding: 10px 20px;
+            padding: 8px 16px;
             border-radius: 8px;
             color: white;
             cursor: pointer;
             font-size: 13px;
+            transition: all 0.2s;
         }
+        button:hover { background: #004c8a; transform: translateY(-1px); }
         .btn-outline {
             background: transparent;
             border: 1px solid #d1d5db;
             color: #374151;
         }
+        .btn-outline:hover { background: #f3f4f6; transform: none; }
         .btn-danger { background: #ef4444; }
+        .btn-danger:hover { background: #dc2626; }
         .btn-success { background: #10b981; }
+        .btn-success:hover { background: #059669; }
         .btn-warning { background: #f59e0b; }
+        .btn-warning:hover { background: #d97706; }
+        .btn-purple { background: #8b5cf6; }
+        .btn-pink { background: #ec4899; }
         
-        /* ФИЛЬТР ИСТОРИИ */
         .history-filter {
             background: #f9fafb;
             border: 1px solid #e5e7eb;
@@ -314,7 +357,7 @@
             text-align: center;
             color: #9ca3af;
         }
-        @media (max-width: 850px) { body { padding: 12px; } }
+        @media (max-width: 850px) { body { padding: 12px; } .user-bar { gap: 8px; } button { padding: 6px 12px; font-size: 11px; } }
     </style>
 </head>
 <body>
@@ -344,9 +387,14 @@
                 <h1>A4‑ПРИНТ</h1>
                 <div style="font-size: 12px; color: #6b7280;">Копировальный центр</div>
             </div>
-            <div style="display: flex; gap: 12px; align-items: center;">
-                <span id="operatorName"></span>
+            <div class="user-bar">
+                <span id="operatorName" style="font-weight: 500;"></span>
+                <button id="themeToggleBtn" class="btn-outline">🌙 Тёмная</button>
+                <button id="adminPanelBtn" class="btn-primary">Админ</button>
                 <button id="shiftBtn" class="btn-warning">🚀 Открыть смену</button>
+                <button id="reportBtn" class="btn-success">📊 Отчёт / Экспорт</button>
+                <button id="syncGoogleBtn" class="btn-pink">🔄 Синхр. с Google</button>
+                <button id="printBlankBtn" class="btn-primary">🖨️ Бланк заказа</button>
                 <button id="logoutBtn" class="btn-outline">Выйти</button>
             </div>
         </div>
@@ -429,12 +477,11 @@
         <div class="history-section">
             <h3>📜 История заказов</h3>
             
-            <!-- ФИЛЬТР -->
             <div class="history-filter">
                 <div class="filter-row">
                     <div class="filter-group">
-                        <label>🔍 Поиск (клиент, телефон, товар)</label>
-                        <input type="text" id="filterSearch" placeholder="Имя, телефон, услуга...">
+                        <label>🔍 Поиск</label>
+                        <input type="text" id="filterSearch" placeholder="Клиент, телефон, товар...">
                     </div>
                     <div class="filter-group">
                         <label>📅 Дата от</label>
@@ -452,10 +499,10 @@
                         <label>💰 Сумма до</label>
                         <input type="number" id="filterAmountTo" placeholder="100000">
                     </div>
-                    <button id="clearFilterBtn" class="clear-filter-btn">✖️ Сбросить</button>
+                    <button id="clearFilterBtn" class="clear-filter-btn">✖️ Сброс</button>
                 </div>
-                <div class="filter-stats" id="filterStats">
-                    <span>📊 Найдено: <span id="filteredCount">0</span> заказов</span>
+                <div class="filter-stats">
+                    <span>📊 Найдено: <span id="filteredCount">0</span></span>
                     <span>💰 Сумма: <span id="filteredTotal">0</span> ₽</span>
                     <span>📈 Прибыль: <span id="filteredProfit">0</span> ₽</span>
                 </div>
@@ -493,6 +540,36 @@
         <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 20px;">
             <button id="saveEditBtn" class="btn-success">💾 Сохранить</button>
             <button id="cancelEditBtn" class="btn-outline">Отмена</button>
+        </div>
+    </div>
+</div>
+
+<!-- Модалка отчёта -->
+<div id="reportModal" class="modal">
+    <div class="modal-card" style="max-width: 400px;">
+        <h3 style="margin-bottom: 20px;">📊 Выберите тип отчёта</h3>
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+            <button id="reportTodayExcelBtn" class="btn-success">📅 Excel: Отчёт за сегодня</button>
+            <button id="reportFullExcelBtn" class="btn-success">📊 Excel: Полный отчёт</button>
+            <button id="reportShiftsExcelBtn" class="btn-purple">📋 Excel: Отчёт по сменам</button>
+            <button id="reportTodayPdfBtn" class="btn-danger">📄 PDF: Отчёт за сегодня</button>
+            <button id="reportFullPdfBtn" class="btn-danger">📑 PDF: Полный отчёт</button>
+            <button id="cancelReportBtn" class="btn-outline">Отмена</button>
+        </div>
+    </div>
+</div>
+
+<!-- Модалка админ-панели (упрощённая) -->
+<div id="adminModal" class="modal">
+    <div class="modal-card">
+        <h3 style="margin-bottom: 20px;">👑 Админ-панель</h3>
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+            <button id="adminStatsBtn" class="btn-primary">📊 Статистика операторов</button>
+            <button id="adminShiftsBtn" class="btn-purple">📅 История смен</button>
+            <button id="adminServicesBtn" class="btn-primary">📋 Управление услугами</button>
+            <button id="adminGoodsBtn" class="btn-primary">🛍️ Управление товарами</button>
+            <button id="adminCashBtn" class="btn-warning">💵 Касса</button>
+            <button id="closeAdminBtn" class="btn-outline">Закрыть</button>
         </div>
     </div>
 </div>
@@ -551,7 +628,6 @@
     
     // ========== ФИЛЬТРАЦИЯ ==========
     function parseDateFromString(dateStr) {
-        // Формат даты в заказе: "26.05.2026, 14:11:25" или "26.05.2026"
         const parts = dateStr.split(",")[0].split(".");
         if (parts.length === 3) {
             return new Date(parts[2], parts[1] - 1, parts[0]);
@@ -567,7 +643,6 @@
         const amountTo = parseFloat(document.getElementById("filterAmountTo")?.value) || 999999999;
         
         return allOrders.filter(order => {
-            // Поиск по тексту (клиент, телефон, состав заказа)
             if (searchText) {
                 const itemsText = order.items.map(i => i.name.toLowerCase()).join(" ");
                 const matchText = order.client.toLowerCase().includes(searchText) ||
@@ -576,7 +651,6 @@
                 if (!matchText) return false;
             }
             
-            // Фильтр по дате (от и до)
             const orderDate = parseDateFromString(order.date);
             if (orderDate) {
                 if (dateFrom) {
@@ -590,7 +664,6 @@
                 }
             }
             
-            // Фильтр по сумме
             const amount = order.finalTotal;
             if (amount < amountFrom || amount > amountTo) return false;
             
@@ -621,13 +694,12 @@
         applyFilterAndRender();
     }
     
-    // ========== ОТРИСОВКА ИСТОРИИ ==========
     function renderHistoryList(ordersToShow) {
         const container = document.getElementById("historyList");
         if (!container) return;
         
         if (ordersToShow.length === 0) {
-            container.innerHTML = "<div class='no-results'>🔍 Ничего не найдено. Измените условия поиска.</div>";
+            container.innerHTML = "<div class='no-results'>🔍 Ничего не найдено</div>";
             return;
         }
         
@@ -1023,6 +1095,79 @@
         return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m]));
     }
     
+    // ========== ТЕМА ==========
+    function toggleTheme() {
+        document.body.classList.toggle("dark");
+        localStorage.setItem("a4print_theme", document.body.classList.contains("dark") ? "dark" : "light");
+    }
+    
+    // ========== ОТЧЁТЫ ==========
+    function showReportModal() {
+        document.getElementById("reportModal").style.display = "flex";
+    }
+    
+    function exportToExcel(orders, title) {
+        if (!orders.length) { alert("Нет данных для экспорта"); return; }
+        const data = [['№', 'Дата', 'Клиент', 'Телефон', 'Состав', 'Подытог', 'Скидка', 'Итого', 'Расход', 'Прибыль', 'Оплата']];
+        orders.forEach((o, i) => {
+            const items = o.items.map(it => `${it.name} x${it.qty}`).join('; ');
+            data.push([i+1, o.date, o.client, o.phone || '', items, o.subtotal || 0, o.discount || 0, o.finalTotal || 0, o.expense || 0, o.profit || 0, o.paymentMethod === 'cash' ? 'Наличные' : 'Карта']);
+        });
+        const ws = XLSX.utils.aoa_to_sheet(data);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Заказы');
+        XLSX.writeFile(wb, `A4print_${title}_${new Date().toISOString().slice(0,19).replace(/:/g, '-')}.xlsx`);
+        showStatus(`✅ Экспорт "${title}" завершён`);
+    }
+    
+    function reportTodayExcel() {
+        const today = new Date().toLocaleDateString('ru-RU');
+        const todayStr = today.split('.').reverse().join('-');
+        const todayOrders = allOrders.filter(o => o.date && o.date.includes(today));
+        if (todayOrders.length === 0) { alert('За сегодня нет заказов'); return; }
+        exportToExcel(todayOrders, `Отчёт_за_${todayStr}`);
+        document.getElementById("reportModal").style.display = "none";
+    }
+    
+    function reportFullExcel() {
+        if (allOrders.length === 0) { alert('Нет заказов'); return; }
+        exportToExcel(allOrders, 'Полный_отчёт');
+        document.getElementById("reportModal").style.display = "none";
+    }
+    
+    function reportShiftsExcel() {
+        alert("Функция в разработке");
+        document.getElementById("reportModal").style.display = "none";
+    }
+    
+    function reportTodayPdf() {
+        alert("PDF отчёт в разработке");
+        document.getElementById("reportModal").style.display = "none";
+    }
+    
+    function reportFullPdf() {
+        alert("PDF отчёт в разработке");
+        document.getElementById("reportModal").style.display = "none";
+    }
+    
+    // ========== АДМИНКА ==========
+    function showAdminPanel() {
+        if (currentUser.role !== 'admin') {
+            alert("Доступно только администратору");
+            return;
+        }
+        document.getElementById("adminModal").style.display = "flex";
+    }
+    
+    function syncGoogle() {
+        alert("🔧 Синхронизация с Google Sheets настраивается в админ-панели");
+    }
+    
+    function printBlank() {
+        alert("🖨️ Функция печати бланка заказа");
+    }
+    
+    // ========== ВХОД/ВЫХОД ==========
     function login() {
         const sel = document.getElementById("loginSelect").value;
         const pwd = document.getElementById("loginPassword").value;
@@ -1047,6 +1192,9 @@
     // ========== ЗАПУСК ==========
     document.addEventListener("DOMContentLoaded", () => {
         const saved = localStorage.getItem("a4print_user");
+        const savedTheme = localStorage.getItem("a4print_theme");
+        if (savedTheme === "dark") document.body.classList.add("dark");
+        
         if (saved) {
             try {
                 currentUser = JSON.parse(saved);
@@ -1058,9 +1206,17 @@
             } catch(e) { logout(); }
         }
         
-        document.getElementById("loginBtn").onclick = login;
-        document.getElementById("logoutBtn").onclick = logout;
+        // Кнопки шапки
+        document.getElementById("themeToggleBtn").onclick = toggleTheme;
+        document.getElementById("adminPanelBtn").onclick = showAdminPanel;
         document.getElementById("shiftBtn").onclick = toggleShift;
+        document.getElementById("reportBtn").onclick = showReportModal;
+        document.getElementById("syncGoogleBtn").onclick = syncGoogle;
+        document.getElementById("printBlankBtn").onclick = printBlank;
+        document.getElementById("logoutBtn").onclick = logout;
+        
+        // Другие кнопки
+        document.getElementById("loginBtn").onclick = login;
         document.getElementById("addFastBtn").onclick = addFastService;
         document.getElementById("addGoodsBtn").onclick = addNewGoods;
         document.getElementById("applyDiscountBtn").onclick = applyDiscount;
@@ -1070,6 +1226,22 @@
         document.getElementById("cancelEditBtn").onclick = () => document.getElementById("editModal").style.display = "none";
         document.getElementById("addEditItemBtn").onclick = addEditItem;
         document.getElementById("orderExpense").oninput = updateTotals;
+        
+        // Модалка отчёта
+        document.getElementById("reportTodayExcelBtn").onclick = reportTodayExcel;
+        document.getElementById("reportFullExcelBtn").onclick = reportFullExcel;
+        document.getElementById("reportShiftsExcelBtn").onclick = reportShiftsExcel;
+        document.getElementById("reportTodayPdfBtn").onclick = reportTodayPdf;
+        document.getElementById("reportFullPdfBtn").onclick = reportFullPdf;
+        document.getElementById("cancelReportBtn").onclick = () => document.getElementById("reportModal").style.display = "none";
+        
+        // Модалка админки
+        document.getElementById("closeAdminBtn").onclick = () => document.getElementById("adminModal").style.display = "none";
+        document.getElementById("adminStatsBtn").onclick = () => alert("📊 Статистика операторов\nВсего заказов: " + allOrders.length);
+        document.getElementById("adminShiftsBtn").onclick = () => alert("📅 История смен\nВсего смен: " + (localStorage.getItem("a4print_shifts_list") ? JSON.parse(localStorage.getItem("a4print_shifts_list")).length : 0));
+        document.getElementById("adminServicesBtn").onclick = () => alert("📋 Управление услугами\nВсего услуг: " + services.length);
+        document.getElementById("adminGoodsBtn").onclick = () => alert("🛍️ Управление товарами\nВсего товаров: " + goods.length);
+        document.getElementById("adminCashBtn").onclick = () => alert("💵 Касса\nНаличные: " + (localStorage.getItem("a4print_cash") || 0));
         
         // Фильтр
         document.getElementById("filterSearch").oninput = applyFilterAndRender;
@@ -1119,9 +1291,9 @@
         };
         
         window.onclick = (e) => {
-            if (e.target === document.getElementById("editModal")) {
-                document.getElementById("editModal").style.display = "none";
-            }
+            if (e.target === document.getElementById("editModal")) document.getElementById("editModal").style.display = "none";
+            if (e.target === document.getElementById("reportModal")) document.getElementById("reportModal").style.display = "none";
+            if (e.target === document.getElementById("adminModal")) document.getElementById("adminModal").style.display = "none";
         };
     });
 </script>
