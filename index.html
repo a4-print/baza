@@ -789,3 +789,182 @@
         showStatus("✅ Заказ обновлён");
     }
     
+    function deleteOrder(orderId) {
+        if (confirm("Удалить этот заказ навсегда?")) {
+            allOrders = allOrders.filter(o => o.id !== orderId);
+            saveOrders();
+            renderHistory();
+            updateShiftFinance();
+            showStatus("🗑 Заказ удалён");
+        }
+    }
+    
+    // ========== СМЕНА ==========
+    function updateShiftUI() {
+        const statusSpan = document.getElementById("shiftStatus");
+        const openSpan = document.getElementById("shiftOpen");
+        const closeSpan = document.getElementById("shiftClose");
+        const btn = document.getElementById("shiftBtn");
+        
+        if (shiftOpen && !shiftClose) {
+            statusSpan.innerText = "Открыта";
+            openSpan.innerText = shiftOpen;
+            closeSpan.innerText = "—";
+            btn.innerText = "🔒 Закрыть смену";
+            btn.classList.remove("btn-warning");
+            btn.classList.add("btn-danger");
+        } else {
+            statusSpan.innerText = shiftOpen ? "Закрыта" : "Не открыта";
+            openSpan.innerText = shiftOpen || "—";
+            closeSpan.innerText = shiftClose || "—";
+            btn.innerText = "🚀 Открыть смену";
+            btn.classList.remove("btn-danger");
+            btn.classList.add("btn-warning");
+        }
+    }
+    
+    function toggleShift() {
+        if (!shiftOpen || shiftClose) {
+            shiftOpen = new Date().toLocaleString();
+            shiftClose = null;
+            saveShift();
+            updateShiftUI();
+            updateShiftFinance();
+            showStatus("✅ Смена открыта");
+        } else {
+            shiftClose = new Date().toLocaleString();
+            saveShift();
+            updateShiftUI();
+            updateShiftFinance();
+            showStatus("✅ Смена закрыта");
+        }
+    }
+    
+    function updateShiftFinance() {
+        if (!shiftOpen) return;
+        const shiftOrders = allOrders.filter(o => o.date >= shiftOpen && (!shiftClose || o.date <= shiftClose));
+        const revenue = shiftOrders.reduce((s, o) => s + o.finalTotal, 0);
+        const cash = shiftOrders.filter(o => o.paymentMethod === "cash").reduce((s, o) => s + o.finalTotal, 0);
+        const card = shiftOrders.filter(o => o.paymentMethod === "card").reduce((s, o) => s + o.finalTotal, 0);
+        const profit = shiftOrders.reduce((s, o) => s + (o.profit || 0), 0);
+        
+        document.getElementById("shiftRevenue").innerHTML = revenue + " ₽";
+        document.getElementById("shiftCash").innerHTML = cash + " ₽";
+        document.getElementById("shiftCard").innerHTML = card + " ₽";
+        document.getElementById("shiftProfit").innerHTML = profit + " ₽";
+    }
+    
+    // ========== ВСПОМОГАТЕЛЬНЫЕ ==========
+    function showStatus(msg) {
+        const el = document.getElementById("statusMsg");
+        if (el) {
+            el.textContent = msg;
+            setTimeout(() => {
+                if (el.textContent === msg) el.textContent = "💾 Готово";
+            }, 2000);
+        }
+    }
+    
+    function escapeHtml(str) {
+        if (!str) return "";
+        return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m]));
+    }
+    
+    function login() {
+        const sel = document.getElementById("loginSelect").value;
+        const pwd = document.getElementById("loginPassword").value;
+        if (!sel) { document.getElementById("loginError").innerText = "Выберите оператора"; return; }
+        const user = operators[sel];
+        if (user && user.password === pwd) {
+            currentUser = { ...user, username: sel };
+            localStorage.setItem("a4print_user", JSON.stringify(currentUser));
+            document.getElementById("loginModal").style.display = "none";
+            document.getElementById("mainApp").style.display = "block";
+            loadData();
+        } else {
+            document.getElementById("loginError").innerText = "Неверный пароль";
+        }
+    }
+    
+    function logout() {
+        localStorage.removeItem("a4print_user");
+        location.reload();
+    }
+    
+    // ========== ЗАПУСК ==========
+    document.addEventListener("DOMContentLoaded", () => {
+        const saved = localStorage.getItem("a4print_user");
+        if (saved) {
+            try {
+                currentUser = JSON.parse(saved);
+                if (operators[currentUser.username]) {
+                    document.getElementById("loginModal").style.display = "none";
+                    document.getElementById("mainApp").style.display = "block";
+                    loadData();
+                } else { logout(); }
+            } catch(e) { logout(); }
+        }
+        
+        // Кнопки
+        document.getElementById("loginBtn").onclick = login;
+        document.getElementById("logoutBtn").onclick = logout;
+        document.getElementById("shiftBtn").onclick = toggleShift;
+        document.getElementById("addFastBtn").onclick = addFastService;
+        document.getElementById("addGoodsBtn").onclick = addNewGoods;
+        document.getElementById("applyDiscountBtn").onclick = applyDiscount;
+        document.getElementById("completeBtn").onclick = completeOrder;
+        document.getElementById("clearCartBtn").onclick = clearCart;
+        document.getElementById("saveEditBtn").onclick = saveEditedOrder;
+        document.getElementById("cancelEditBtn").onclick = () => document.getElementById("editModal").style.display = "none";
+        document.getElementById("addEditItemBtn").onclick = addEditItem;
+        document.getElementById("orderExpense").oninput = updateTotals;
+        
+        // Табы
+        document.getElementById("tabServices").onclick = () => {
+            document.getElementById("servicesPanel").classList.remove("hidden");
+            document.getElementById("goodsPanel").classList.add("hidden");
+            document.getElementById("tabServices").classList.add("active");
+            document.getElementById("tabGoods").classList.remove("active");
+        };
+        document.getElementById("tabGoods").onclick = () => {
+            document.getElementById("servicesPanel").classList.add("hidden");
+            document.getElementById("goodsPanel").classList.remove("hidden");
+            document.getElementById("tabGoods").classList.add("active");
+            document.getElementById("tabServices").classList.remove("active");
+        };
+        
+        // Поиск
+        document.getElementById("searchService").oninput = () => {
+            const q = document.getElementById("searchService").value.toLowerCase();
+            const filtered = services.filter(s => s.name.toLowerCase().includes(q));
+            const grid = document.getElementById("servicesGrid");
+            if (grid) {
+                grid.innerHTML = "";
+                filtered.forEach(s => {
+                    grid.innerHTML += `<div class="service-card"><div class="price">${s.price} ₽</div><div><strong>${escapeHtml(s.name)}</strong></div><input type="number" id="srvQty_${s.id}" value="1" min="1"><button onclick="addToCart('service', ${s.id})">➕ Добавить</button></div>`;
+                });
+            }
+        };
+        
+        document.getElementById("searchGoods").oninput = () => {
+            const q = document.getElementById("searchGoods").value.toLowerCase();
+            const filtered = goods.filter(g => g.name.toLowerCase().includes(q));
+            const grid = document.getElementById("goodsGrid");
+            if (grid) {
+                grid.innerHTML = "";
+                filtered.forEach(g => {
+                    grid.innerHTML += `<div class="goods-card"><div class="price">${g.price} ₽</div><div><strong>${escapeHtml(g.name)}</strong></div><div style="font-size: 12px; color: #6b7280;">📦 Остаток: ${g.stock}</div><input type="number" id="goodsQty_${g.id}" value="1" min="1" max="${g.stock}"><button onclick="addToCart('goods', ${g.id})">➕ В корзину</button></div>`;
+                });
+            }
+        };
+        
+        // Закрытие модалки
+        window.onclick = (e) => {
+            if (e.target === document.getElementById("editModal")) {
+                document.getElementById("editModal").style.display = "none";
+            }
+        };
+    });
+</script>
+</body>
+</html>
