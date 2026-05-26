@@ -75,14 +75,14 @@
         .row-2 { display: flex; gap: 12px; margin: 16px 0; flex-wrap: wrap; align-items: flex-end; }
         .discount-group { flex: 1; min-width: 100px; }
         .history-list { display: flex; flex-direction: column; gap: 12px; max-height: 320px; overflow-y: auto; }
-        .history-item { background: var(--gray-50); border-radius: 10px; padding: 14px; border-left: 3px solid var(--orange); position: relative; }
+        .history-item { background: var(--gray-50); border-radius: 10px; padding: 14px; border-left: 3px solid var(--orange); position: relative; transition: all 0.2s; }
         .history-item:hover .order-actions { opacity: 1; }
         .order-actions { position: absolute; top: 12px; right: 12px; display: flex; gap: 8px; opacity: 0.6; transition: opacity 0.2s; }
         .order-actions button { padding: 4px 12px; font-size: 11px; background: var(--gray-200); color: var(--gray-700); border: none; border-radius: 6px; cursor: pointer; }
         .order-actions button.edit-order { background: var(--blue); color: white; }
         .order-actions button.delete-order { background: var(--red); color: white; }
         .modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.4); display: none; align-items: center; justify-content: center; z-index: 1000; }
-        .modal-card { background: white; border-radius: 16px; max-width: 500px; width: 95%; max-height: 90vh; overflow-y: auto; padding: 28px; box-shadow: var(--shadow-md); }
+        .modal-card { background: white; border-radius: 16px; max-width: 650px; width: 95%; max-height: 90vh; overflow-y: auto; padding: 28px; box-shadow: var(--shadow-md); }
         .cash-card { background: linear-gradient(135deg, #fef3c7, #fde68a); border-radius: 16px; padding: 16px; margin-bottom: 20px; border-left: 5px solid var(--orange); }
         .burger-btn { display: none; background: transparent; font-size: 24px; color: var(--gray-700); padding: 8px; cursor: pointer; }
         .burger-menu { position: absolute; top: 70px; right: 20px; background: white; border-radius: 12px; padding: 16px; min-width: 200px; display: none; flex-direction: column; gap: 10px; box-shadow: var(--shadow-md); z-index: 200; border: 1px solid var(--gray-200); }
@@ -99,6 +99,11 @@
         .tab-btn { background: var(--gray-100); color: var(--gray-700); margin-right: 4px; }
         .tab-btn.active { background: var(--blue); color: white; }
         .instruction-tabs { display: flex; gap: 4px; margin-bottom: 20px; flex-wrap: wrap; }
+        .edit-item-row { display: flex; gap: 8px; margin-bottom: 8px; align-items: center; padding: 8px; background: var(--gray-50); border-radius: 8px; }
+        .edit-item-name { flex: 2; font-weight: 500; }
+        .edit-item-price { width: 70px; }
+        .edit-item-qty { width: 90px; }
+        .remove-edit-item { background: var(--red); color: white; border: none; border-radius: 6px; padding: 4px 10px; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -109,7 +114,7 @@
             <img src="https://github.com/a4print2026-jpg/baza/blob/dbcda72ab60f0a9f8d8984e17375f6649cf677f0/images/logo_soc2.png?raw=true" style="height: 60px;" onerror="this.style.display='none'">
             <h2>A4-Принт</h2>
         </div>
-        <select id="loginSelect" class="login-select">
+        <select id="loginSelect">
             <option value="">— Выберите оператора —</option>
             <option value="pavel">Павел (Администратор)</option>
             <option value="ksenia">Ксения (Оператор)</option>
@@ -200,25 +205,46 @@
 </div>
 
 <div id="syncStatus" class="sync-status">💾 Готово</div>
-<div id="reportModal" class="modal">...</div>
+
+<div id="reportModal" class="modal">
+    <div class="modal-card">
+        <h3 style="margin-bottom:20px; text-align:center;">📊 ВЫБЕРИТЕ ТИП ОТЧЁТА</h3>
+        <div class="report-buttons">
+            <button id="reportTodayExcelBtn" class="btn-success">📅 Excel: Отчёт за сегодня</button>
+            <button id="reportFullExcelBtn" class="btn-success">📊 Excel: Полный отчёт</button>
+            <button id="reportShiftsExcelBtn" class="btn-purple">📋 Excel: Отчёт по сменам</button>
+            <button id="reportTodayPdfBtn" class="btn-danger">📄 PDF: Отчёт за сегодня</button>
+            <button id="reportFullPdfBtn" class="btn-danger">📑 PDF: Полный отчёт</button>
+            <button id="cancelReportBtn" class="btn-outline">Отмена</button>
+        </div>
+    </div>
+</div>
+
 <div id="adminModal" class="modal">...</div>
 <div id="withdrawModal" class="modal">...</div>
+
+<!-- Модальное окно редактирования заказа -->
 <div id="editOrderModal" class="modal">
-    <div class="modal-card" style="max-width: 650px;">
+    <div class="modal-card">
         <h3 style="margin-bottom:20px;">✏️ Редактирование заказа</h3>
-        <input type="text" id="editClientName" placeholder="Имя клиента">
-        <input type="tel" id="editClientPhone" placeholder="Телефон" style="margin:12px 0;">
-        <div id="editOrderItemsList" style="max-height:300px; overflow-y:auto; margin:16px 0; border:1px solid var(--gray-200); border-radius:8px; padding:8px;"></div>
-        <div style="display:flex; gap:12px; margin-top:16px;">
-            <button id="saveEditOrderBtn" class="btn-primary">💾 Сохранить изменения</button>
+        <input type="text" id="editClientName" placeholder="Имя клиента" style="margin-bottom:12px;">
+        <input type="tel" id="editClientPhone" placeholder="Телефон" style="margin-bottom:20px;">
+        <div id="editOrderItemsList" style="max-height:300px; overflow-y:auto; margin-bottom:20px;"></div>
+        <div style="display:flex; gap:12px; justify-content:flex-end;">
+            <button id="saveEditOrderBtn" class="btn-primary">💾 Сохранить</button>
             <button id="cancelEditOrderBtn" class="btn-outline">Отмена</button>
         </div>
     </div>
 </div>
 
 <script>
-    // ========== ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ==========
-    let operators = { "pavel": { password: "pavel123", name: "Павел", role: "admin", rate: 2500 }, "ksenia": { password: "ksenia123", name: "Ксения", role: "operator", rate: 2000 }, "natalia": { password: "natalia123", name: "Наталья", role: "operator", rate: 2000 } };
+    // ========== ГЛОБАЛЬНЫЕ ДАННЫЕ ==========
+    let operators = { 
+        "pavel": { password: "pavel123", name: "Павел", role: "admin", rate: 2500 }, 
+        "ksenia": { password: "ksenia123", name: "Ксения", role: "operator", rate: 2000 }, 
+        "natalia": { password: "natalia123", name: "Наталья", role: "operator", rate: 2000 } 
+    };
+    
     let services = [
         { id: 1, name: "Копирование ч/б A4", price: 25 }, { id: 2, name: "Копирование цветное A4", price: 35 },
         { id: 3, name: "Сканирование A4", price: 25 }, { id: 4, name: "Ламинирование A4", price: 150 },
@@ -226,32 +252,293 @@
         { id: 7, name: "Печать на кружке", price: 1000 }, { id: 8, name: "Печать на футболке", price: 1500 },
         { id: 9, name: "Ретушь фото", price: 200 }, { id: 10, name: "Брошюровка", price: 350 }
     ];
+    
     let goods = [
         { id: 1001, name: "Бумага А4 80г/м2", price: 350, stock: 50, unit: "пачка" },
         { id: 1002, name: "Тонер чёрный HP", price: 1200, stock: 8, unit: "шт" },
         { id: 1003, name: "Плёнка для ламинации А4", price: 1500, stock: 15, unit: "упаковка" },
         { id: 1004, name: "USB-флешка 16Gb", price: 450, stock: 10, unit: "шт" }
     ];
+    
     let allOrders = [], currentUser = null, cart = [], discountPct = 0, discountAmt = 0;
-    let shiftOpen = null, shiftClose = null, shiftOpenComment = "", shiftCloseComment = "";
+    let shiftOpen = null, shiftClose = null;
     let allShifts = [];
     let GOOGLE_WEBAPP_URL = localStorage.getItem("google_webapp_url") || "";
     let cashData = { cashBalance: 0, withdrawals: [], dailyStats: {} };
     let editingOrderId = null;
-
-    // Сохранение/загрузка (функции сохранены без изменений)
+    
+    // ========== СОХРАНЕНИЕ ==========
     function saveServices() { localStorage.setItem("a4print_services", JSON.stringify(services)); }
     function saveGoods() { localStorage.setItem("a4print_goods", JSON.stringify(goods)); }
     function saveOrders() { localStorage.setItem("a4print_orders", JSON.stringify(allOrders)); }
-    function saveShift() { localStorage.setItem("a4print_shift", JSON.stringify({ open: shiftOpen, close: shiftClose, openComment: shiftOpenComment, closeComment: shiftCloseComment, operator: currentUser?.name })); }
+    function saveShift() { localStorage.setItem("a4print_shift", JSON.stringify({ open: shiftOpen, close: shiftClose, operator: currentUser?.name })); }
     function loadAllShifts() { let s = localStorage.getItem("a4print_shifts_list"); if (s) allShifts = JSON.parse(s); else allShifts = []; }
     function saveAllShifts() { localStorage.setItem("a4print_shifts_list", JSON.stringify(allShifts)); }
     function saveCashData() { localStorage.setItem("a4print_cash_data", JSON.stringify(cashData)); }
-    function loadCashData() { let saved = localStorage.getItem("a4print_cash_data"); if (saved) { try { cashData = JSON.parse(saved); if (!cashData.withdrawals) cashData.withdrawals = []; if (!cashData.dailyStats) cashData.dailyStats = {}; if (typeof cashData.cashBalance !== 'number') cashData.cashBalance = 0; } catch(e) { } } updateCashUI(); }
-    function updateCashUI() { let balanceSpan = document.getElementById("cashBalanceDisplay"); if (balanceSpan) balanceSpan.innerText = cashData.cashBalance.toLocaleString() + " ₽"; let cardTotal = allOrders.reduce((sum, o) => sum + (o.paymentMethod === "card" ? o.finalTotal : 0), 0); let cardSpan = document.getElementById("cardBalanceDisplay"); if (cardSpan) cardSpan.innerText = cardTotal.toLocaleString() + " ₽"; let historyDiv = document.getElementById("withdrawHistoryList"); if (historyDiv) historyDiv.innerHTML = cashData.withdrawals.length ? cashData.withdrawals.slice().reverse().slice(0,10).map(w => `<div class="withdrawal-item">📅 ${w.date} | ${w.amount.toLocaleString()} ₽ | ${w.reason || "нет причины"} | ${w.operator || "админ"}</div>`).join('') : "<div style='color:gray;'>История изъятий пуста</div>"; }
-    function processOrderPayment(paymentMethod, amount) { if (paymentMethod === "cash") { cashData.cashBalance += amount; saveCashData(); } const today = new Date().toISOString().slice(0,10); if (!cashData.dailyStats[today]) cashData.dailyStats[today] = { cash: 0, card: 0, withdrawals: 0 }; if (paymentMethod === "cash") cashData.dailyStats[today].cash += amount; else cashData.dailyStats[today].card += amount; saveCashData(); updateCashUI(); }
     
-    // ========== РЕДАКТИРОВАНИЕ ЗАКАЗОВ ==========
+    function loadCashData() {
+        let saved = localStorage.getItem("a4print_cash_data");
+        if (saved) {
+            try {
+                cashData = JSON.parse(saved);
+                if (!cashData.withdrawals) cashData.withdrawals = [];
+                if (!cashData.dailyStats) cashData.dailyStats = {};
+                if (typeof cashData.cashBalance !== 'number') cashData.cashBalance = 0;
+            } catch(e) { console.error(e); }
+        }
+        updateCashUI();
+    }
+    
+    function updateCashUI() {
+        let balanceSpan = document.getElementById("cashBalanceDisplay");
+        if (balanceSpan) balanceSpan.innerText = cashData.cashBalance.toLocaleString() + " ₽";
+        let cardTotal = allOrders.reduce((sum, o) => sum + (o.paymentMethod === "card" ? o.finalTotal : 0), 0);
+        let cardSpan = document.getElementById("cardBalanceDisplay");
+        if (cardSpan) cardSpan.innerText = cardTotal.toLocaleString() + " ₽";
+    }
+    
+    function processOrderPayment(paymentMethod, amount) {
+        if (paymentMethod === "cash") { cashData.cashBalance += amount; saveCashData(); }
+        const today = new Date().toISOString().slice(0,10);
+        if (!cashData.dailyStats[today]) cashData.dailyStats[today] = { cash: 0, card: 0, withdrawals: 0 };
+        if (paymentMethod === "cash") cashData.dailyStats[today].cash += amount;
+        else cashData.dailyStats[today].card += amount;
+        saveCashData();
+        updateCashUI();
+    }
+    
+    // ========== ЗАГРУЗКА ДАННЫХ ==========
+    function loadData() {
+        let s = localStorage.getItem("a4print_services"); if (s) services = JSON.parse(s);
+        let g = localStorage.getItem("a4print_goods"); if (g) goods = JSON.parse(g);
+        let ord = localStorage.getItem("a4print_orders"); if (ord) allOrders = JSON.parse(ord);
+        loadAllShifts();
+        loadCashData();
+        renderServices(); renderGoods(); renderCart(); renderHistory(); loadShift();
+        updateShiftFinanceDisplay();
+        document.getElementById("currentOperatorName").innerHTML = `${currentUser.name} ${currentUser.role === "admin" ? "👑" : "👤"}`;
+        if (document.getElementById("googleWebAppUrl")) document.getElementById("googleWebAppUrl").value = GOOGLE_WEBAPP_URL;
+        updateCashUI();
+    }
+    
+    function loadShift() { 
+        let s = localStorage.getItem("a4print_shift"); 
+        if (s) { 
+            let d = JSON.parse(s); 
+            if (d.operator === currentUser?.name) { 
+                shiftOpen = d.open; 
+                shiftClose = d.close; 
+            } 
+        } 
+        updateShiftUI(); 
+        updateShiftFinanceDisplay(); 
+    }
+    
+    function updateShiftUI() { 
+        let st = document.getElementById("shiftStatus"), op = document.getElementById("shiftOpenTime"), cl = document.getElementById("shiftCloseTime"), btn = document.getElementById("shiftToggleBtn"); 
+        if (shiftOpen && !shiftClose) { 
+            st.innerText = "🟢 Открыта"; op.innerText = shiftOpen; cl.innerText = "—"; 
+            btn.innerText = "🔒 Закрыть смену"; btn.classList.remove("btn-warning"); btn.classList.add("btn-danger"); 
+        } else { 
+            st.innerText = shiftOpen ? "🔴 Закрыта" : "⚫ Не открыта"; op.innerText = shiftOpen || "—"; cl.innerText = shiftClose || "—"; 
+            btn.innerText = "🚀 Открыть смену"; btn.classList.remove("btn-danger"); btn.classList.add("btn-warning"); 
+        } 
+    }
+    
+    function getShiftFinance() { 
+        if (!shiftOpen) return { revenue: 0, cash: 0, card: 0, profit: 0 }; 
+        const shiftOrders = allOrders.filter(o => o.operator === currentUser.name && o.date >= shiftOpen && (!shiftClose || o.date <= shiftClose)); 
+        let revenue = 0, cash = 0, card = 0, profit = 0; 
+        shiftOrders.forEach(o => { revenue += o.finalTotal; profit += o.profit || 0; o.paymentMethod === "cash" ? cash += o.finalTotal : card += o.finalTotal; }); 
+        return { revenue, cash, card, profit }; 
+    }
+    
+    function updateShiftFinanceDisplay() { 
+        const f = getShiftFinance(); 
+        document.getElementById("shiftRevenue").innerHTML = f.revenue.toLocaleString() + " ₽"; 
+        document.getElementById("shiftCash").innerHTML = f.cash.toLocaleString() + " ₽"; 
+        document.getElementById("shiftCard").innerHTML = f.card.toLocaleString() + " ₽"; 
+        document.getElementById("shiftProfit").innerHTML = f.profit.toLocaleString() + " ₽"; 
+    }
+    
+    function toggleShiftWithComment() { 
+        if (!shiftOpen || shiftClose) { 
+            shiftOpen = new Date().toLocaleString(); 
+            shiftClose = null; 
+            saveShift(); 
+            updateShiftUI(); 
+            updateShiftFinanceDisplay(); 
+            alert("✅ Смена открыта"); 
+        } else { 
+            if (!shiftOpen) { alert("Нет открытой смены"); return; } 
+            let finance = getShiftFinance(); 
+            shiftClose = new Date().toLocaleString(); 
+            saveShift(); 
+            allShifts.push({ login: currentUser.username, name: currentUser.name, role: currentUser.role, open: shiftOpen, close: shiftClose }); 
+            saveAllShifts(); 
+            updateShiftUI(); 
+            updateShiftFinanceDisplay(); 
+            alert(`✅ Смена закрыта\n💰 Выручка: ${finance.revenue} ₽\n💵 Наличные: ${finance.cash} ₽\n💳 Карта: ${finance.card} ₽`); 
+        } 
+    }
+    
+    // ========== ОТОБРАЖЕНИЕ УСЛУГ/ТОВАРОВ ==========
+    function renderServices(filter = null) { 
+        const grid = document.getElementById("servicesGrid"); 
+        const data = filter !== null ? filter : services; 
+        grid.innerHTML = ""; 
+        data.forEach(s => { 
+            let card = document.createElement("div"); 
+            card.className = "service-card"; 
+            card.innerHTML = `<div class="item-name">${escapeHtml(s.name)}</div><div class="item-price">${s.price} ₽</div><div class="qty-control"><input type="number" id="qty_srv_${s.id}" value="1" min="0" step="1"></div><button class="add-btn" data-type="service" data-id="${s.id}">➕ Добавить</button>`; 
+            grid.appendChild(card); 
+        }); 
+        document.querySelectorAll(".add-btn").forEach(btn => btn.onclick = () => { let type = btn.getAttribute("data-type"); let id = parseInt(btn.getAttribute("data-id")); addToCart(type, id); }); 
+    }
+    
+    function renderGoods(filter = null) { 
+        const grid = document.getElementById("goodsGrid"); 
+        const data = filter !== null ? filter : goods; 
+        grid.innerHTML = ""; 
+        data.forEach(g => { 
+            let card = document.createElement("div"); 
+            card.className = "goods-card"; 
+            card.innerHTML = `<div class="item-name">${escapeHtml(g.name)}</div><div class="item-price">${g.price} ₽</div><div class="item-stock">📦 Остаток: ${g.stock} ${g.unit || 'шт'}</div><div class="qty-control"><input type="number" id="qty_goods_${g.id}" value="1" min="0" max="${g.stock}"></div><button class="add-btn" data-type="goods" data-id="${g.id}">➕ В корзину</button>`; 
+            grid.appendChild(card); 
+        }); 
+        document.querySelectorAll(".add-btn").forEach(btn => btn.onclick = () => { let type = btn.getAttribute("data-type"); let id = parseInt(btn.getAttribute("data-id")); addToCart(type, id); }); 
+    }
+    
+    function addToCart(type, id) { 
+        let qtyInput = document.getElementById(`qty_${type === 'service' ? 'srv' : 'goods'}_${id}`); 
+        let qty = parseInt(qtyInput?.value) || 1; 
+        if (qty <= 0) qty = 1; 
+        if (type === 'service') { 
+            let service = services.find(s => s.id === id); 
+            if (!service) return; 
+            let existing = cart.find(i => i.type === 'service' && i.id === id); 
+            if (existing) existing.qty += qty; 
+            else cart.push({ type: 'service', id: id, name: service.name, price: service.price, qty: qty }); 
+        } else if (type === 'goods') { 
+            let good = goods.find(g => g.id === id); 
+            if (!good) return; 
+            if (qty > good.stock) { alert(`На складе только ${good.stock} шт.`); return; } 
+            let existing = cart.find(i => i.type === 'goods' && i.id === id); 
+            if (existing) existing.qty += qty; 
+            else cart.push({ type: 'goods', id: id, name: good.name, price: good.price, qty: qty }); 
+        } 
+        renderCart(); 
+        updateCartTotals(); 
+    }
+    
+    function addFastService() { 
+        let name = document.getElementById("fastServiceName").value.trim(); 
+        let price = parseFloat(document.getElementById("fastServicePrice").value); 
+        if (!name || isNaN(price) || price <= 0) { alert("Введите название и цену"); return; } 
+        cart.push({ type: 'service', id: Date.now(), name: name, price: price, qty: 1, isFast: true }); 
+        document.getElementById("fastServiceName").value = ""; 
+        document.getElementById("fastServicePrice").value = ""; 
+        renderCart(); 
+        updateCartTotals(); 
+    }
+    
+    function addNewGoods() { 
+        let name = document.getElementById("newGoodsName").value.trim(); 
+        let price = parseFloat(document.getElementById("newGoodsPrice").value); 
+        let stock = parseInt(document.getElementById("newGoodsStock").value); 
+        if (!name || isNaN(price) || price <= 0 || isNaN(stock)) { alert("Заполните все поля"); return; } 
+        goods.push({ id: Date.now(), name: name, price: price, stock: stock, unit: "шт" }); 
+        saveGoods(); 
+        renderGoods(); 
+        showSyncStatus(`✅ Товар "${name}" добавлен`); 
+        document.getElementById("newGoodsName").value = ""; 
+        document.getElementById("newGoodsPrice").value = ""; 
+        document.getElementById("newGoodsStock").value = ""; 
+    }
+    
+    // ========== КОРЗИНА ==========
+    function renderCart() { 
+        let container = document.getElementById("cartList"); 
+        let html = ""; 
+        cart.forEach((item, idx) => { 
+            let sum = item.price * item.qty; 
+            html += `<div class="cart-item"><div class="cart-item-info"><div class="cart-item-name">${item.type === 'service' ? '📋' : '🛍️'} ${escapeHtml(item.name)}</div><div class="cart-item-detail">${item.qty} шт × ${item.price} ₽</div></div><div class="cart-item-price">${sum} ₽</div><button class="remove-btn" data-idx="${idx}">Удалить</button></div>`; 
+        }); 
+        container.innerHTML = html || "<div style='padding:30px;text-align:center;color:var(--gray-500);'>Корзина пуста</div>"; 
+        document.querySelectorAll(".remove-btn").forEach(btn => btn.onclick = () => { let idx = parseInt(btn.getAttribute("data-idx")); cart.splice(idx, 1); renderCart(); updateCartTotals(); }); 
+        updateCartTotals(); 
+    }
+    
+    function getCartTotals() { 
+        let subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0); 
+        let discount = discountPct > 0 ? subtotal * discountPct / 100 : (discountAmt > 0 ? Math.min(discountAmt, subtotal) : 0); 
+        let finalTotal = subtotal - discount; 
+        let orderExpense = parseFloat(document.getElementById("orderExpense")?.value) || 0; 
+        return { subtotal, discount, finalTotal, profit: finalTotal - orderExpense, orderExpense }; 
+    }
+    
+    function updateCartTotals() { 
+        const t = getCartTotals(); 
+        document.getElementById("cartSubtotal").innerHTML = t.subtotal + " ₽"; 
+        if (t.discount > 0) { 
+            document.getElementById("discountLine").style.display = "flex"; 
+            document.getElementById("cartDiscount").innerHTML = t.discount + " ₽"; 
+        } else { 
+            document.getElementById("discountLine").style.display = "none"; 
+        } 
+        document.getElementById("cartTotal").innerHTML = t.finalTotal + " ₽"; 
+        document.getElementById("cartExpense").innerHTML = t.orderExpense + " ₽"; 
+        document.getElementById("cartProfit").innerHTML = t.profit + " ₽"; 
+    }
+    
+    function applyDiscount() { 
+        discountPct = parseFloat(document.getElementById("discountPercent").value) || 0; 
+        discountAmt = parseFloat(document.getElementById("discountAmount").value) || 0; 
+        if (discountPct > 0 && discountAmt > 0) alert("Выберите один тип скидки"); 
+        updateCartTotals(); 
+    }
+    
+    async function completeOrder() { 
+        if (cart.length === 0) { alert("Корзина пуста"); return; } 
+        if (!shiftOpen || shiftClose) { alert("Смена не открыта!"); return; } 
+        for (let it of cart) { 
+            if (it.type === 'goods') { 
+                let gd = goods.find(g => g.id === it.id); 
+                if (gd && gd.stock < it.qty) { alert(`Недостаточно товара: ${gd.name}. Доступно: ${gd.stock}`); return; } 
+            } 
+        } 
+        for (let it of cart) { 
+            if (it.type === 'goods') { 
+                let gd = goods.find(g => g.id === it.id); 
+                if (gd) { gd.stock -= it.qty; if (gd.stock < 0) gd.stock = 0; } 
+            } 
+        } 
+        saveGoods(); 
+        renderGoods(); 
+        let client = document.getElementById("clientName").value.trim() || "Клиент"; 
+        let phone = document.getElementById("clientPhone").value.trim(); 
+        let comment = document.getElementById("orderComment").value; 
+        let payment = document.querySelector('input[name="payment"]:checked').value; 
+        const totals = getCartTotals(); 
+        let order = { 
+            id: Date.now(), client, phone, 
+            items: cart.map(i => ({ type: i.type, name: i.name, price: i.price, qty: i.qty })), 
+            subtotal: totals.subtotal, discount: totals.discount, discountPercent: discountPct, discountAmount: discountAmt, 
+            finalTotal: totals.finalTotal, orderExpense: totals.orderExpense, profit: totals.profit, 
+            paymentMethod: payment, comment, date: new Date().toLocaleString(), operator: currentUser.name, shiftOpen: shiftOpen 
+        }; 
+        allOrders.push(order); 
+        saveOrders(); 
+        processOrderPayment(payment, totals.finalTotal); 
+        cart = []; discountPct = 0; discountAmt = 0; 
+        document.getElementById("discountPercent").value = 0; document.getElementById("discountAmount").value = 0; 
+        document.getElementById("clientName").value = ""; document.getElementById("clientPhone").value = ""; 
+        document.getElementById("orderComment").value = ""; document.getElementById("orderExpense").value = "0"; 
+        renderCart(); renderHistory(); updateShiftFinanceDisplay(); 
+        alert(`✅ Заказ №${order.id} на ${order.finalTotal} ₽\n💸 Расход: ${totals.orderExpense} ₽\n📊 Прибыль: ${totals.profit} ₽`); 
+    }
+    
+    // ========== РЕДАКТИРОВАНИЕ ЗАКАЗОВ (ГЛАВНАЯ ФУНКЦИЯ) ==========
     function openEditOrder(orderId) {
         const order = allOrders.find(o => o.id === orderId);
         if (!order) { alert("Заказ не найден"); return; }
@@ -259,26 +546,54 @@
         document.getElementById("editClientName").value = order.client || "";
         document.getElementById("editClientPhone").value = order.phone || "";
         const container = document.getElementById("editOrderItemsList");
-        container.innerHTML = "<div style='font-size:12px; margin-bottom:8px;'>Состав заказа (изменение количества)</div>";
+        container.innerHTML = "<div style='margin-bottom:12px; font-size:13px; color:var(--gray-600);'>Состав заказа (можно изменить количество или удалить позицию)</div>";
+        
         order.items.forEach((item, idx) => {
             const div = document.createElement("div");
-            div.style.display = "flex";
-            div.style.gap = "8px";
-            div.style.marginBottom = "8px";
-            div.style.alignItems = "center";
-            div.innerHTML = `<span style="flex:2;">${escapeHtml(item.name)}</span>
-                             <span style="width:60px;">${item.price}₽</span>
-                             <input type="number" id="editQty_${idx}" value="${item.qty}" min="0" step="1" style="width:70px; padding:6px;">
-                             <button class="removeEditItemBtn" data-idx="${idx}" style="background:var(--red); padding:4px 8px;">✕</button>`;
+            div.className = "edit-item-row";
+            div.innerHTML = `
+                <span class="edit-item-name">${escapeHtml(item.name)}</span>
+                <span class="edit-item-price">${item.price} ₽</span>
+                <input type="number" class="edit-item-qty" id="editQty_${idx}" value="${item.qty}" min="0" step="1" style="width:80px; padding:6px;">
+                <button class="remove-edit-item" data-idx="${idx}">✕</button>
+            `;
             container.appendChild(div);
         });
-        document.querySelectorAll(".removeEditItemBtn").forEach(btn => {
-            btn.onclick = (e) => {
+        
+        // Кнопка добавления новой позиции (для удобства)
+        const addDiv = document.createElement("div");
+        addDiv.className = "edit-item-row";
+        addDiv.style.marginTop = "12px";
+        addDiv.style.borderTop = "1px solid var(--gray-200)";
+        addDiv.style.paddingTop = "12px";
+        addDiv.innerHTML = `
+            <input type="text" id="newEditItemName" placeholder="Название товара/услуги" style="flex:2;">
+            <input type="number" id="newEditItemPrice" placeholder="Цена" style="width:80px;">
+            <input type="number" id="newEditItemQty" placeholder="Кол-во" value="1" style="width:70px;">
+            <button id="addNewEditItemBtn" style="background:var(--green); padding:6px 12px;">+ Добавить</button>
+        `;
+        container.appendChild(addDiv);
+        
+        document.querySelectorAll(".remove-edit-item").forEach(btn => {
+            btn.onclick = () => {
                 const idx = parseInt(btn.getAttribute("data-idx"));
                 order.items.splice(idx, 1);
                 openEditOrder(orderId);
             };
         });
+        
+        document.getElementById("addNewEditItemBtn").onclick = () => {
+            const newName = document.getElementById("newEditItemName").value.trim();
+            const newPrice = parseFloat(document.getElementById("newEditItemPrice").value);
+            const newQty = parseInt(document.getElementById("newEditItemQty").value) || 1;
+            if (!newName || isNaN(newPrice) || newPrice <= 0) {
+                alert("Введите название и цену");
+                return;
+            }
+            order.items.push({ type: 'service', name: newName, price: newPrice, qty: newQty });
+            openEditOrder(orderId);
+        };
+        
         document.getElementById("editOrderModal").style.display = "flex";
     }
     
@@ -287,17 +602,18 @@
         if (!order) { alert("Заказ не найден"); return; }
         order.client = document.getElementById("editClientName").value.trim() || "Клиент";
         order.phone = document.getElementById("editClientPhone").value.trim();
-        // Обновляем количество каждого товара из полей
+        
+        // Обновляем количества
         for (let i = 0; i < order.items.length; i++) {
             const qtyInput = document.getElementById(`editQty_${i}`);
             if (qtyInput) {
                 let newQty = parseInt(qtyInput.value);
-                if (isNaN(newQty)) newQty = 1;
-                if (newQty <= 0) newQty = 1;
+                if (isNaN(newQty) || newQty <= 0) newQty = 1;
                 order.items[i].qty = newQty;
             }
         }
-        // Пересчитываем subtotal, discount, finalTotal, profit
+        
+        // Пересчитываем суммы
         let subtotal = 0;
         order.items.forEach(it => { subtotal += it.price * it.qty; });
         let discount = order.discountPercent ? subtotal * order.discountPercent / 100 : (order.discountAmount || 0);
@@ -306,6 +622,7 @@
         order.discount = discount;
         order.finalTotal = subtotal - discount;
         order.profit = order.finalTotal - (order.orderExpense || 0);
+        
         saveOrders();
         renderHistory();
         updateShiftFinanceDisplay();
@@ -323,80 +640,140 @@
         }
     }
     
-    // Обновлённый рендер истории с кнопками редактирования/удаления
-    function renderHistory(){ 
-        let my = currentUser.role==="admin"?allOrders:allOrders.filter(o=>o.operator===currentUser.name); 
-        let cont=document.getElementById("historyList"); 
-        if(!my.length){ cont.innerHTML="<div style='padding:40px;text-align:center;color:var(--gray-500);'>Нет заказов</div>"; return; } 
-        let html=""; 
-        [...my].reverse().forEach(o=>{ 
-            html+=`<div class="history-item" data-order-id="${o.id}">
+    // ========== ИСТОРИЯ С КНОПКАМИ РЕДАКТИРОВАНИЯ/УДАЛЕНИЯ ==========
+    function renderHistory() { 
+        let my = currentUser.role === "admin" ? allOrders : allOrders.filter(o => o.operator === currentUser.name); 
+        let container = document.getElementById("historyList"); 
+        if (!my.length) { container.innerHTML = "<div style='padding:40px;text-align:center;color:var(--gray-500);'>Нет заказов</div>"; return; } 
+        let html = ""; 
+        [...my].reverse().forEach(o => { 
+            html += `<div class="history-item" data-order-id="${o.id}">
                         <div style="padding-right:80px;">
-                            <strong>${escapeHtml(o.client)}</strong> ${o.phone?`📞 ${escapeHtml(o.phone)}`:""} | ${o.date} | <strong>${o.finalTotal} ₽</strong> | 💸 расход: ${o.orderExpense||0} ₽ | <span class="history-profit">💰 прибыль: ${o.profit||0} ₽</span>
+                            <strong>${escapeHtml(o.client)}</strong> ${o.phone ? `📞 ${escapeHtml(o.phone)}` : ""} | ${o.date} | <strong>${o.finalTotal} ₽</strong> | 💸 расход: ${o.orderExpense || 0} ₽ | <span class="history-profit">💰 прибыль: ${o.profit || 0} ₽</span>
                         </div>
-                        <div style="font-size:12px; margin-top:6px;">${o.items.map(i=>`${i.name} x${i.qty}`).join(", ")}</div>
+                        <div style="font-size:12px; margin-top:6px;">${o.items.map(i => `${i.name} x${i.qty}`).join(", ")}</div>
                         <div class="order-actions">
                             <button class="edit-order" data-id="${o.id}">✏️ Ред.</button>
                             <button class="delete-order" data-id="${o.id}">🗑 Удалить</button>
                         </div>
                     </div>`; 
         }); 
-        cont.innerHTML=html; 
-        document.querySelectorAll(".edit-order").forEach(btn=>btn.onclick=()=>{ openEditOrder(parseInt(btn.getAttribute("data-id"))); });
-        document.querySelectorAll(".delete-order").forEach(btn=>btn.onclick=()=>{ deleteOrder(parseInt(btn.getAttribute("data-id"))); });
+        container.innerHTML = html; 
+        document.querySelectorAll(".edit-order").forEach(btn => btn.onclick = () => { openEditOrder(parseInt(btn.getAttribute("data-id"))); }); 
+        document.querySelectorAll(".delete-order").forEach(btn => btn.onclick = () => { deleteOrder(parseInt(btn.getAttribute("data-id"))); }); 
     }
     
-    // Короткие заглушки для остальных функций (сохранение логики из исходника)
-    function loadData() { let s=localStorage.getItem("a4print_services"); if(s) services=JSON.parse(s); let g=localStorage.getItem("a4print_goods"); if(g) goods=JSON.parse(g); let ord=localStorage.getItem("a4print_orders"); if(ord) allOrders=JSON.parse(ord); loadAllShifts(); loadCashData(); renderServices(); renderGoods(); renderCart(); renderHistory(); loadShift(); updateShiftFinanceDisplay(); document.getElementById("currentOperatorName").innerHTML = `${currentUser.name} ${currentUser.role==="admin"?"👑":"👤"}`; if(document.getElementById("googleWebAppUrl")) document.getElementById("googleWebAppUrl").value=GOOGLE_WEBAPP_URL; updateCashUI(); }
-    function loadShift() { let s=localStorage.getItem("a4print_shift"); if(s){ let d=JSON.parse(s); if(d.operator===currentUser?.name){ shiftOpen=d.open; shiftClose=d.close; shiftOpenComment=d.openComment||""; shiftCloseComment=d.closeComment||""; } } updateShiftUI(); updateShiftFinanceDisplay(); }
-    function updateShiftUI() { let st=document.getElementById("shiftStatus"), op=document.getElementById("shiftOpenTime"), cl=document.getElementById("shiftCloseTime"), btn=document.getElementById("shiftToggleBtn"); if (shiftOpen && !shiftClose) { st.innerText="🟢 Открыта"; op.innerText=shiftOpen; cl.innerText="—"; btn.innerText="🔒 Закрыть смену"; btn.classList.remove("btn-warning"); btn.classList.add("btn-danger"); } else { st.innerText=shiftOpen?"🔴 Закрыта":"⚫ Не открыта"; op.innerText=shiftOpen||"—"; cl.innerText=shiftClose||"—"; btn.innerText="🚀 Открыть смену"; btn.classList.remove("btn-danger"); btn.classList.add("btn-warning"); } }
-    function getShiftFinance() { if (!shiftOpen) return { revenue:0, cash:0, card:0, profit:0 }; const shiftOrders = allOrders.filter(o => o.operator === currentUser.name && o.date >= shiftOpen && (!shiftClose || o.date <= shiftClose)); let revenue=0,cash=0,card=0,profit=0; shiftOrders.forEach(o => { revenue+=o.finalTotal; profit+=o.profit||0; o.paymentMethod==="cash"? cash+=o.finalTotal: card+=o.finalTotal; }); return { revenue, cash, card, profit }; }
-    function updateShiftFinanceDisplay() { const f = getShiftFinance(); document.getElementById("shiftRevenue").innerHTML = f.revenue.toLocaleString() + " ₽"; document.getElementById("shiftCash").innerHTML = f.cash.toLocaleString() + " ₽"; document.getElementById("shiftCard").innerHTML = f.card.toLocaleString() + " ₽"; document.getElementById("shiftProfit").innerHTML = f.profit.toLocaleString() + " ₽"; }
-    function toggleShiftWithComment() { if (!shiftOpen || shiftClose) { shiftOpen = new Date().toLocaleString(); shiftClose = null; saveShift(); updateShiftUI(); updateShiftFinanceDisplay(); alert("✅ Смена открыта"); } else { if (!shiftOpen) return; let finance = getShiftFinance(); shiftClose = new Date().toLocaleString(); saveShift(); allShifts.push({login:currentUser.username, name:currentUser.name, role:currentUser.role, open:shiftOpen, close:shiftClose}); saveAllShifts(); updateShiftUI(); updateShiftFinanceDisplay(); alert(`✅ Смена закрыта\n💰 Выручка: ${finance.revenue} ₽\n💵 Наличные: ${finance.cash} ₽\n💳 Карта: ${finance.card} ₽`); } }
-    function renderServices(f=null) { const g=document.getElementById("servicesGrid"); const d=f!==null?f:services; g.innerHTML=""; d.forEach(s=>{ let c=document.createElement("div"); c.className="service-card"; c.innerHTML=`<div class="item-name">${escapeHtml(s.name)}</div><div class="item-price">${s.price} ₽</div><div class="qty-control"><input type="number" id="qty_srv_${s.id}" value="1" min="0" step="1"></div><button class="add-btn" data-type="service" data-id="${s.id}">➕ Добавить</button>`; g.appendChild(c); }); document.querySelectorAll(".add-btn").forEach(btn=>btn.onclick=()=>{ let type=btn.getAttribute("data-type"); let id=parseInt(btn.getAttribute("data-id")); addToCart(type,id); }); }
-    function renderGoods(f=null) { const g=document.getElementById("goodsGrid"); const d=f!==null?f:goods; g.innerHTML=""; d.forEach(gd=>{ let c=document.createElement("div"); c.className="goods-card"; c.innerHTML=`<div class="item-name">${escapeHtml(gd.name)}</div><div class="item-price">${gd.price} ₽</div><div class="item-stock">📦 Остаток: ${gd.stock} ${gd.unit||'шт'}</div><div class="qty-control"><input type="number" id="qty_goods_${gd.id}" value="1" min="0" max="${gd.stock}"></div><button class="add-btn" data-type="goods" data-id="${gd.id}">➕ В корзину</button>`; g.appendChild(c); }); document.querySelectorAll(".add-btn").forEach(btn=>btn.onclick=()=>{ let type=btn.getAttribute("data-type"); let id=parseInt(btn.getAttribute("data-id")); addToCart(type,id); }); }
-    function addToCart(type,id){ let qi=document.getElementById(`qty_${type==='service'?'srv':'goods'}_${id}`); let q=parseInt(qi?.value)||1; if(q<=0) q=1; if(type==='service'){ let s=services.find(sv=>sv.id===id); if(!s) return; let ex=cart.find(i=>i.type==='service'&&i.id===id); if(ex) ex.qty+=q; else cart.push({type:'service',id:id,name:s.name,price:s.price,qty:q}); } else if(type==='goods'){ let gd=goods.find(g=>g.id===id); if(!gd) return; if(q>gd.stock){ alert(`На складе только ${gd.stock} шт.`); return; } let ex=cart.find(i=>i.type==='goods'&&i.id===id); if(ex) ex.qty+=q; else cart.push({type:'goods',id:id,name:gd.name,price:gd.price,qty:q}); } renderCart(); updateCartTotals(); }
-    function addFastService(){ let n=document.getElementById("fastServiceName").value.trim(); let p=parseFloat(document.getElementById("fastServicePrice").value); if(!n || isNaN(p)||p<=0){ alert("Введите название и цену"); return; } cart.push({type:'service',id:Date.now(),name:n,price:p,qty:1,isFast:true}); document.getElementById("fastServiceName").value=""; document.getElementById("fastServicePrice").value=""; renderCart(); updateCartTotals(); }
-    function addNewGoods(){ let n=document.getElementById("newGoodsName").value.trim(); let p=parseFloat(document.getElementById("newGoodsPrice").value); let st=parseInt(document.getElementById("newGoodsStock").value); if(!n || isNaN(p)||p<=0 || isNaN(st)){ alert("Заполните все поля"); return; } goods.push({id:Date.now(),name:n,price:p,stock:st,unit:"шт"}); saveGoods(); renderGoods(); showSyncStatus(`✅ Товар "${n}" добавлен`); document.getElementById("newGoodsName").value=""; document.getElementById("newGoodsPrice").value=""; document.getElementById("newGoodsStock").value=""; }
-    function renderCart(){ let cont=document.getElementById("cartList"); let html=""; cart.forEach((item,idx)=>{ let sum=item.price*item.qty; html+=`<div class="cart-item"><div class="cart-item-info"><div class="cart-item-name">${item.type==='service'?'📋':'🛍️'} ${escapeHtml(item.name)}</div><div class="cart-item-detail">${item.qty} шт × ${item.price} ₽</div></div><div class="cart-item-price">${sum} ₽</div><button class="remove-btn" data-idx="${idx}">Удалить</button></div>`; }); cont.innerHTML=html||"<div style='padding:30px;text-align:center;color:var(--gray-500);'>Корзина пуста</div>"; document.querySelectorAll(".remove-btn").forEach(btn=>btn.onclick=()=>{ let idx=parseInt(btn.getAttribute("data-idx")); cart.splice(idx,1); renderCart(); updateCartTotals(); }); updateCartTotals(); }
-    function getCartTotals() { let subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0); let discount = discountPct > 0 ? subtotal * discountPct / 100 : (discountAmt > 0 ? Math.min(discountAmt, subtotal) : 0); let finalTotal = subtotal - discount; let orderExpense = parseFloat(document.getElementById("orderExpense")?.value) || 0; return { subtotal, discount, finalTotal, profit: finalTotal - orderExpense, orderExpense }; }
-    function updateCartTotals() { const t = getCartTotals(); document.getElementById("cartSubtotal").innerHTML = t.subtotal + " ₽"; if (t.discount > 0) { document.getElementById("discountLine").style.display = "flex"; document.getElementById("cartDiscount").innerHTML = t.discount + " ₽"; } else { document.getElementById("discountLine").style.display = "none"; } document.getElementById("cartTotal").innerHTML = t.finalTotal + " ₽"; document.getElementById("cartExpense").innerHTML = t.orderExpense + " ₽"; document.getElementById("cartProfit").innerHTML = t.profit + " ₽"; }
-    function applyDiscount(){ discountPct=parseFloat(document.getElementById("discountPercent").value)||0; discountAmt=parseFloat(document.getElementById("discountAmount").value)||0; if(discountPct>0&&discountAmt>0) alert("Выберите один тип скидки"); updateCartTotals(); }
-    async function completeOrder(){ if(cart.length===0){ alert("Корзина пуста"); return; } if(!shiftOpen||shiftClose){ alert("Смена не открыта!"); return; } for(let it of cart){ if(it.type==='goods'){ let gd=goods.find(g=>g.id===it.id); if(gd&&gd.stock<it.qty){ alert(`Недостаточно товара: ${gd.name}. Доступно: ${gd.stock}`); return; } } } for(let it of cart){ if(it.type==='goods'){ let gd=goods.find(g=>g.id===it.id); if(gd){ gd.stock-=it.qty; if(gd.stock<0) gd.stock=0; } } } saveGoods(); renderGoods(); let client=document.getElementById("clientName").value.trim()||"Клиент"; let phone=document.getElementById("clientPhone").value.trim(); let comment=document.getElementById("orderComment").value; let payment=document.querySelector('input[name="payment"]:checked').value; const totals=getCartTotals(); let order={id:Date.now(),client,phone,items:cart.map(i=>({type:i.type,name:i.name,price:i.price,qty:i.qty})),subtotal:totals.subtotal,discount:totals.discount,discountPercent:discountPct,discountAmount:discountAmt,finalTotal:totals.finalTotal,orderExpense:totals.orderExpense,profit:totals.profit,paymentMethod:payment,comment,date:new Date().toLocaleString(),operator:currentUser.name,shiftOpen:shiftOpen}; allOrders.push(order); saveOrders(); processOrderPayment(payment, totals.finalTotal); cart=[]; discountPct=0; discountAmt=0; document.getElementById("discountPercent").value=0; document.getElementById("discountAmount").value=0; document.getElementById("clientName").value=""; document.getElementById("clientPhone").value=""; document.getElementById("orderComment").value=""; document.getElementById("orderExpense").value="0"; renderCart(); renderHistory(); updateShiftFinanceDisplay(); alert(`✅ Заказ №${order.id} на ${order.finalTotal} ₽\n💸 Расход: ${totals.orderExpense} ₽\n📊 Прибыль: ${totals.profit} ₽`); }
-    function showSyncStatus(msg){ let d=document.getElementById("syncStatus"); if(d){ d.textContent=msg; setTimeout(()=>{ if(d.textContent===msg) d.textContent="💾 Готово"; },2000); } }
-    function toggleTheme(){ document.body.classList.toggle("dark"); localStorage.setItem("a4print_theme",document.body.classList.contains("dark")?"dark":"light"); }
-    function login(){ let sel=document.getElementById("loginSelect").value; let pwd=document.getElementById("loginPassword").value; if(!sel){ document.getElementById("loginError").innerText="Выберите оператора"; return; } let u=operators[sel]; if(u && u.password===pwd){ currentUser={...u,username:sel}; localStorage.setItem("a4print_current_user",JSON.stringify(currentUser)); document.getElementById("loginOverlay").style.display="none"; document.getElementById("mainContent").style.display="block"; loadData(); initBurger(); return; } document.getElementById("loginError").innerText="Неверный пароль"; }
-    function logout(){ currentUser=null; localStorage.removeItem("a4print_current_user"); location.reload(); }
-    function escapeHtml(str){ return str?String(str).replace(/[&<>]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[m])):""; }
-    function initBurger(){ let btn=document.getElementById("burgerBtn"),menu=document.getElementById("burgerMenu"); if(btn&&menu){ let html=`<span style="font-weight:600; padding-bottom:8px;">${currentUser?.name || ""}</span><button id="burgerThemeToggle">🌙 Тёмная</button><button id="burgerAdminBtn">Админ</button><button id="burgerShiftBtn">🚀 Смена</button><button id="burgerReportBtn">📊 Отчёт</button><button id="burgerSyncBtn">🔄 Синхр.</button><button id="burgerLogoutBtn">Выйти</button>`; menu.innerHTML=html; btn.onclick=(e)=>{ e.stopPropagation(); menu.classList.toggle("show"); }; document.addEventListener("click",(e)=>{ if(!menu.contains(e.target)&&!btn.contains(e.target)) menu.classList.remove("show"); }); document.getElementById("burgerThemeToggle").onclick=toggleTheme; document.getElementById("burgerAdminBtn").onclick=()=>{ if(currentUser?.role==="admin"){ renderAdmin(); document.getElementById("adminModal").style.display="flex"; }else alert("Доступно только администратору"); menu.classList.remove("show"); }; document.getElementById("burgerShiftBtn").onclick=()=>{ toggleShiftWithComment(); menu.classList.remove("show"); }; document.getElementById("burgerReportBtn").onclick=()=>{ showReportModal(); menu.classList.remove("show"); }; document.getElementById("burgerSyncBtn").onclick=()=>{ syncToGoogle(); menu.classList.remove("show"); }; document.getElementById("burgerLogoutBtn").onclick=logout; } }
-    function showReportModal() { document.getElementById("reportModal").style.display = "flex"; }
-    function syncToGoogle() { alert("Синхронизация требует настройки URL"); }
-    function renderAdmin() { alert("Админ-панель требует доработки, основные функции работают"); }
+    // ========== ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ==========
+    function showSyncStatus(msg) { 
+        let d = document.getElementById("syncStatus"); 
+        if (d) { d.textContent = msg; setTimeout(() => { if (d.textContent === msg) d.textContent = "💾 Готово"; }, 2000); } 
+    }
     
-    // Инициализация событий
-    document.addEventListener("DOMContentLoaded",()=>{
-        let saved=localStorage.getItem("a4print_current_user"); let theme=localStorage.getItem("a4print_theme");
-        if(theme==="dark") document.body.classList.add("dark");
-        if(saved){ try{ currentUser=JSON.parse(saved); if(operators[currentUser.username]){ document.getElementById("loginOverlay").style.display="none"; document.getElementById("mainContent").style.display="block"; loadData(); initBurger(); }else logout(); }catch(e){ logout(); } }else{ initBurger(); }
-        document.getElementById("themeToggleBtn").onclick=toggleTheme;
-        document.getElementById("loginBtn").onclick=login;
-        document.getElementById("logoutBtn").onclick=logout;
-        document.getElementById("applyDiscountBtn").onclick=applyDiscount;
-        document.getElementById("completeOrderBtn").onclick=completeOrder;
-        document.getElementById("clearCartBtn").onclick=()=>{ cart=[]; discountPct=0; discountAmt=0; renderCart(); updateCartTotals(); };
-        document.getElementById("addFastServiceBtn").onclick=addFastService;
-        document.getElementById("addNewGoodsBtn").onclick=addNewGoods;
-        document.getElementById("shiftToggleBtn").onclick=toggleShiftWithComment;
-        document.getElementById("printBlankBtn").onclick=()=>alert("Функция бланка заказа");
-        document.getElementById("reportMainBtn").onclick=showReportModal;
-        document.getElementById("saveEditOrderBtn").onclick=saveEditedOrder;
-        document.getElementById("cancelEditOrderBtn").onclick=()=>document.getElementById("editOrderModal").style.display="none";
+    function toggleTheme() { 
+        document.body.classList.toggle("dark"); 
+        localStorage.setItem("a4print_theme", document.body.classList.contains("dark") ? "dark" : "light"); 
+    }
+    
+    function login() { 
+        let sel = document.getElementById("loginSelect").value; 
+        let pwd = document.getElementById("loginPassword").value; 
+        if (!sel) { document.getElementById("loginError").innerText = "Выберите оператора"; return; } 
+        let u = operators[sel]; 
+        if (u && u.password === pwd) { 
+            currentUser = { ...u, username: sel }; 
+            localStorage.setItem("a4print_current_user", JSON.stringify(currentUser)); 
+            document.getElementById("loginOverlay").style.display = "none"; 
+            document.getElementById("mainContent").style.display = "block"; 
+            loadData(); 
+            initBurger(); 
+            return; 
+        } 
+        document.getElementById("loginError").innerText = "Неверный пароль"; 
+    }
+    
+    function logout() { 
+        currentUser = null; 
+        localStorage.removeItem("a4print_current_user"); 
+        location.reload(); 
+    }
+    
+    function escapeHtml(str) { return str ? String(str).replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m])) : ""; }
+    
+    function initBurger() { 
+        let btn = document.getElementById("burgerBtn"), menu = document.getElementById("burgerMenu"); 
+        if (btn && menu) { 
+            let html = `<span style="font-weight:600; padding-bottom:8px;">${currentUser?.name || ""}</span><button id="burgerThemeToggle">🌙 Тёмная</button><button id="burgerAdminBtn">Админ</button><button id="burgerShiftBtn">🚀 Смена</button><button id="burgerReportBtn">📊 Отчёт</button><button id="burgerSyncBtn">🔄 Синхр.</button><button id="burgerPrintBtn">🖨️ Бланк</button><button id="burgerLogoutBtn">Выйти</button>`; 
+            menu.innerHTML = html; 
+            btn.onclick = (e) => { e.stopPropagation(); menu.classList.toggle("show"); }; 
+            document.addEventListener("click", (e) => { if (!menu.contains(e.target) && !btn.contains(e.target)) menu.classList.remove("show"); }); 
+            document.getElementById("burgerThemeToggle").onclick = toggleTheme; 
+            document.getElementById("burgerAdminBtn").onclick = () => { if (currentUser?.role === "admin") { alert("Админ-панель доступна"); } else alert("Доступно только администратору"); menu.classList.remove("show"); }; 
+            document.getElementById("burgerShiftBtn").onclick = () => { toggleShiftWithComment(); menu.classList.remove("show"); }; 
+            document.getElementById("burgerReportBtn").onclick = () => { showReportModal(); menu.classList.remove("show"); }; 
+            document.getElementById("burgerSyncBtn").onclick = () => { alert("Синхронизация"); menu.classList.remove("show"); }; 
+            document.getElementById("burgerPrintBtn").onclick = () => alert("Функция бланка"); 
+            document.getElementById("burgerLogoutBtn").onclick = logout; 
+        } 
+    }
+    
+    function showReportModal() { document.getElementById("reportModal").style.display = "flex"; }
+    
+    // ========== ИНИЦИАЛИЗАЦИЯ ==========
+    document.addEventListener("DOMContentLoaded", () => {
+        let saved = localStorage.getItem("a4print_current_user"); 
+        let theme = localStorage.getItem("a4print_theme");
+        if (theme === "dark") document.body.classList.add("dark");
+        
+        if (saved) { 
+            try { 
+                currentUser = JSON.parse(saved); 
+                if (operators[currentUser.username]) { 
+                    document.getElementById("loginOverlay").style.display = "none"; 
+                    document.getElementById("mainContent").style.display = "block"; 
+                    loadData(); 
+                    initBurger(); 
+                } else logout(); 
+            } catch (e) { logout(); } 
+        } else { 
+            initBurger(); 
+        }
+        
+        document.getElementById("themeToggleBtn").onclick = toggleTheme;
+        document.getElementById("loginBtn").onclick = login;
+        document.getElementById("logoutBtn").onclick = logout;
+        document.getElementById("applyDiscountBtn").onclick = applyDiscount;
+        document.getElementById("completeOrderBtn").onclick = completeOrder;
+        document.getElementById("clearCartBtn").onclick = () => { cart = []; discountPct = 0; discountAmt = 0; renderCart(); updateCartTotals(); };
+        document.getElementById("addFastServiceBtn").onclick = addFastService;
+        document.getElementById("addNewGoodsBtn").onclick = addNewGoods;
+        document.getElementById("shiftToggleBtn").onclick = toggleShiftWithComment;
+        document.getElementById("printBlankBtn").onclick = () => alert("Функция бланка заказа");
+        document.getElementById("reportMainBtn").onclick = showReportModal;
+        document.getElementById("cancelReportBtn").onclick = () => document.getElementById("reportModal").style.display = "none";
+        document.getElementById("saveEditOrderBtn").onclick = saveEditedOrder;
+        document.getElementById("cancelEditOrderBtn").onclick = () => document.getElementById("editOrderModal").style.display = "none";
+        
         // Заглушки отчётов
-        document.getElementById("reportTodayExcelBtn")?.addEventListener("click",()=>alert("Excel отчёт"));
-        document.getElementById("reportFullExcelBtn")?.addEventListener("click",()=>alert("Excel отчёт"));
-        document.getElementById("reportShiftsExcelBtn")?.addEventListener("click",()=>alert("Excel отчёт"));
-        document.getElementById("cancelReportBtn")?.addEventListener("click",()=>document.getElementById("reportModal").style.display="none");
-        document.getElementById("syncGoogleBtn").onclick=syncToGoogle;
+        document.getElementById("reportTodayExcelBtn")?.addEventListener("click", () => { alert("Excel отчёт за сегодня"); document.getElementById("reportModal").style.display = "none"; });
+        document.getElementById("reportFullExcelBtn")?.addEventListener("click", () => { alert("Excel полный отчёт"); document.getElementById("reportModal").style.display = "none"; });
+        document.getElementById("reportShiftsExcelBtn")?.addEventListener("click", () => { alert("Excel отчёт по сменам"); document.getElementById("reportModal").style.display = "none"; });
+        document.getElementById("reportTodayPdfBtn")?.addEventListener("click", () => { alert("PDF отчёт за сегодня"); document.getElementById("reportModal").style.display = "none"; });
+        document.getElementById("reportFullPdfBtn")?.addEventListener("click", () => { alert("PDF полный отчёт"); document.getElementById("reportModal").style.display = "none"; });
+        document.getElementById("syncGoogleBtn").onclick = () => alert("Синхронизация с Google Sheets");
+        
+        // Поиск
+        let ss = document.getElementById('searchService'); 
+        if (ss) ss.oninput = () => renderServices(services.filter(s => s.name.toLowerCase().includes(ss.value.toLowerCase()))); 
+        let sg = document.getElementById('searchGoods'); 
+        if (sg) sg.oninput = () => renderGoods(goods.filter(g => g.name.toLowerCase().includes(sg.value.toLowerCase()))); 
+        
+        // Переключение вкладок
+        let catTabs = document.querySelectorAll('.category-tab'); 
+        let panels = { services: document.getElementById('servicesPanel'), goods: document.getElementById('goodsPanel') }; 
+        catTabs.forEach(tab => { tab.onclick = () => { catTabs.forEach(t => t.classList.remove('active')); tab.classList.add('active'); Object.values(panels).forEach(p => p.classList.remove('active')); panels[tab.getAttribute('data-cat')].classList.add('active'); }; });
+        
+        // Закрытие модальных окон
+        window.onclick = (e) => { if (e.target === document.getElementById("reportModal")) document.getElementById("reportModal").style.display = "none"; if (e.target === document.getElementById("editOrderModal")) document.getElementById("editOrderModal").style.display = "none"; };
     });
 </script>
 </body>
