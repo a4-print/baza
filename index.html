@@ -13,7 +13,6 @@
         }
         .container { max-width: 1400px; margin: 0 auto; }
         
-        /* Шапка */
         .header {
             background: white;
             border-radius: 16px;
@@ -28,7 +27,6 @@
         }
         h1 { font-size: 24px; color: #0066B3; }
         
-        /* Панель смены */
         .shift-bar {
             background: white;
             border-radius: 16px;
@@ -43,7 +41,6 @@
         .shift-stats { display: flex; gap: 24px; flex-wrap: wrap; }
         .stat-item { background: #f3f4f6; padding: 6px 14px; border-radius: 20px; }
         
-        /* Основная сетка */
         .dashboard {
             display: flex;
             gap: 24px;
@@ -70,7 +67,6 @@
             padding: 20px;
         }
         
-        /* Услуги и товары */
         .services-grid, .goods-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
@@ -85,7 +81,6 @@
             border-radius: 12px;
             padding: 12px;
             text-align: center;
-            cursor: pointer;
             transition: all 0.2s;
         }
         .service-card:hover, .goods-card:hover { border-color: #0066B3; transform: translateY(-2px); }
@@ -93,7 +88,6 @@
         .service-card input, .goods-card input { width: 70px; padding: 6px; text-align: center; border: 1px solid #d1d5db; border-radius: 8px; }
         .service-card button, .goods-card button { background: #0066B3; color: white; border: none; padding: 6px 12px; border-radius: 8px; margin-top: 8px; width: 100%; cursor: pointer; }
         
-        /* Корзина */
         .cart-item {
             background: #f9fafb;
             border-left: 3px solid #0066B3;
@@ -131,7 +125,6 @@
         .btn-success { background: #10b981; }
         .btn-warning { background: #f59e0b; }
         
-        /* История заказов — тут кнопки ВСЕГДА видны */
         .history-list {
             max-height: 400px;
             overflow-y: auto;
@@ -186,7 +179,6 @@
             border-top: 1px dashed #e5e7eb;
         }
         
-        /* Модальные окна */
         .modal {
             position: fixed;
             top: 0;
@@ -202,7 +194,7 @@
         .modal-card {
             background: white;
             border-radius: 20px;
-            max-width: 600px;
+            max-width: 650px;
             width: 90%;
             max-height: 85vh;
             overflow-y: auto;
@@ -244,6 +236,13 @@
             border-top: 1px solid #e5e7eb;
             flex-wrap: wrap;
         }
+        .expense-row {
+            background: #fef3c7;
+            padding: 12px;
+            border-radius: 8px;
+            margin: 12px 0;
+            border-left: 3px solid #f59e0b;
+        }
         .sync-status {
             position: fixed;
             bottom: 20px;
@@ -262,6 +261,7 @@
         }
         .tab-btn.active { background: #0066B3; color: white; }
         .hidden { display: none; }
+        .profit-text { color: #10b981; font-weight: 600; }
         @media (max-width: 850px) { body { padding: 12px; } }
     </style>
 </head>
@@ -343,6 +343,11 @@
                 <input type="text" id="clientName" placeholder="Имя клиента">
                 <input type="text" id="clientPhone" placeholder="Телефон" style="margin-top: 8px;">
                 
+                <div style="margin: 12px 0; padding: 10px; background: #fef3c7; border-radius: 8px;">
+                    <label>💸 Расход по заказу (материалы, партнёрам)</label>
+                    <input type="number" id="orderExpense" value="0" step="100" style="margin-top: 6px;">
+                </div>
+                
                 <div id="cartList" style="margin: 16px 0; max-height: 280px; overflow-y: auto;"></div>
                 
                 <div class="row-2">
@@ -359,6 +364,8 @@
                 <div class="total-line"><span>Подытог</span><span id="subtotal">0 ₽</span></div>
                 <div class="total-line" id="discountLine" style="display:none;"><span>Скидка</span><span id="discountSpan">0 ₽</span></div>
                 <div class="total-line"><span>💰 Итого</span><span id="totalSum">0 ₽</span></div>
+                <div class="total-line"><span>💸 Расход</span><span id="expenseSpan">0 ₽</span></div>
+                <div class="total-line profit-text"><span>📊 Чистая прибыль</span><span id="profitSpan">0 ₽</span></div>
                 
                 <div class="row-2">
                     <button id="completeBtn" style="flex:2;">✅ Оформить заказ</button>
@@ -382,13 +389,22 @@
         <h3 style="margin-bottom: 20px;">✏️ Редактирование заказа</h3>
         <input type="text" id="editClientName" placeholder="Имя клиента">
         <input type="text" id="editClientPhone" placeholder="Телефон" style="margin: 12px 0;">
+        
+        <div class="expense-row">
+            <label>💸 Расход по заказу</label>
+            <input type="number" id="editOrderExpense" value="0" step="100" style="margin-top: 6px;">
+        </div>
+        
+        <label style="font-weight: 500; margin-bottom: 8px; display: block;">Состав заказа:</label>
         <div id="editItemsList" style="max-height: 300px; overflow-y: auto; margin-bottom: 16px;"></div>
+        
         <div class="add-item-row">
             <input type="text" id="newItemName" placeholder="Название" style="flex:2;">
             <input type="number" id="newItemPrice" placeholder="Цена" style="width: 90px;">
             <input type="number" id="newItemQty" placeholder="Кол-во" value="1" style="width: 80px;">
             <button id="addEditItemBtn" style="background: #10b981;">➕</button>
         </div>
+        
         <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 20px;">
             <button id="saveEditBtn" class="btn-success">💾 Сохранить</button>
             <button id="cancelEditBtn" class="btn-outline">Отмена</button>
@@ -562,6 +578,8 @@
         let discount = discountPercent > 0 ? subtotal * discountPercent / 100 : discountAmount;
         if (discount > subtotal) discount = subtotal;
         const finalTotal = subtotal - discount;
+        const expense = parseFloat(document.getElementById("orderExpense")?.value) || 0;
+        const profit = finalTotal - expense;
         
         document.getElementById("subtotal").innerHTML = subtotal + " ₽";
         if (discount > 0) {
@@ -571,6 +589,8 @@
             document.getElementById("discountLine").style.display = "none";
         }
         document.getElementById("totalSum").innerHTML = finalTotal + " ₽";
+        document.getElementById("expenseSpan").innerHTML = expense + " ₽";
+        document.getElementById("profitSpan").innerHTML = profit + " ₽";
     }
     
     function applyDiscount() {
@@ -595,6 +615,8 @@
         let discount = discountPercent > 0 ? subtotal * discountPercent / 100 : discountAmount;
         if (discount > subtotal) discount = subtotal;
         const finalTotal = subtotal - discount;
+        const expense = parseFloat(document.getElementById("orderExpense").value) || 0;
+        const profit = finalTotal - expense;
         
         const order = {
             id: Date.now(),
@@ -607,7 +629,8 @@
             discountPercent,
             discountAmount,
             finalTotal,
-            profit: finalTotal,
+            expense: expense,
+            profit: profit,
             paymentMethod: payment,
             operator: currentUser.name
         };
@@ -631,12 +654,13 @@
         discountAmount = 0;
         document.getElementById("discPct").value = 0;
         document.getElementById("discAmt").value = 0;
+        document.getElementById("orderExpense").value = "0";
         document.getElementById("clientName").value = "";
         document.getElementById("clientPhone").value = "";
         renderCart();
         renderHistory();
         updateShiftFinance();
-        showStatus(`✅ Заказ на ${finalTotal} ₽ оформлен`);
+        showStatus(`✅ Заказ на ${finalTotal} ₽, прибыль: ${profit} ₽`);
     }
     
     function clearCart() {
@@ -645,6 +669,7 @@
         discountAmount = 0;
         document.getElementById("discPct").value = 0;
         document.getElementById("discAmt").value = 0;
+        document.getElementById("orderExpense").value = "0";
         renderCart();
     }
     
@@ -660,11 +685,14 @@
         let html = "";
         allOrders.forEach(order => {
             const itemsText = order.items.map(i => `${i.name} x${i.qty}`).join(", ");
+            const expense = order.expense || 0;
+            const profit = order.profit || (order.finalTotal - expense);
             html += `
                 <div class="history-item">
                     <div class="history-header">
                         <div class="history-info">
-                            <strong>${escapeHtml(order.client)}</strong> ${order.phone ? `📞 ${escapeHtml(order.phone)}` : ""} | ${order.date} | <strong>${order.finalTotal} ₽</strong> | 💰 прибыль: ${order.profit || 0} ₽
+                            <strong>${escapeHtml(order.client)}</strong> ${order.phone ? `📞 ${escapeHtml(order.phone)}` : ""} | ${order.date} | 
+                            <strong>${order.finalTotal} ₽</strong> | 💸 расход: ${expense} ₽ | 📈 прибыль: ${profit} ₽
                         </div>
                         <div class="history-actions">
                             <button class="edit-btn" onclick="openEditOrder(${order.id})">✏️ Ред.</button>
@@ -684,6 +712,7 @@
         editingOrderId = orderId;
         document.getElementById("editClientName").value = order.client || "";
         document.getElementById("editClientPhone").value = order.phone || "";
+        document.getElementById("editOrderExpense").value = order.expense || 0;
         
         const container = document.getElementById("editItemsList");
         container.innerHTML = "";
@@ -693,7 +722,7 @@
             div.className = "edit-item-row";
             div.innerHTML = `
                 <span class="edit-item-name">${escapeHtml(item.name)} (${item.price}₽)</span>
-                <input type="number" class="edit-item-qty" id="editQty_${idx}" value="${item.qty}" min="1">
+                <input type="number" class="edit-item-qty" id="editQty_${idx}" value="${item.qty}" min="1" style="width: 80px;">
                 <button class="remove-item" onclick="removeEditItem(${idx})">✕</button>
             `;
             container.appendChild(div);
@@ -733,6 +762,7 @@
         
         order.client = document.getElementById("editClientName").value.trim() || "Клиент";
         order.phone = document.getElementById("editClientPhone").value.trim();
+        order.expense = parseFloat(document.getElementById("editOrderExpense").value) || 0;
         
         for (let i = 0; i < order.items.length; i++) {
             const qtyInput = document.getElementById(`editQty_${i}`);
@@ -750,7 +780,7 @@
         order.subtotal = subtotal;
         order.discount = discount;
         order.finalTotal = subtotal - discount;
-        order.profit = order.finalTotal;
+        order.profit = order.finalTotal - (order.expense || 0);
         
         saveOrders();
         renderHistory();
@@ -759,181 +789,3 @@
         showStatus("✅ Заказ обновлён");
     }
     
-    function deleteOrder(orderId) {
-        if (confirm("Удалить этот заказ навсегда?")) {
-            allOrders = allOrders.filter(o => o.id !== orderId);
-            saveOrders();
-            renderHistory();
-            updateShiftFinance();
-            showStatus("🗑 Заказ удалён");
-        }
-    }
-    
-    // ========== СМЕНА ==========
-    function updateShiftUI() {
-        const statusSpan = document.getElementById("shiftStatus");
-        const openSpan = document.getElementById("shiftOpen");
-        const closeSpan = document.getElementById("shiftClose");
-        const btn = document.getElementById("shiftBtn");
-        
-        if (shiftOpen && !shiftClose) {
-            statusSpan.innerText = "Открыта";
-            openSpan.innerText = shiftOpen;
-            closeSpan.innerText = "—";
-            btn.innerText = "🔒 Закрыть смену";
-            btn.classList.remove("btn-warning");
-            btn.classList.add("btn-danger");
-        } else {
-            statusSpan.innerText = shiftOpen ? "Закрыта" : "Не открыта";
-            openSpan.innerText = shiftOpen || "—";
-            closeSpan.innerText = shiftClose || "—";
-            btn.innerText = "🚀 Открыть смену";
-            btn.classList.remove("btn-danger");
-            btn.classList.add("btn-warning");
-        }
-    }
-    
-    function toggleShift() {
-        if (!shiftOpen || shiftClose) {
-            shiftOpen = new Date().toLocaleString();
-            shiftClose = null;
-            saveShift();
-            updateShiftUI();
-            updateShiftFinance();
-            showStatus("✅ Смена открыта");
-        } else {
-            shiftClose = new Date().toLocaleString();
-            saveShift();
-            updateShiftUI();
-            updateShiftFinance();
-            showStatus("✅ Смена закрыта");
-        }
-    }
-    
-    function updateShiftFinance() {
-        if (!shiftOpen) return;
-        const shiftOrders = allOrders.filter(o => o.date >= shiftOpen && (!shiftClose || o.date <= shiftClose));
-        const revenue = shiftOrders.reduce((s, o) => s + o.finalTotal, 0);
-        const cash = shiftOrders.filter(o => o.paymentMethod === "cash").reduce((s, o) => s + o.finalTotal, 0);
-        const card = shiftOrders.filter(o => o.paymentMethod === "card").reduce((s, o) => s + o.finalTotal, 0);
-        const profit = shiftOrders.reduce((s, o) => s + (o.profit || 0), 0);
-        
-        document.getElementById("shiftRevenue").innerHTML = revenue + " ₽";
-        document.getElementById("shiftCash").innerHTML = cash + " ₽";
-        document.getElementById("shiftCard").innerHTML = card + " ₽";
-        document.getElementById("shiftProfit").innerHTML = profit + " ₽";
-    }
-    
-    // ========== ВСПОМОГАТЕЛЬНЫЕ ==========
-    function showStatus(msg) {
-        const el = document.getElementById("statusMsg");
-        if (el) {
-            el.textContent = msg;
-            setTimeout(() => {
-                if (el.textContent === msg) el.textContent = "💾 Готово";
-            }, 2000);
-        }
-    }
-    
-    function escapeHtml(str) {
-        if (!str) return "";
-        return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m]));
-    }
-    
-    function login() {
-        const sel = document.getElementById("loginSelect").value;
-        const pwd = document.getElementById("loginPassword").value;
-        if (!sel) { document.getElementById("loginError").innerText = "Выберите оператора"; return; }
-        const user = operators[sel];
-        if (user && user.password === pwd) {
-            currentUser = { ...user, username: sel };
-            localStorage.setItem("a4print_user", JSON.stringify(currentUser));
-            document.getElementById("loginModal").style.display = "none";
-            document.getElementById("mainApp").style.display = "block";
-            loadData();
-        } else {
-            document.getElementById("loginError").innerText = "Неверный пароль";
-        }
-    }
-    
-    function logout() {
-        localStorage.removeItem("a4print_user");
-        location.reload();
-    }
-    
-    // ========== ЗАПУСК ==========
-    document.addEventListener("DOMContentLoaded", () => {
-        const saved = localStorage.getItem("a4print_user");
-        if (saved) {
-            try {
-                currentUser = JSON.parse(saved);
-                if (operators[currentUser.username]) {
-                    document.getElementById("loginModal").style.display = "none";
-                    document.getElementById("mainApp").style.display = "block";
-                    loadData();
-                } else { logout(); }
-            } catch(e) { logout(); }
-        }
-        
-        // Кнопки
-        document.getElementById("loginBtn").onclick = login;
-        document.getElementById("logoutBtn").onclick = logout;
-        document.getElementById("shiftBtn").onclick = toggleShift;
-        document.getElementById("addFastBtn").onclick = addFastService;
-        document.getElementById("addGoodsBtn").onclick = addNewGoods;
-        document.getElementById("applyDiscountBtn").onclick = applyDiscount;
-        document.getElementById("completeBtn").onclick = completeOrder;
-        document.getElementById("clearCartBtn").onclick = clearCart;
-        document.getElementById("saveEditBtn").onclick = saveEditedOrder;
-        document.getElementById("cancelEditBtn").onclick = () => document.getElementById("editModal").style.display = "none";
-        document.getElementById("addEditItemBtn").onclick = addEditItem;
-        
-        // Табы
-        document.getElementById("tabServices").onclick = () => {
-            document.getElementById("servicesPanel").classList.remove("hidden");
-            document.getElementById("goodsPanel").classList.add("hidden");
-            document.getElementById("tabServices").classList.add("active");
-            document.getElementById("tabGoods").classList.remove("active");
-        };
-        document.getElementById("tabGoods").onclick = () => {
-            document.getElementById("servicesPanel").classList.add("hidden");
-            document.getElementById("goodsPanel").classList.remove("hidden");
-            document.getElementById("tabGoods").classList.add("active");
-            document.getElementById("tabServices").classList.remove("active");
-        };
-        
-        // Поиск
-        document.getElementById("searchService").oninput = () => {
-            const q = document.getElementById("searchService").value.toLowerCase();
-            const filtered = services.filter(s => s.name.toLowerCase().includes(q));
-            const grid = document.getElementById("servicesGrid");
-            if (grid) {
-                grid.innerHTML = "";
-                filtered.forEach(s => {
-                    grid.innerHTML += `<div class="service-card"><div class="price">${s.price} ₽</div><div><strong>${escapeHtml(s.name)}</strong></div><input type="number" id="srvQty_${s.id}" value="1" min="1"><button onclick="addToCart('service', ${s.id})">➕ Добавить</button></div>`;
-                });
-            }
-        };
-        
-        document.getElementById("searchGoods").oninput = () => {
-            const q = document.getElementById("searchGoods").value.toLowerCase();
-            const filtered = goods.filter(g => g.name.toLowerCase().includes(q));
-            const grid = document.getElementById("goodsGrid");
-            if (grid) {
-                grid.innerHTML = "";
-                filtered.forEach(g => {
-                    grid.innerHTML += `<div class="goods-card"><div class="price">${g.price} ₽</div><div><strong>${escapeHtml(g.name)}</strong></div><div style="font-size: 12px; color: #6b7280;">📦 Остаток: ${g.stock}</div><input type="number" id="goodsQty_${g.id}" value="1" min="1" max="${g.stock}"><button onclick="addToCart('goods', ${g.id})">➕ В корзину</button></div>`;
-                });
-            }
-        };
-        
-        // Закрытие модалки
-        window.onclick = (e) => {
-            if (e.target === document.getElementById("editModal")) {
-                document.getElementById("editModal").style.display = "none";
-            }
-        };
-    });
-</script>
-</body>
-</html>
