@@ -77,12 +77,12 @@
         .history-list { display: flex; flex-direction: column; gap: 12px; max-height: 320px; overflow-y: auto; }
         .history-item { background: var(--gray-50); border-radius: 10px; padding: 14px; border-left: 3px solid var(--orange); position: relative; transition: all 0.2s; }
         .history-item:hover .order-actions { opacity: 1; }
-        .order-actions { position: absolute; top: 12px; right: 12px; display: flex; gap: 8px; opacity: 0.6; transition: opacity 0.2s; }
+        .order-actions { position: absolute; top: 12px; right: 12px; display: flex; gap: 8px; opacity: 0; transition: opacity 0.2s; }
         .order-actions button { padding: 4px 12px; font-size: 11px; background: var(--gray-200); color: var(--gray-700); border: none; border-radius: 6px; cursor: pointer; }
         .order-actions button.edit-order { background: var(--blue); color: white; }
         .order-actions button.delete-order { background: var(--red); color: white; }
         .modal { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.4); display: none; align-items: center; justify-content: center; z-index: 1000; }
-        .modal-card { background: white; border-radius: 16px; max-width: 650px; width: 95%; max-height: 90vh; overflow-y: auto; padding: 28px; box-shadow: var(--shadow-md); }
+        .modal-card { background: white; border-radius: 16px; max-width: 700px; width: 95%; max-height: 90vh; overflow-y: auto; padding: 28px; box-shadow: var(--shadow-md); }
         .cash-card { background: linear-gradient(135deg, #fef3c7, #fde68a); border-radius: 16px; padding: 16px; margin-bottom: 20px; border-left: 5px solid var(--orange); }
         .burger-btn { display: none; background: transparent; font-size: 24px; color: var(--gray-700); padding: 8px; cursor: pointer; }
         .burger-menu { position: absolute; top: 70px; right: 20px; background: white; border-radius: 12px; padding: 16px; min-width: 200px; display: none; flex-direction: column; gap: 10px; box-shadow: var(--shadow-md); z-index: 200; border: 1px solid var(--gray-200); }
@@ -94,16 +94,12 @@
         .report-buttons { display: flex; flex-direction: column; gap: 8px; margin-top: 16px; }
         .instruction-content { display: none; }
         .instruction-content.active { display: block; }
-        .stats-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--gray-200); }
-        .stats-header { font-weight: bold; background: var(--gray-100); }
-        .tab-btn { background: var(--gray-100); color: var(--gray-700); margin-right: 4px; }
-        .tab-btn.active { background: var(--blue); color: white; }
-        .instruction-tabs { display: flex; gap: 4px; margin-bottom: 20px; flex-wrap: wrap; }
-        .edit-item-row { display: flex; gap: 8px; margin-bottom: 8px; align-items: center; padding: 8px; background: var(--gray-50); border-radius: 8px; }
+        .edit-item-row { display: flex; gap: 10px; margin-bottom: 12px; align-items: center; flex-wrap: wrap; background: var(--gray-50); padding: 8px; border-radius: 8px; }
         .edit-item-name { flex: 2; font-weight: 500; }
-        .edit-item-price { width: 70px; }
-        .edit-item-qty { width: 90px; }
-        .remove-edit-item { background: var(--red); color: white; border: none; border-radius: 6px; padding: 4px 10px; cursor: pointer; }
+        .edit-item-price { min-width: 70px; }
+        .edit-item-qty { width: 90px; padding: 8px; }
+        .remove-edit-item { background: var(--red); color: white; border: none; border-radius: 6px; padding: 6px 12px; cursor: pointer; }
+        .add-edit-item { background: var(--green); color: white; border: none; border-radius: 6px; padding: 8px 16px; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -220,18 +216,15 @@
     </div>
 </div>
 
-<div id="adminModal" class="modal">...</div>
-<div id="withdrawModal" class="modal">...</div>
-
 <!-- Модальное окно редактирования заказа -->
 <div id="editOrderModal" class="modal">
     <div class="modal-card">
         <h3 style="margin-bottom:20px;">✏️ Редактирование заказа</h3>
         <input type="text" id="editClientName" placeholder="Имя клиента" style="margin-bottom:12px;">
         <input type="tel" id="editClientPhone" placeholder="Телефон" style="margin-bottom:20px;">
-        <div id="editOrderItemsList" style="max-height:300px; overflow-y:auto; margin-bottom:20px;"></div>
-        <div style="display:flex; gap:12px; justify-content:flex-end;">
-            <button id="saveEditOrderBtn" class="btn-primary">💾 Сохранить</button>
+        <div id="editOrderItemsList" style="max-height: 350px; overflow-y: auto; margin-bottom: 20px;"></div>
+        <div style="display: flex; gap: 12px; justify-content: flex-end; margin-top: 10px;">
+            <button id="saveEditOrderBtn" class="btn-primary">💾 Сохранить изменения</button>
             <button id="cancelEditOrderBtn" class="btn-outline">Отмена</button>
         </div>
     </div>
@@ -286,15 +279,6 @@
                 if (typeof cashData.cashBalance !== 'number') cashData.cashBalance = 0;
             } catch(e) { console.error(e); }
         }
-        updateCashUI();
-    }
-    
-    function updateCashUI() {
-        let balanceSpan = document.getElementById("cashBalanceDisplay");
-        if (balanceSpan) balanceSpan.innerText = cashData.cashBalance.toLocaleString() + " ₽";
-        let cardTotal = allOrders.reduce((sum, o) => sum + (o.paymentMethod === "card" ? o.finalTotal : 0), 0);
-        let cardSpan = document.getElementById("cardBalanceDisplay");
-        if (cardSpan) cardSpan.innerText = cardTotal.toLocaleString() + " ₽";
     }
     
     function processOrderPayment(paymentMethod, amount) {
@@ -304,7 +288,6 @@
         if (paymentMethod === "cash") cashData.dailyStats[today].cash += amount;
         else cashData.dailyStats[today].card += amount;
         saveCashData();
-        updateCashUI();
     }
     
     // ========== ЗАГРУЗКА ДАННЫХ ==========
@@ -317,8 +300,6 @@
         renderServices(); renderGoods(); renderCart(); renderHistory(); loadShift();
         updateShiftFinanceDisplay();
         document.getElementById("currentOperatorName").innerHTML = `${currentUser.name} ${currentUser.role === "admin" ? "👑" : "👤"}`;
-        if (document.getElementById("googleWebAppUrl")) document.getElementById("googleWebAppUrl").value = GOOGLE_WEBAPP_URL;
-        updateCashUI();
     }
     
     function loadShift() { 
@@ -538,54 +519,58 @@
         alert(`✅ Заказ №${order.id} на ${order.finalTotal} ₽\n💸 Расход: ${totals.orderExpense} ₽\n📊 Прибыль: ${totals.profit} ₽`); 
     }
     
-    // ========== РЕДАКТИРОВАНИЕ ЗАКАЗОВ (ГЛАВНАЯ ФУНКЦИЯ) ==========
+    // ========== РЕДАКТИРОВАНИЕ ЗАКАЗОВ (ОСНОВНАЯ ФУНКЦИЯ) ==========
     function openEditOrder(orderId) {
         const order = allOrders.find(o => o.id === orderId);
         if (!order) { alert("Заказ не найден"); return; }
         editingOrderId = orderId;
         document.getElementById("editClientName").value = order.client || "";
         document.getElementById("editClientPhone").value = order.phone || "";
-        const container = document.getElementById("editOrderItemsList");
-        container.innerHTML = "<div style='margin-bottom:12px; font-size:13px; color:var(--gray-600);'>Состав заказа (можно изменить количество или удалить позицию)</div>";
         
+        const container = document.getElementById("editOrderItemsList");
+        container.innerHTML = "<div style='margin-bottom:12px; font-size:13px; color:var(--gray-600);'>Состав заказа (измените количество или удалите позицию)</div>";
+        
+        // Отображаем каждую позицию
         order.items.forEach((item, idx) => {
             const div = document.createElement("div");
             div.className = "edit-item-row";
             div.innerHTML = `
                 <span class="edit-item-name">${escapeHtml(item.name)}</span>
                 <span class="edit-item-price">${item.price} ₽</span>
-                <input type="number" class="edit-item-qty" id="editQty_${idx}" value="${item.qty}" min="0" step="1" style="width:80px; padding:6px;">
-                <button class="remove-edit-item" data-idx="${idx}">✕</button>
+                <input type="number" class="edit-item-qty" id="editQty_${idx}" value="${item.qty}" min="1" step="1" style="width:90px; padding:8px; border-radius:6px;">
+                <button class="remove-edit-item" data-idx="${idx}">✕ Удалить</button>
             `;
             container.appendChild(div);
         });
         
-        // Кнопка добавления новой позиции (для удобства)
+        // Кнопка добавления новой позиции
         const addDiv = document.createElement("div");
         addDiv.className = "edit-item-row";
-        addDiv.style.marginTop = "12px";
         addDiv.style.borderTop = "1px solid var(--gray-200)";
-        addDiv.style.paddingTop = "12px";
+        addDiv.style.marginTop = "10px";
+        addDiv.style.paddingTop = "10px";
         addDiv.innerHTML = `
-            <input type="text" id="newEditItemName" placeholder="Название товара/услуги" style="flex:2;">
-            <input type="number" id="newEditItemPrice" placeholder="Цена" style="width:80px;">
-            <input type="number" id="newEditItemQty" placeholder="Кол-во" value="1" style="width:70px;">
-            <button id="addNewEditItemBtn" style="background:var(--green); padding:6px 12px;">+ Добавить</button>
+            <input type="text" id="newItemName" placeholder="Название" style="flex:2;">
+            <input type="number" id="newItemPrice" placeholder="Цена" style="width:90px;">
+            <input type="number" id="newItemQty" placeholder="Кол-во" value="1" style="width:80px;">
+            <button id="addNewItemBtn" class="add-edit-item">➕ Добавить</button>
         `;
         container.appendChild(addDiv);
         
+        // Обработчики удаления
         document.querySelectorAll(".remove-edit-item").forEach(btn => {
             btn.onclick = () => {
                 const idx = parseInt(btn.getAttribute("data-idx"));
                 order.items.splice(idx, 1);
-                openEditOrder(orderId);
+                openEditOrder(orderId); // Перерисовываем
             };
         });
         
-        document.getElementById("addNewEditItemBtn").onclick = () => {
-            const newName = document.getElementById("newEditItemName").value.trim();
-            const newPrice = parseFloat(document.getElementById("newEditItemPrice").value);
-            const newQty = parseInt(document.getElementById("newEditItemQty").value) || 1;
+        // Обработчик добавления новой позиции
+        document.getElementById("addNewItemBtn").onclick = () => {
+            const newName = document.getElementById("newItemName").value.trim();
+            const newPrice = parseFloat(document.getElementById("newItemPrice").value);
+            const newQty = parseInt(document.getElementById("newItemQty").value) || 1;
             if (!newName || isNaN(newPrice) || newPrice <= 0) {
                 alert("Введите название и цену");
                 return;
@@ -600,6 +585,8 @@
     function saveEditedOrder() {
         const order = allOrders.find(o => o.id === editingOrderId);
         if (!order) { alert("Заказ не найден"); return; }
+        
+        // Обновляем клиента
         order.client = document.getElementById("editClientName").value.trim() || "Клиент";
         order.phone = document.getElementById("editClientPhone").value.trim();
         
@@ -627,11 +614,11 @@
         renderHistory();
         updateShiftFinanceDisplay();
         document.getElementById("editOrderModal").style.display = "none";
-        showSyncStatus("✅ Заказ обновлён");
+        showSyncStatus("✅ Заказ успешно обновлён");
     }
     
     function deleteOrder(orderId) {
-        if (confirm("Удалить этот заказ навсегда?")) {
+        if (confirm("⚠️ Удалить этот заказ навсегда? Восстановить будет невозможно!")) {
             allOrders = allOrders.filter(o => o.id !== orderId);
             saveOrders();
             renderHistory();
@@ -640,7 +627,7 @@
         }
     }
     
-    // ========== ИСТОРИЯ С КНОПКАМИ РЕДАКТИРОВАНИЯ/УДАЛЕНИЯ ==========
+    // ========== ИСТОРИЯ С КНОПКАМИ РЕДАКТИРОВАНИЯ ==========
     function renderHistory() { 
         let my = currentUser.role === "admin" ? allOrders : allOrders.filter(o => o.operator === currentUser.name); 
         let container = document.getElementById("historyList"); 
@@ -659,6 +646,8 @@
                     </div>`; 
         }); 
         container.innerHTML = html; 
+        
+        // Назначаем обработчики
         document.querySelectorAll(".edit-order").forEach(btn => btn.onclick = () => { openEditOrder(parseInt(btn.getAttribute("data-id"))); }); 
         document.querySelectorAll(".delete-order").forEach(btn => btn.onclick = () => { deleteOrder(parseInt(btn.getAttribute("data-id"))); }); 
     }
@@ -710,8 +699,8 @@
             document.getElementById("burgerAdminBtn").onclick = () => { if (currentUser?.role === "admin") { alert("Админ-панель доступна"); } else alert("Доступно только администратору"); menu.classList.remove("show"); }; 
             document.getElementById("burgerShiftBtn").onclick = () => { toggleShiftWithComment(); menu.classList.remove("show"); }; 
             document.getElementById("burgerReportBtn").onclick = () => { showReportModal(); menu.classList.remove("show"); }; 
-            document.getElementById("burgerSyncBtn").onclick = () => { alert("Синхронизация"); menu.classList.remove("show"); }; 
-            document.getElementById("burgerPrintBtn").onclick = () => alert("Функция бланка"); 
+            document.getElementById("burgerSyncBtn").onclick = () => { alert("Синхронизация с Google Sheets (настройте URL)"); menu.classList.remove("show"); }; 
+            document.getElementById("burgerPrintBtn").onclick = () => alert("Функция печати бланка заказа"); 
             document.getElementById("burgerLogoutBtn").onclick = logout; 
         } 
     }
@@ -738,6 +727,7 @@
             initBurger(); 
         }
         
+        // Привязка кнопок
         document.getElementById("themeToggleBtn").onclick = toggleTheme;
         document.getElementById("loginBtn").onclick = login;
         document.getElementById("logoutBtn").onclick = logout;
@@ -747,19 +737,33 @@
         document.getElementById("addFastServiceBtn").onclick = addFastService;
         document.getElementById("addNewGoodsBtn").onclick = addNewGoods;
         document.getElementById("shiftToggleBtn").onclick = toggleShiftWithComment;
-        document.getElementById("printBlankBtn").onclick = () => alert("Функция бланка заказа");
+        document.getElementById("printBlankBtn").onclick = () => alert("Функция печати бланка заказа");
         document.getElementById("reportMainBtn").onclick = showReportModal;
         document.getElementById("cancelReportBtn").onclick = () => document.getElementById("reportModal").style.display = "none";
         document.getElementById("saveEditOrderBtn").onclick = saveEditedOrder;
         document.getElementById("cancelEditOrderBtn").onclick = () => document.getElementById("editOrderModal").style.display = "none";
         
         // Заглушки отчётов
-        document.getElementById("reportTodayExcelBtn")?.addEventListener("click", () => { alert("Excel отчёт за сегодня"); document.getElementById("reportModal").style.display = "none"; });
-        document.getElementById("reportFullExcelBtn")?.addEventListener("click", () => { alert("Excel полный отчёт"); document.getElementById("reportModal").style.display = "none"; });
-        document.getElementById("reportShiftsExcelBtn")?.addEventListener("click", () => { alert("Excel отчёт по сменам"); document.getElementById("reportModal").style.display = "none"; });
+        document.getElementById("reportTodayExcelBtn")?.addEventListener("click", () => { exportToExcel(allOrders.filter(o => new Date(o.date).toDateString() === new Date().toDateString()), "За сегодня"); document.getElementById("reportModal").style.display = "none"; });
+        document.getElementById("reportFullExcelBtn")?.addEventListener("click", () => { exportToExcel(allOrders, "Полный отчёт"); document.getElementById("reportModal").style.display = "none"; });
+        document.getElementById("reportShiftsExcelBtn")?.addEventListener("click", () => { alert("Экспорт смен в Excel"); document.getElementById("reportModal").style.display = "none"; });
         document.getElementById("reportTodayPdfBtn")?.addEventListener("click", () => { alert("PDF отчёт за сегодня"); document.getElementById("reportModal").style.display = "none"; });
         document.getElementById("reportFullPdfBtn")?.addEventListener("click", () => { alert("PDF полный отчёт"); document.getElementById("reportModal").style.display = "none"; });
-        document.getElementById("syncGoogleBtn").onclick = () => alert("Синхронизация с Google Sheets");
+        document.getElementById("syncGoogleBtn").onclick = () => alert("Синхронизация с Google Sheets (настройте URL в админ-панели)");
+        
+        function exportToExcel(orders, title) {
+            if (!orders.length) { alert("Нет данных для экспорта"); return; }
+            let data = [['№', 'Дата', 'Клиент', 'Телефон', 'Состав', 'Подытог', 'Скидка', 'Итого', 'Расход', 'Прибыль', 'Оплата', 'Оператор']];
+            orders.forEach((o, i) => {
+                let items = o.items.map(it => `${it.name} x${it.qty}`).join('; ');
+                data.push([i+1, o.date, o.client, o.phone || '', items, o.subtotal || 0, o.discount || 0, o.finalTotal || 0, o.orderExpense || 0, o.profit || 0, o.paymentMethod === 'cash' ? 'Наличные' : 'Карта', o.operator || '']);
+            });
+            let ws = XLSX.utils.aoa_to_sheet(data);
+            let wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'Заказы');
+            XLSX.writeFile(wb, `A4print_${title}_${new Date().toISOString().slice(0,19).replace(/:/g, '-')}.xlsx`);
+            showSyncStatus(`✅ Экспорт "${title}" завершён`);
+        }
         
         // Поиск
         let ss = document.getElementById('searchService'); 
@@ -773,7 +777,10 @@
         catTabs.forEach(tab => { tab.onclick = () => { catTabs.forEach(t => t.classList.remove('active')); tab.classList.add('active'); Object.values(panels).forEach(p => p.classList.remove('active')); panels[tab.getAttribute('data-cat')].classList.add('active'); }; });
         
         // Закрытие модальных окон
-        window.onclick = (e) => { if (e.target === document.getElementById("reportModal")) document.getElementById("reportModal").style.display = "none"; if (e.target === document.getElementById("editOrderModal")) document.getElementById("editOrderModal").style.display = "none"; };
+        window.onclick = (e) => { 
+            if (e.target === document.getElementById("reportModal")) document.getElementById("reportModal").style.display = "none"; 
+            if (e.target === document.getElementById("editOrderModal")) document.getElementById("editOrderModal").style.display = "none"; 
+        };
     });
 </script>
 </body>
