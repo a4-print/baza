@@ -144,6 +144,7 @@
                 <button id="reportMainBtn" class="btn-success">📊 Отчёт / Экспорт</button>
                 <button id="syncGoogleBtn" class="btn-pink">🔄 Синхр. с Google</button>
                 <button id="printBlankBtn" class="btn-primary">🖨️ Бланк заказа</button>
+                <button id="goToServiceBtn" class="btn-purple">🔧 Сервисный центр</button>
                 <button id="logoutBtn" class="btn-outline">Выйти</button>
             </div>
             <button class="burger-btn" id="burgerBtn">☰</button>
@@ -1001,8 +1002,8 @@
         let sm=calculateSalaryForMonth(m,y); 
         let html=`<table style="width:100%"><tr><th>Оператор</th><th>Смен</th><th>Итого</th></tr>`; 
         let total=0; 
-        for(let [key,data] of sm){ html+=`<tr><td>${data.name}</td><td>${data.count}</td><td>${data.total.toLocaleString()} ₽</td></tr>`; total+=data.total; } 
-        html+=`<tr style="background:var(--blue);color:white;"><td><strong>ИТОГО:</strong></td><td></td><td><strong>${total.toLocaleString()} ₽</strong></td></tr></table>`; 
+        for(let [key,data] of sm){ html+=`<tr><td>${data.name}</td><td>${data.count}</td><td>${data.total.toLocaleString()} ₽</td></table>`; total+=data.total; } 
+        html+=`<tr style="background:var(--blue);color:white;"><td><strong>ИТОГО:</strong></td><td></td><td><strong>${total.toLocaleString()} ₽</strong></td></tr></td>`; 
         document.getElementById("salaryReportContent").innerHTML=html; 
     }
     function renderShiftsHistory(){ 
@@ -1052,7 +1053,7 @@
     function initBurger(){ 
         let btn=document.getElementById("burgerBtn"),menu=document.getElementById("burgerMenu"); 
         if(btn&&menu){ 
-            let html=`<span style="font-weight:600; padding-bottom:8px;">${currentUser?.name || ""}</span><button id="burgerThemeToggle">🌙 Тёмная</button><button id="burgerAdminBtn">Админ</button><button id="burgerShiftBtn">🚀 Смена</button><button id="burgerReportBtn">📊 Отчёт</button><button id="burgerSyncBtn">🔄 Синхр.</button><button id="burgerPrintBtn">🖨️ Бланк</button><button id="burgerLogoutBtn">Выйти</button>`; 
+            let html=`<span style="font-weight:600; padding-bottom:8px;">${currentUser?.name || ""}</span><button id="burgerThemeToggle">🌙 Тёмная</button><button id="burgerAdminBtn">Админ</button><button id="burgerShiftBtn">🚀 Смена</button><button id="burgerReportBtn">📊 Отчёт</button><button id="burgerSyncBtn">🔄 Синхр.</button><button id="burgerPrintBtn">🖨️ Бланк</button><button id="burgerServiceBtn">🔧 Сервис</button><button id="burgerLogoutBtn">Выйти</button>`; 
             menu.innerHTML=html; 
             btn.onclick=(e)=>{ e.stopPropagation(); menu.classList.toggle("show"); }; 
             document.addEventListener("click",(e)=>{ if(!menu.contains(e.target)&&!btn.contains(e.target)) menu.classList.remove("show"); }); 
@@ -1062,6 +1063,7 @@
             document.getElementById("burgerReportBtn").onclick=()=>{ showReportModal(); menu.classList.remove("show"); }; 
             document.getElementById("burgerSyncBtn").onclick=()=>{ syncToGoogle(); menu.classList.remove("show"); }; 
             document.getElementById("burgerPrintBtn").onclick=()=>alert("Функция бланка"); 
+            document.getElementById("burgerServiceBtn").onclick=()=>{ window.open('https://a4-print.github.io/baza/service.html', '_blank'); menu.classList.remove("show"); };
             document.getElementById("burgerLogoutBtn").onclick=logout; 
         } 
     }
@@ -1117,6 +1119,7 @@
         document.getElementById("reportFullPdfBtn").onclick=reportFullPdf;
         document.getElementById("cancelReportBtn").onclick=()=>document.getElementById("reportModal").style.display="none";
         document.getElementById("syncGoogleBtn").onclick=()=>syncToGoogle(false);
+        document.getElementById("goToServiceBtn").onclick=()=>{ window.open('https://a4-print.github.io/baza/service.html', '_blank'); };
         document.getElementById("adminPanelBtn").onclick=()=>{ if(currentUser?.role==="admin"){ renderAdmin(); document.getElementById("adminModal").style.display="flex"; } else alert("Доступно только администратору"); };
         document.getElementById("closeAdminModal").onclick=()=>document.getElementById("adminModal").style.display="none";
         document.getElementById("exportStatsExcelBtn").onclick=()=>{ exportToExcel(allOrders, 'Статистика_операторов'); };
