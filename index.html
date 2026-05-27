@@ -575,11 +575,8 @@
             saveAllShifts(); 
             
             // === ИСПРАВЛЕНИЕ ОШИБКИ INVALID DATE ===
-            // Используем текущую дату (самый надёжный способ)
             const today = new Date();
             const dateStr = today.toLocaleDateString('ru-RU');
-            // Альтернативный вариант (если нужно из shiftOpen):
-            // const dateStr = shiftOpen.split(',')[0].trim();
             
             const shiftData = {
                 type: 'shift_close',
@@ -603,7 +600,8 @@
                     items: o.items,
                     total: o.finalTotal,
                     payment: o.paymentMethod,
-                    operator: o.operator
+                    operator: o.operator,
+                    expense: o.orderExpense || 0   // ← ДОБАВЛЕНО: расход по заказу
                 }))
             };
             
