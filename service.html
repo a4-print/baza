@@ -3,19 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>A4-Принт | Сервисный центр</title>
+    <title>А4-Сервис | Сервисный центр</title>
     <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
         :root {
-            --blue: #3b82f6;
-            --blue-dark: #2563eb;
+            --blue: #0066B3;
+            --blue-dark: #004c8a;
             --orange: #f59e0b;
             --green: #10b981;
             --red: #ef4444;
             --purple: #8b5cf6;
+            --pink: #ec4899;
             --gray-50: #f9fafb;
             --gray-100: #f3f4f6;
             --gray-200: #e5e7eb;
@@ -33,28 +34,28 @@
         body {
             background: var(--gray-50);
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Inter', sans-serif;
-            padding: 24px;
+            padding: 20px;
             color: var(--gray-800);
         }
         
         body.dark {
-            background: #1e293b;
+            background: #121826;
             color: #e2e8f0;
         }
         
         body.dark .card, body.dark .cart-panel, body.dark .history-section, body.dark .header, body.dark .shift-bar, body.dark .modal-card {
-            background: #334155;
-            border-color: #475569;
+            background: #1e293b;
+            border-color: #334155;
         }
         
         body.dark .service-card, body.dark .repair-item, body.dark .category-card, body.dark .brand-card, body.dark .model-item {
-            background: #1e293b;
-            border-color: #475569;
+            background: #0f172a;
+            border-color: #334155;
         }
         
         body.dark input, body.dark select, body.dark textarea {
-            background: #1e293b;
-            border-color: #475569;
+            background: #0f172a;
+            border-color: #334155;
             color: #e2e8f0;
         }
         
@@ -76,7 +77,7 @@
         
         .logo-area { display: flex; align-items: center; gap: 12px; }
         .logo { height: 44px; width: auto; border-radius: 8px; }
-        h1 { font-size: 20px; font-weight: 700; color: var(--gray-800); }
+        h1 { font-size: 20px; font-weight: 700; }
         .sub { font-size: 12px; color: var(--gray-500); }
         
         .user-bar {
@@ -86,6 +87,7 @@
             background: var(--gray-100);
             padding: 6px 20px;
             border-radius: 40px;
+            flex-wrap: wrap;
         }
         
         button {
@@ -108,6 +110,7 @@
         .btn-danger { background: var(--red); }
         .btn-warning { background: var(--orange); }
         .btn-purple { background: var(--purple); }
+        .btn-pink { background: var(--pink); }
         
         .dashboard {
             display: flex;
@@ -118,7 +121,7 @@
         
         .left-panel {
             flex: 1.5;
-            min-width: 320px;
+            min-width: 350px;
             background: var(--white);
             border-radius: 12px;
             padding: 24px;
@@ -128,7 +131,7 @@
         
         .right-panel {
             flex: 1;
-            min-width: 300px;
+            min-width: 320px;
             background: var(--white);
             border-radius: 12px;
             padding: 24px;
@@ -176,14 +179,14 @@
             padding: 10px 14px;
             background: var(--white);
             border: 1px solid var(--gray-300);
-            border-radius: 8px;
+            border-radius: 10px;
             font-size: 14px;
             font-family: inherit;
         }
         input:focus, select:focus, textarea:focus {
             outline: none;
             border-color: var(--blue);
-            box-shadow: 0 0 0 2px rgba(59,130,246,0.1);
+            box-shadow: 0 0 0 2px rgba(0,102,179,0.1);
         }
         
         .categories-grid, .brands-grid {
@@ -207,6 +210,16 @@
             background: var(--blue);
             color: white;
             border-color: var(--blue);
+        }
+        
+        .selector-level {
+            margin-bottom: 16px;
+        }
+        .selector-title {
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--gray-600);
         }
         
         .models-list {
@@ -249,7 +262,7 @@
             display: flex;
             flex-direction: column;
             gap: 12px;
-            max-height: 400px;
+            max-height: 500px;
             overflow-y: auto;
         }
         .repair-item {
@@ -285,12 +298,13 @@
             display: flex;
             gap: 8px;
             flex-wrap: wrap;
+            align-items: center;
         }
         
         .search-input {
             width: 100%;
             padding: 10px 14px;
-            border-radius: 8px;
+            border-radius: 10px;
             border: 1px solid var(--gray-300);
             margin-bottom: 16px;
         }
@@ -310,15 +324,15 @@
         .modal-card {
             background: white;
             border-radius: 16px;
-            max-width: 700px;
-            width: 90%;
+            max-width: 800px;
+            width: 95%;
             max-height: 85vh;
             overflow-y: auto;
-            padding: 24px;
+            padding: 28px;
             box-shadow: var(--shadow-md);
         }
         
-        .burger-btn { display: none; background: transparent; font-size: 24px; color: var(--gray-700); padding: 8px; }
+        .burger-btn { display: none; background: transparent; font-size: 24px; color: var(--gray-700); padding: 8px; cursor: pointer; }
         .burger-menu {
             position: absolute;
             top: 70px;
@@ -337,54 +351,65 @@
         .burger-menu.show { display: flex; }
         .burger-menu button { width: 100%; text-align: center; }
         
-        /* АККОРДЕОН ДЛЯ ЦЕН */
+        .sync-status {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--gray-800);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 12px;
+            font-size: 12px;
+            z-index: 999;
+        }
+        
         .accordion {
             background: var(--gray-100);
             border-radius: 12px;
-            margin-bottom: 12px;
+            margin-bottom: 8px;
             overflow: hidden;
         }
         .accordion-header {
-            padding: 12px 16px;
+            padding: 10px 14px;
             cursor: pointer;
             display: flex;
             justify-content: space-between;
             align-items: center;
             font-weight: 600;
             font-size: 13px;
-            background: var(--gray-100);
-            transition: all 0.15s;
         }
-        .accordion-header:hover { background: var(--gray-200); }
-        .accordion-icon { font-size: 12px; transition: transform 0.2s; }
         .accordion-content {
             max-height: 0;
             overflow: hidden;
             transition: max-height 0.3s ease-out;
-            background: var(--gray-50);
         }
-        .accordion-content.open { max-height: 300px; }
+        .accordion-content.open { max-height: 250px; overflow-y: auto; }
         .price-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 10px 16px;
-            border-bottom: 1px solid var(--gray-200);
+            padding: 8px 14px;
+            border-top: 1px solid var(--gray-200);
             cursor: pointer;
             transition: all 0.1s;
         }
         .price-item:hover { background: var(--gray-200); }
-        .price-item:last-child { border-bottom: none; }
-        .price-name { font-size: 13px; font-weight: 500; }
+        .price-name { font-size: 13px; }
         .price-value { font-size: 14px; font-weight: 700; color: var(--blue); }
-        .price-calc-badge { font-size: 10px; color: var(--green); margin-left: 8px; }
         
-        .repair-prices-panel {
-            background: var(--gray-100);
-            border-radius: 12px;
-            padding: 8px;
-            margin-top: 16px;
+        .print-blank {
+            font-family: 'Courier New', monospace;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
         }
+        .print-header { text-align: center; margin-bottom: 20px; }
+        .print-title { font-size: 20px; font-weight: bold; margin-bottom: 5px; }
+        .print-sub { font-size: 12px; color: #666; }
+        .print-line { border-top: 1px dashed #000; margin: 10px 0; }
+        .print-row { display: flex; margin: 8px 0; }
+        .print-label { width: 150px; font-weight: bold; }
+        .print-value { flex: 1; }
         
         @media (max-width: 850px) {
             body { padding: 16px; }
@@ -393,880 +418,950 @@
             .dashboard { flex-direction: column; }
         }
         @media (min-width: 851px) { .burger-menu { display: none !important; } }
+        
+        .stats-card {
+            background: var(--gray-100);
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 16px;
+        }
+        .stats-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+        }
     </style>
 </head>
 <body>
 
-    <div id="loginOverlay" class="modal" style="display: flex;">
-        <div class="modal-card" style="max-width: 380px;">
-            <div style="text-align:center; margin-bottom: 20px;">
-                <img src="https://github.com/a4print2026-jpg/baza/blob/dbcda72ab60f0a9f8d8984e17375f6649cf677f0/images/logo_soc2.png?raw=true" style="height: 60px;" onerror="this.style.display='none'">
-                <h2>A4-Принт | Сервисный центр</h2>
-            </div>
-            <select id="loginSelect" style="width:100%; padding: 12px; border-radius: 8px; margin-bottom: 12px;">
-                <option value="">— Выберите оператора —</option>
-                <option value="pavel">Павел (Администратор)</option>
-                <option value="ksenia">Ксения (Оператор)</option>
-                <option value="natalia">Наталья (Оператор)</option>
-            </select>
-            <input type="password" id="loginPassword" placeholder="Пароль">
-            <button id="loginBtn" style="width:100%; margin-top: 20px;">Войти</button>
-            <div id="loginError" style="color:var(--red); margin-top: 16px;"></div>
+<div id="loginOverlay" class="modal" style="display: flex;">
+    <div class="modal-card" style="max-width: 380px;">
+        <div style="text-align:center; margin-bottom: 20px;">
+            <img src="https://github.com/a4print2026-jpg/baza/blob/dbcda72ab60f0a9f8d8984e17375f6649cf677f0/images/logo_soc2.png?raw=true" style="height: 60px;" onerror="this.style.display='none'">
+            <h2>А4-Сервис</h2>
+            <div style="font-size:12px; color:var(--gray-500);">Сервисный центр</div>
         </div>
+        <select id="loginSelect" style="width:100%; padding: 12px; border-radius: 10px; margin-bottom: 12px;">
+            <option value="">— Выберите оператора —</option>
+            <option value="pavel">Павел (Администратор)</option>
+            <option value="ksenia">Ксения (Оператор)</option>
+            <option value="natalia">Наталья (Оператор)</option>
+        </select>
+        <input type="password" id="loginPassword" placeholder="Пароль">
+        <button id="loginBtn" style="width:100%; margin-top: 20px;">Войти</button>
+        <div id="loginError" style="color:var(--red); margin-top: 16px;"></div>
     </div>
+</div>
 
-    <div id="mainContent" style="display: none;">
-        <div class="app">
-            <div class="header">
-                <div class="logo-area">
-                    <img src="https://github.com/a4print2026-jpg/baza/blob/dbcda72ab60f0a9f8d8984e17375f6649cf677f0/images/logo_soc2.png?raw=true" class="logo" onerror="this.style.display='none'">
-                    <div><h1>A4‑ПРИНТ</h1><div class="sub">Сервисный центр | Ремонт техники</div></div>
-                </div>
-                <div class="user-bar">
-                    <span id="currentOperatorName" style="font-weight:500;"></span>
-                    <button id="themeToggleBtn" class="btn-outline">🌙 Тёмная</button>
-                    <button id="adminPanelBtn" class="btn-primary">Админ</button>
-                    <button id="logoutBtn" class="btn-outline">Выйти</button>
-                </div>
-                <button class="burger-btn" id="burgerBtn">☰</button>
-                <div class="burger-menu" id="burgerMenu">
-                    <span id="burgerOperatorName" style="font-weight:600;"></span>
-                    <button id="burgerThemeToggle">🌙 Тёмная</button>
-                    <button id="burgerAdminBtn">Админ</button>
-                    <button id="burgerLogoutBtn">Выйти</button>
-                </div>
+<div id="mainContent" style="display: none;">
+    <div class="app">
+        <div class="header">
+            <div class="logo-area">
+                <img src="https://github.com/a4print2026-jpg/baza/blob/dbcda72ab60f0a9f8d8984e17375f6649cf677f0/images/logo_soc2.png?raw=true" class="logo" onerror="this.style.display='none'">
+                <div><h1>А4‑СЕРВИС</h1><div class="sub">Сервисный центр | Ремонт техники</div></div>
             </div>
+            <div class="user-bar">
+                <span id="currentOperatorName" style="font-weight:500;"></span>
+                <button id="themeToggleBtn" class="btn-outline">🌙 Тёмная</button>
+                <button id="adminPanelBtn" class="btn-primary">Админ</button>
+                <button id="syncGoogleBtn" class="btn-pink">🔄 Синхр. с Google</button>
+                <button id="logoutBtn" class="btn-outline">Выйти</button>
+            </div>
+            <button class="burger-btn" id="burgerBtn">☰</button>
+            <div class="burger-menu" id="burgerMenu">
+                <span id="burgerOperatorName" style="font-weight:600;"></span>
+                <button id="burgerThemeToggle">🌙 Тёмная</button>
+                <button id="burgerAdminBtn">Админ</button>
+                <button id="burgerSyncBtn">🔄 Синхр. с Google</button>
+                <button id="burgerLogoutBtn">Выйти</button>
+            </div>
+        </div>
 
-            <div class="dashboard">
-                <div class="left-panel">
-                    <div class="panel-title">🔧 ПРИЁМ В РЕМОНТ</div>
-                    
-                    <div class="form-row">
-                        <div class="form-group" style="flex:2;">
-                            <label>Клиент</label>
-                            <input type="text" id="clientName" placeholder="Имя клиента">
-                        </div>
-                        <div class="form-group">
-                            <label>Телефон</label>
-                            <input type="text" id="clientPhone" placeholder="Телефон">
-                        </div>
+        <div class="dashboard">
+            <div class="left-panel">
+                <div class="panel-title">🔧 ПРИЁМ В РЕМОНТ</div>
+                
+                <div class="form-row">
+                    <div class="form-group" style="flex:2;">
+                        <label>Клиент *</label>
+                        <input type="text" id="clientName" placeholder="Имя клиента">
                     </div>
-                    
-                    <!-- ТИП УСТРОЙСТВА -->
-                    <div class="selector-level">
-                        <div class="selector-title">1. Тип устройства</div>
-                        <div id="categoriesGrid" class="categories-grid"></div>
-                    </div>
-                    
-                    <!-- БРЕНД -->
-                    <div class="selector-level" id="brandsSection" style="display:none;">
-                        <div class="selector-title">2. Бренд</div>
-                        <div id="brandsGrid" class="brands-grid"></div>
-                    </div>
-                    
-                    <!-- МОДЕЛЬ -->
-                    <div class="selector-level" id="modelsSection" style="display:none;">
-                        <div class="selector-title">3. Модель</div>
-                        <div id="modelsList" class="models-list"></div>
-                    </div>
-                    
-                    <!-- АККОРДЕОН С ПРИМЕРНЫМИ ЦЕНАМИ -->
-                    <div class="repair-prices-panel" id="pricesPanel" style="display:none;">
-                        <div class="quick-add-title" style="margin-bottom: 8px;">💰 Примерные цены (рыночные)</div>
-                        <div id="pricesAccordion"></div>
-                        <div style="font-size:10px; color:var(--gray-500); margin-top:8px;">* Нажмите на цену для быстрой вставки в стоимость</div>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Тип поломки</label>
-                            <select id="faultType">
-                                <option value="Не включается">Не включается</option>
-                                <option value="Не работает">Не работает</option>
-                                <option value="Сломан экран">Сломан экран</option>
-                                <option value="Проблема с питанием">Проблема с питанием</option>
-                                <option value="Замена детали">Замена детали</option>
-                                <option value="Программная ошибка">Программная ошибка</option>
-                                <option value="Механическая поломка">Механическая поломка</option>
-                                <option value="Другое">Другое</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Срочность</label>
-                            <select id="urgency">
-                                <option value="Обычная">Обычная</option>
-                                <option value="Срочно">Срочно</option>
-                                <option value="VIP">VIP</option>
-                            </select>
-                        </div>
-                    </div>
-                    
                     <div class="form-group">
-                        <label>Описание проблемы</label>
-                        <textarea id="faultDesc" rows="2" placeholder="Подробное описание..."></textarea>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>Комплектация</label>
-                        <textarea id="accessories" rows="1" placeholder="Зарядное, кабель..."></textarea>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Предоплата (₽)</label>
-                            <input type="number" id="prepayment" value="0" step="500">
-                        </div>
-                        <div class="form-group">
-                            <label>Ориентир. стоимость</label>
-                            <input type="number" id="estimatedCost" value="0" step="500">
-                        </div>
-                    </div>
-                    
-                    <button id="addRepairBtn" class="btn-primary" style="width:100%; margin-top: 16px;">➕ Принять в ремонт</button>
-                    
-                    <!-- Быстрое добавление (только для админа) -->
-                    <div id="quickAddPanel" class="quick-add-panel" style="display:none; margin-top: 16px;">
-                        <div class="quick-add-title">⚡ Быстрое добавление</div>
-                        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-                            <input type="text" id="quickBrandName" placeholder="Новый бренд" style="flex:2;">
-                            <input type="text" id="quickModelName" placeholder="Новая модель" style="flex:2;">
-                            <button id="quickAddBtn" class="btn-primary" style="padding: 8px 12px;">➕ Добавить</button>
-                        </div>
+                        <label>Телефон *</label>
+                        <input type="tel" id="clientPhone" placeholder="Телефон">
                     </div>
                 </div>
                 
-                <div class="right-panel">
-                    <div class="panel-title">📊 СТАТИСТИКА</div>
-                    <div id="statsRepairs" style="margin-bottom: 20px;">
-                        <div>📦 В ремонте: <strong id="statInRepair">0</strong></div>
-                        <div>✅ Готово: <strong id="statReady">0</strong></div>
-                        <div>💰 Выручка: <strong id="statRevenue">0 ₽</strong></div>
+                <div class="selector-level">
+                    <div class="selector-title">1. Тип устройства</div>
+                    <div id="categoriesGrid" class="categories-grid"></div>
+                </div>
+                
+                <div class="selector-level" id="brandsSection" style="display:none;">
+                    <div class="selector-title">2. Бренд</div>
+                    <div id="brandsGrid" class="brands-grid"></div>
+                </div>
+                
+                <div class="selector-level" id="modelsSection" style="display:none;">
+                    <div class="selector-title">3. Модель</div>
+                    <div id="modelsList" class="models-list"></div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Тип поломки</label>
+                        <select id="faultType">
+                            <option value="Не включается">Не включается</option>
+                            <option value="Не работает">Не работает</option>
+                            <option value="Сломан экран">Сломан экран</option>
+                            <option value="Проблема с питанием">Проблема с питанием</option>
+                            <option value="Замена детали">Замена детали</option>
+                            <option value="Программная ошибка">Программная ошибка</option>
+                            <option value="Механическая поломка">Механическая поломка</option>
+                            <option value="Другое">Другое</option>
+                        </select>
                     </div>
-                    
-                    <div class="panel-title">🔍 ПОИСК</div>
-                    <input type="text" id="searchRepairs" class="search-input" placeholder="Поиск по клиенту, модели...">
-                    
-                    <div class="panel-title" style="margin-top: 16px;">📋 АКТИВНЫЕ РЕМОНТЫ</div>
-                    <div id="repairsList" class="repairs-list"></div>
+                    <div class="form-group">
+                        <label>Срочность</label>
+                        <select id="urgency">
+                            <option value="Обычная">Обычная</option>
+                            <option value="Срочно">⚠️ Срочно</option>
+                            <option value="VIP">⭐ VIP</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Описание проблемы</label>
+                    <textarea id="faultDesc" rows="2" placeholder="Подробное описание..."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>Комплектация (зарядное, кабель...)</label>
+                    <textarea id="accessories" rows="1" placeholder="Что сдано клиентом"></textarea>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Предоплата (₽)</label>
+                        <input type="number" id="prepayment" value="0" step="500">
+                    </div>
+                    <div class="form-group">
+                        <label>Ориентир. стоимость (₽)</label>
+                        <input type="number" id="estimatedCost" value="0" step="500">
+                    </div>
+                </div>
+                
+                <button id="addRepairBtn" class="btn-primary" style="width:100%; margin-top: 16px;">📝 Принять в ремонт</button>
+                <button id="printBlankBtn" class="btn-outline" style="width:100%; margin-top: 12px;">🖨️ Распечатать бланк заказа</button>
+                
+                <div id="quickAddPanel" class="quick-add-panel" style="display:none;">
+                    <div class="quick-add-title">⚡ Быстрое добавление (админ)</div>
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                        <input type="text" id="quickBrandName" placeholder="Новый бренд" style="flex:2;">
+                        <input type="text" id="quickModelName" placeholder="Новая модель" style="flex:2;">
+                        <button id="quickAddBtn" class="btn-primary">➕ Добавить</button>
+                    </div>
                 </div>
             </div>
             
-            <div class="history-section">
-                <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 16px;">
-                    <div class="panel-title" style="margin-bottom:0;">📜 ЗАВЕРШЁННЫЕ РЕМОНТЫ</div>
-                    <div style="display: flex; gap: 10px;">
-                        <button id="exportExcelBtn" class="btn-success">📎 Excel</button>
-                        <button id="clearCompletedBtn" class="btn-danger">🗑 Очистить</button>
-                    </div>
+            <div class="right-panel">
+                <div class="panel-title">📊 СТАТИСТИКА</div>
+                <div class="stats-card">
+                    <div class="stats-row"><span>📦 В ремонте:</span><strong id="statInRepair">0</strong></div>
+                    <div class="stats-row"><span>✅ Готово к выдаче:</span><strong id="statReady">0</strong></div>
+                    <div class="stats-row"><span>💰 Общая выручка:</span><strong id="statRevenue">0 ₽</strong></div>
                 </div>
-                <div id="completedRepairsList" class="repairs-list"></div>
+                
+                <div class="panel-title">🔍 ПОИСК</div>
+                <input type="text" id="searchRepairs" class="search-input" placeholder="Поиск по клиенту, модели, телефону...">
+                
+                <div class="panel-title" style="margin-top: 16px;">📋 АКТИВНЫЕ РЕМОНТЫ</div>
+                <div id="repairsList" class="repairs-list"></div>
             </div>
         </div>
-    </div>
-
-    <div id="syncStatus" style="position: fixed; bottom: 20px; right: 20px; background: var(--gray-800); color: white; padding: 8px 16px; border-radius: 8px; font-size: 12px; z-index: 999;">💾 Готово</div>
-
-    <div id="adminModal" class="modal">
-        <div class="modal-card">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
-                <h2>Администрирование</h2>
-                <button id="closeAdminModal" style="background:none; font-size: 24px;">✕</button>
+        
+        <div class="history-section">
+            <div style="display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-bottom: 16px;">
+                <div class="panel-title" style="margin-bottom:0;">📜 ЗАВЕРШЁННЫЕ РЕМОНТЫ</div>
+                <div style="display: flex; gap: 10px;">
+                    <button id="exportExcelBtn" class="btn-success">📎 Экспорт Excel</button>
+                    <button id="clearCompletedBtn" class="btn-danger">🗑 Очистить</button>
+                </div>
             </div>
-            
-            <h3>📁 Категории устройств</h3>
-            <div id="adminCategoriesList"></div>
-            <div style="display:flex; gap:12px; margin: 16px 0;">
-                <input type="text" id="newCategoryName" placeholder="Новая категория" style="flex:2;">
-                <button id="addCategoryBtn" class="btn-primary">Добавить</button>
-            </div>
-            
-            <h3>🏷️ Бренды</h3>
-            <div id="adminBrandsList"></div>
-            <div style="display:flex; gap:12px; margin: 16px 0;">
-                <select id="selectCategoryForBrand" style="flex:1;"></select>
-                <input type="text" id="newBrandName" placeholder="Новый бренд" style="flex:2;">
-                <button id="addBrandBtn" class="btn-primary">Добавить</button>
-            </div>
-            
-            <h3>📱 Модели</h3>
-            <div id="adminModelsList"></div>
-            <div style="display:flex; gap:12px; margin: 16px 0;">
-                <select id="selectBrandForModel" style="flex:1;"></select>
-                <input type="text" id="newModelName" placeholder="Новая модель" style="flex:2;">
-                <button id="addModelBtn" class="btn-primary">Добавить</button>
-            </div>
-            
-            <hr style="margin: 20px 0;">
-            
-            <h3>💰 Цены на ремонт (рыночные)</h3>
-            <div id="adminPricesList"></div>
-            <div style="display:flex; gap:12px; margin: 16px 0;">
-                <input type="text" id="newPriceName" placeholder="Тип ремонта" style="flex:2;">
-                <input type="number" id="newPriceValue" placeholder="Цена (₽)" style="flex:1;">
-                <button id="addPriceBtn" class="btn-primary">Добавить</button>
-            </div>
+            <div id="completedRepairsList" class="repairs-list"></div>
         </div>
     </div>
+</div>
 
-    <div id="printBlankContainer" style="display: none;"></div>
+<div id="syncStatus" class="sync-status">💾 Готово</div>
 
-    <script>
-        // ========== ОПЕРАТОРЫ ==========
-        let operators = { 
-            "pavel": { password: "pavel123", name: "Павел", role: "admin" }, 
-            "ksenia": { password: "ksenia123", name: "Ксения", role: "operator" }, 
-            "natalia": { password: "natalia123", name: "Наталья", role: "operator" } 
-        };
+<div id="adminModal" class="modal">
+    <div class="modal-card">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
+            <h2>⚙️ Администрирование</h2>
+            <button id="closeAdminModal" style="background:none; font-size: 24px;">✕</button>
+        </div>
         
-        // ========== КАТЕГОРИИ ==========
-        let categories = [
-            { id: 1, name: "📱 Телефон" }, { id: 2, name: "📟 Планшет" }, { id: 3, name: "💻 Ноутбук" },
-            { id: 4, name: "🖥️ ПК" }, { id: 5, name: "🔄 Робот-пылесос" }, { id: 6, name: "🧺 Стиральная машина" },
-            { id: 7, name: "🍲 СВЧ-печь" }, { id: 8, name: "🧊 Холодильник" }, { id: 9, name: "☕ Кофемашина" },
-            { id: 10, name: "📺 Телевизор" }, { id: 11, name: "🎧 Наушники/Колонки" }, { id: 12, name: "🖨️ МФУ/Принтер" }
-        ];
+        <h3>📁 Категории устройств</h3>
+        <div id="adminCategoriesList" style="max-height:200px; overflow-y:auto; margin-bottom:12px;"></div>
+        <div style="display:flex; gap:12px; margin-bottom: 20px;">
+            <input type="text" id="newCategoryName" placeholder="Новая категория" style="flex:2;">
+            <button id="addCategoryBtn" class="btn-primary">Добавить</button>
+        </div>
         
-        // ========== БРЕНДЫ ==========
-        let brands = [
-            { id: 1, categoryId: 1, name: "Apple" }, { id: 2, categoryId: 1, name: "Samsung" }, { id: 3, categoryId: 1, name: "Xiaomi" },
-            { id: 4, categoryId: 1, name: "OPPO" }, { id: 5, categoryId: 1, name: "vivo" }, { id: 6, categoryId: 1, name: "Google Pixel" },
-            { id: 7, categoryId: 1, name: "OnePlus" }, { id: 8, categoryId: 1, name: "Huawei" }, { id: 9, categoryId: 1, name: "Honor" },
-            { id: 10, categoryId: 1, name: "Realme" }, { id: 11, categoryId: 1, name: "Motorola" }, { id: 12, categoryId: 1, name: "Tecno" },
-            { id: 20, categoryId: 2, name: "Apple iPad" }, { id: 21, categoryId: 2, name: "Samsung" }, { id: 22, categoryId: 2, name: "Lenovo" },
-            { id: 23, categoryId: 2, name: "Huawei" }, { id: 24, categoryId: 2, name: "Xiaomi" }, { id: 25, categoryId: 2, name: "Teclast" },
-            { id: 30, categoryId: 3, name: "Apple MacBook" }, { id: 31, categoryId: 3, name: "Lenovo" }, { id: 32, categoryId: 3, name: "HP" },
-            { id: 33, categoryId: 3, name: "Dell" }, { id: 34, categoryId: 3, name: "Asus" }, { id: 35, categoryId: 3, name: "Acer" },
-            { id: 50, categoryId: 5, name: "Xiaomi" }, { id: 51, categoryId: 5, name: "Roborock" }, { id: 52, categoryId: 5, name: "iRobot" },
-            { id: 60, categoryId: 6, name: "LG" }, { id: 61, categoryId: 6, name: "Samsung" }, { id: 62, categoryId: 6, name: "Bosch" },
-            { id: 70, categoryId: 7, name: "Samsung" }, { id: 71, categoryId: 7, name: "LG" }, { id: 80, categoryId: 8, name: "LG" },
-            { id: 81, categoryId: 8, name: "Samsung" }, { id: 82, categoryId: 8, name: "Bosch" }, { id: 90, categoryId: 9, name: "De'Longhi" },
-            { id: 100, categoryId: 10, name: "LG" }, { id: 101, categoryId: 10, name: "Samsung" }, { id: 102, categoryId: 10, name: "Sony" },
-            { id: 110, categoryId: 11, name: "Apple" }, { id: 111, categoryId: 11, name: "Sony" }, { id: 112, categoryId: 11, name: "JBL" },
-            { id: 120, categoryId: 12, name: "HP" }, { id: 121, categoryId: 12, name: "Canon" }, { id: 122, categoryId: 12, name: "Epson" }
-        ];
+        <h3>🏷️ Бренды</h3>
+        <div id="adminBrandsList" style="max-height:200px; overflow-y:auto; margin-bottom:12px;"></div>
+        <div style="display:flex; gap:12px; margin-bottom: 20px;">
+            <select id="selectCategoryForBrand" style="flex:1;"></select>
+            <input type="text" id="newBrandName" placeholder="Новый бренд" style="flex:2;">
+            <button id="addBrandBtn" class="btn-primary">Добавить</button>
+        </div>
         
-        // ========== МОДЕЛИ ==========
-        let models = [
-            { id: 1, brandId: 1, name: "iPhone 16 Pro Max" }, { id: 2, brandId: 1, name: "iPhone 16 Pro" }, { id: 3, brandId: 1, name: "iPhone 16" },
-            { id: 4, brandId: 1, name: "iPhone 15 Pro Max" }, { id: 5, brandId: 1, name: "iPhone 15" }, { id: 6, brandId: 1, name: "iPhone 14" },
-            { id: 7, brandId: 2, name: "Galaxy S24 Ultra" }, { id: 8, brandId: 2, name: "Galaxy S24" }, { id: 9, brandId: 2, name: "Galaxy A55" },
-            { id: 10, brandId: 3, name: "Xiaomi 14" }, { id: 11, brandId: 3, name: "Redmi Note 13" }, { id: 12, brandId: 3, name: "POCO F6" },
-            { id: 13, brandId: 20, name: "iPad Pro 13" }, { id: 14, brandId: 20, name: "iPad Air" }, { id: 15, brandId: 21, name: "Galaxy Tab S11" },
-            { id: 16, brandId: 22, name: "Lenovo Tab P12" }, { id: 17, brandId: 23, name: "MatePad Pro" }, { id: 18, brandId: 30, name: "MacBook Pro 16" },
-            { id: 19, brandId: 30, name: "MacBook Air 15" }, { id: 20, brandId: 31, name: "ThinkPad X1" }, { id: 21, brandId: 32, name: "HP Spectre" }
-        ];
+        <h3>📱 Модели</h3>
+        <div id="adminModelsList" style="max-height:200px; overflow-y:auto; margin-bottom:12px;"></div>
+        <div style="display:flex; gap:12px; margin-bottom: 20px;">
+            <select id="selectBrandForModel" style="flex:1;"></select>
+            <input type="text" id="newModelName" placeholder="Новая модель" style="flex:2;">
+            <button id="addModelBtn" class="btn-primary">Добавить</button>
+        </div>
         
-        // ========== ЦЕНЫ НА РЕМОНТ ==========
-        let repairPrices = [
-            { id: 1, name: "🔧 Замена экрана", price: 3500 },
-            { id: 2, name: "🔋 Замена аккумулятора", price: 1800 },
-            { id: 3, name: "🔌 Замена разъёма", price: 1200 },
-            { id: 4, name: "💻 Ремонт материнской платы", price: 4500 },
-            { id: 5, name: "🧹 Чистка/профилактика", price: 800 },
-            { id: 6, name: "📲 Перепрошивка", price: 1500 },
-            { id: 7, name: "🔊 Замена динамика/микрофона", price: 1300 },
-            { id: 8, name: "🔘 Замена кнопок", price: 900 },
-            { id: 9, name: "⚡ Ремонт блока питания", price: 2000 },
-            { id: 10, name: "🩺 Диагностика", price: 500 }
-        ];
+        <hr style="margin: 20px 0;">
         
-        let repairs = [];
-        let completedRepairs = [];
-        let currentUser = null;
+        <h3>💰 Цены на ремонт (для быстрой вставки)</h3>
+        <div id="adminPricesList"></div>
+        <div style="display:flex; gap:12px; margin-top:16px;">
+            <input type="text" id="newPriceName" placeholder="Тип ремонта" style="flex:2;">
+            <input type="number" id="newPriceValue" placeholder="Цена (₽)" style="flex:1;">
+            <button id="addPriceBtn" class="btn-primary">Добавить</button>
+        </div>
         
-        let selectedCategoryId = null;
-        let selectedBrandId = null;
-        let selectedModelId = null;
+        <hr style="margin: 20px 0;">
         
-        const CATEGORIES_KEY = "service_categories_v3", BRANDS_KEY = "service_brands_v3", MODELS_KEY = "service_models_v3", REPAIRS_KEY = "service_repairs_v3", COMPLETED_KEY = "service_completed_v3", PRICES_KEY = "service_prices_v3";
-        
-        function saveCategories() { localStorage.setItem(CATEGORIES_KEY, JSON.stringify(categories)); }
-        function saveBrands() { localStorage.setItem(BRANDS_KEY, JSON.stringify(brands)); }
-        function saveModels() { localStorage.setItem(MODELS_KEY, JSON.stringify(models)); }
-        function saveRepairs() { localStorage.setItem(REPAIRS_KEY, JSON.stringify(repairs)); }
-        function saveCompleted() { localStorage.setItem(COMPLETED_KEY, JSON.stringify(completedRepairs)); }
-        function savePrices() { localStorage.setItem(PRICES_KEY, JSON.stringify(repairPrices)); }
-        
-        function loadData() {
-            let c = localStorage.getItem(CATEGORIES_KEY); if (c) categories = JSON.parse(c);
-            let b = localStorage.getItem(BRANDS_KEY); if (b) brands = JSON.parse(b);
-            let m = localStorage.getItem(MODELS_KEY); if (m) models = JSON.parse(m);
-            let r = localStorage.getItem(REPAIRS_KEY); if (r) repairs = JSON.parse(r);
-            let comp = localStorage.getItem(COMPLETED_KEY); if (comp) completedRepairs = JSON.parse(comp);
-            let p = localStorage.getItem(PRICES_KEY); if (p) repairPrices = JSON.parse(p);
-            renderCategories();
-            renderRepairs();
-            renderCompleted();
-            updateStats();
-            renderPricesAccordion();
-            
-            let quickPanel = document.getElementById("quickAddPanel");
-            if (quickPanel) quickPanel.style.display = currentUser?.role === "admin" ? "block" : "none";
-        }
-        
-        // АККОРДЕОН С ЦЕНАМИ
-        function renderPricesAccordion() {
-            const container = document.getElementById("pricesAccordion");
-            if (!container) return;
-            container.innerHTML = "";
-            // Группируем цены по категориям
-            const priceCategories = [
-                { name: "📱 Экран и корпус", items: repairPrices.filter(p => p.name.includes("экран") || p.name.includes("кнопк")) },
-                { name: "🔋 Электроника и питание", items: repairPrices.filter(p => p.name.includes("аккумулятор") || p.name.includes("разъём") || p.name.includes("плат") || p.name.includes("блок питания")) },
-                { name: "🛠️ Обслуживание и софт", items: repairPrices.filter(p => p.name.includes("чистк") || p.name.includes("Перепрошивк") || p.name.includes("Диагностик")) }
-            ];
-            
-            priceCategories.forEach(cat => {
-                if (cat.items.length === 0) return;
-                let accordion = document.createElement("div");
-                accordion.className = "accordion";
-                accordion.innerHTML = `
-                    <div class="accordion-header">
-                        <span>${cat.name}</span>
-                        <span class="accordion-icon">▼</span>
-                    </div>
-                    <div class="accordion-content">
-                        ${cat.items.map(p => `
-                            <div class="price-item" data-price="${p.price}" data-name="${p.name}">
-                                <span class="price-name">${p.name}</span>
-                                <span class="price-value">${p.price.toLocaleString()} ₽</span>
-                                <span class="price-calc-badge">📋 выбрать</span>
-                            </div>
-                        `).join('')}
-                    </div>
-                `;
-                container.appendChild(accordion);
-            });
-            
-            // Добавляем остальные цены, не попавшие в категории
-            let otherPrices = repairPrices.filter(p => 
-                !p.name.includes("экран") && !p.name.includes("кнопк") && 
-                !p.name.includes("аккумулятор") && !p.name.includes("разъём") && 
-                !p.name.includes("плат") && !p.name.includes("блок питания") &&
-                !p.name.includes("чистк") && !p.name.includes("Перепрошивк") && !p.name.includes("Диагностик")
-            );
-            if (otherPrices.length > 0) {
-                let accordion = document.createElement("div");
-                accordion.className = "accordion";
-                accordion.innerHTML = `
-                    <div class="accordion-header">
-                        <span>🔧 Другие работы</span>
-                        <span class="accordion-icon">▼</span>
-                    </div>
-                    <div class="accordion-content">
-                        ${otherPrices.map(p => `
-                            <div class="price-item" data-price="${p.price}" data-name="${p.name}">
-                                <span class="price-name">${p.name}</span>
-                                <span class="price-value">${p.price.toLocaleString()} ₽</span>
-                                <span class="price-calc-badge">📋 выбрать</span>
-                            </div>
-                        `).join('')}
-                    </div>
-                `;
-                container.appendChild(accordion);
-            }
-            
-            // Обработчики для аккордеонов
-            document.querySelectorAll(".accordion-header").forEach(header => {
-                header.onclick = () => {
-                    let content = header.nextElementSibling;
-                    let icon = header.querySelector(".accordion-icon");
-                    if (content.classList.contains("open")) {
-                        content.classList.remove("open");
-                        icon.textContent = "▼";
-                    } else {
-                        content.classList.add("open");
-                        icon.textContent = "▲";
-                    }
-                };
-            });
-            
-            // Обработчики для выбора цены
-            document.querySelectorAll(".price-item").forEach(item => {
-                item.onclick = (e) => {
-                    e.stopPropagation();
-                    let price = parseInt(item.getAttribute("data-price"));
-                    let name = item.getAttribute("data-name");
-                    document.getElementById("estimatedCost").value = price;
-                    // Также можно обновить тип поломки
-                    let faultSelect = document.getElementById("faultType");
-                    if (faultSelect && name) {
-                        let shortName = name.replace(/^[^a-zA-Zа-яА-Я]+/, "");
-                        if (!faultSelect.querySelector(`option[value="${shortName}"]`)) {
-                            // если нет точного совпадения, просто показываем
-                        }
-                    }
-                    showSyncStatus(`✅ Установлена цена: ${price} ₽ (${name})`);
-                    // Показываем уведомление
-                    let priceDiv = item.querySelector(".price-calc-badge");
-                    priceDiv.textContent = "✓ выбрано";
-                    setTimeout(() => { if (priceDiv) priceDiv.textContent = "📋 выбрать"; }, 1500);
-                };
-            });
-        }
-        
-        function renderCategories() {
-            const grid = document.getElementById("categoriesGrid");
-            if (!grid) return;
-            grid.innerHTML = "";
-            categories.forEach(c => {
-                let card = document.createElement("div");
-                card.className = "category-card" + (selectedCategoryId === c.id ? " active" : "");
-                card.innerText = c.name;
-                card.onclick = () => { selectCategory(c.id); };
-                grid.appendChild(card);
-            });
-        }
-        
-        function selectCategory(categoryId) {
-            selectedCategoryId = categoryId;
-            selectedBrandId = null;
-            selectedModelId = null;
-            renderCategories();
-            const categoryBrands = brands.filter(b => b.categoryId === categoryId);
-            renderBrands(categoryBrands);
-            document.getElementById("brandsSection").style.display = "block";
-            document.getElementById("modelsSection").style.display = "none";
-            document.getElementById("pricesPanel").style.display = "block";
-        }
-        
-        function renderBrands(brandsToShow) {
-            const grid = document.getElementById("brandsGrid");
-            if (!grid) return;
-            if (brandsToShow.length === 0) {
-                grid.innerHTML = "<div style='padding:20px;text-align:center;color:var(--gray-500);'>Нет брендов</div>";
-                return;
-            }
-            grid.innerHTML = "";
-            brandsToShow.forEach(b => {
-                let card = document.createElement("div");
-                card.className = "brand-card" + (selectedBrandId === b.id ? " active" : "");
-                card.innerText = b.name;
-                card.onclick = () => { selectBrand(b.id); };
-                grid.appendChild(card);
-            });
-        }
-        
-        function selectBrand(brandId) {
-            selectedBrandId = brandId;
-            selectedModelId = null;
-            renderBrands(brands.filter(b => b.categoryId === selectedCategoryId));
-            const brandModels = models.filter(m => m.brandId === brandId);
-            renderModels(brandModels);
-            document.getElementById("modelsSection").style.display = "block";
-        }
-        
-        function renderModels(modelsToShow) {
-            const container = document.getElementById("modelsList");
-            if (!container) return;
-            if (modelsToShow.length === 0) {
-                container.innerHTML = "<div style='padding:20px;text-align:center;color:var(--gray-500);'>Нет моделей</div>";
-                return;
-            }
-            container.innerHTML = "";
-            modelsToShow.forEach(m => {
-                let item = document.createElement("div");
-                item.className = "model-item" + (selectedModelId === m.id ? " selected" : "");
-                item.innerHTML = `<span>${m.name}</span>`;
-                item.onclick = () => { 
-                    selectedModelId = m.id; 
-                    renderModels(modelsToShow);
-                };
-                container.appendChild(item);
-            });
-        }
-        
-        function quickAddBrandModel() {
-            let newBrand = document.getElementById("quickBrandName").value.trim();
-            let newModel = document.getElementById("quickModelName").value.trim();
-            
-            if (!selectedCategoryId) { alert("Сначала выберите категорию"); return; }
-            if (!newBrand && !newModel) { alert("Введите бренд или модель"); return; }
-            
-            if (newBrand) {
-                let existing = brands.find(b => b.categoryId === selectedCategoryId && b.name.toLowerCase() === newBrand.toLowerCase());
-                if (!existing) {
-                    brands.push({ id: Date.now(), categoryId: selectedCategoryId, name: newBrand });
-                    saveBrands();
-                    showSyncStatus(`✅ Бренд "${newBrand}" добавлен`);
-                    const categoryBrands = brands.filter(b => b.categoryId === selectedCategoryId);
-                    renderBrands(categoryBrands);
-                } else { showSyncStatus(`⚠️ Бренд уже существует`); }
-            }
-            
-            if (newModel && selectedBrandId) {
-                let existing = models.find(m => m.brandId === selectedBrandId && m.name.toLowerCase() === newModel.toLowerCase());
-                if (!existing) {
-                    models.push({ id: Date.now(), brandId: selectedBrandId, name: newModel });
-                    saveModels();
-                    showSyncStatus(`✅ Модель "${newModel}" добавлена`);
-                    const brandModels = models.filter(m => m.brandId === selectedBrandId);
-                    renderModels(brandModels);
-                } else { showSyncStatus(`⚠️ Модель уже существует`); }
-            } else if (newModel && !selectedBrandId) { alert("Сначала выберите бренд"); }
-            
-            document.getElementById("quickBrandName").value = "";
-            document.getElementById("quickModelName").value = "";
-        }
-        
-        function addRepair() {
-            let client = document.getElementById("clientName").value.trim();
-            let phone = document.getElementById("clientPhone").value.trim();
-            if (!client && !phone) { alert("Укажите имя или телефон"); return; }
-            if (!selectedCategoryId) { alert("Выберите тип устройства"); return; }
-            if (!selectedBrandId) { alert("Выберите бренд"); return; }
-            if (!selectedModelId) { alert("Выберите модель"); return; }
-            
-            let category = categories.find(c => c.id === selectedCategoryId);
-            let brand = brands.find(b => b.id === selectedBrandId);
-            let model = models.find(m => m.id === selectedModelId);
-            let faultType = document.getElementById("faultType").value;
-            let urgency = document.getElementById("urgency").value;
-            let faultDesc = document.getElementById("faultDesc").value;
-            let accessories = document.getElementById("accessories").value;
-            let prepayment = parseFloat(document.getElementById("prepayment").value) || 0;
-            let estimatedCost = parseFloat(document.getElementById("estimatedCost").value) || 0;
-            
-            let newRepair = {
-                id: Date.now(),
-                date: new Date().toLocaleString(),
-                client: client || "Клиент",
-                phone: phone,
-                categoryId: selectedCategoryId,
-                categoryName: category.name,
-                brandId: selectedBrandId,
-                brandName: brand.name,
-                modelId: selectedModelId,
-                modelName: model.name,
-                faultType: faultType,
-                urgency: urgency,
-                faultDesc: faultDesc,
-                accessories: accessories,
-                prepayment: prepayment,
-                estimatedCost: estimatedCost,
-                finalCost: null,
-                status: "new",
-                comment: "",
-                operator: currentUser.name
-            };
-            repairs.push(newRepair);
-            saveRepairs();
-            renderRepairs();
-            updateStats();
-            
-            document.getElementById("clientName").value = "";
-            document.getElementById("clientPhone").value = "";
-            document.getElementById("faultDesc").value = "";
-            document.getElementById("accessories").value = "";
-            document.getElementById("prepayment").value = "0";
-            document.getElementById("estimatedCost").value = "0";
-            selectedCategoryId = null;
-            selectedBrandId = null;
-            selectedModelId = null;
-            renderCategories();
-            document.getElementById("brandsSection").style.display = "none";
-            document.getElementById("modelsSection").style.display = "none";
-            document.getElementById("pricesPanel").style.display = "none";
-            
-            alert(`✅ Ремонт №${newRepair.id} принят!\n${category.name} ${brand.name} ${model.name}`);
-        }
-        
-        function getStatusBadge(status) {
-            const classes = { 'new': 'status-new', 'diagnostic': 'status-diagnostic', 'repair': 'status-repair', 'ready': 'status-ready', 'given': 'status-given' };
-            const names = { 'new': 'Назначен', 'diagnostic': 'Диагностика', 'repair': 'Ремонт', 'ready': 'Готов', 'given': 'Выдан' };
-            return `<span class="status-badge ${classes[status]}">${names[status]}</span>`;
-        }
-        
-        function renderRepairs() {
-            const container = document.getElementById("repairsList");
-            if (!container) return;
-            let searchTerm = document.getElementById("searchRepairs")?.value.toLowerCase() || "";
-            let filtered = repairs.filter(r => 
-                r.client.toLowerCase().includes(searchTerm) || 
-                r.modelName.toLowerCase().includes(searchTerm) ||
-                r.phone.includes(searchTerm));
-            if (filtered.length === 0) {
-                container.innerHTML = "<div style='padding:40px;text-align:center;color:var(--gray-500);'>Нет активных ремонтов</div>";
-                return;
-            }
-            let html = "";
-            filtered.forEach(r => {
-                let urgencyIcon = r.urgency === "Срочно" ? "⚠️ " : (r.urgency === "VIP" ? "⭐ " : "");
-                html += `<div class="repair-item" data-id="${r.id}">
-                            <div style="display:flex; justify-content:space-between; flex-wrap:wrap;">
-                                <span><strong>${urgencyIcon}${r.client}</strong> | ${r.categoryName} ${r.brandName} ${r.modelName}</span>
-                                <span>${getStatusBadge(r.status)}</span>
-                            </div>
-                            <div style="font-size:12px; margin-top:6px;">📞 ${r.phone || "—"} | 🔧 ${r.faultType}</div>
-                            <div style="font-size:12px;">💰 Предоплата: ${r.prepayment} ₽ | Стоимость: ${r.estimatedCost} ₽</div>
-                            ${r.comment ? `<div style="font-size:12px;">📝 ${r.comment}</div>` : ""}
-                            <div class="repair-actions">
-                                <select class="status-select" data-id="${r.id}" style="width:auto; padding:6px;">
-                                    <option value="new" ${r.status === "new" ? "selected" : ""}>Назначен</option>
-                                    <option value="diagnostic" ${r.status === "diagnostic" ? "selected" : ""}>Диагностика</option>
-                                    <option value="repair" ${r.status === "repair" ? "selected" : ""}>Ремонт</option>
-                                    <option value="ready" ${r.status === "ready" ? "selected" : ""}>Готов</option>
-                                    <option value="given" ${r.status === "given" ? "selected" : ""}>Выдан</option>
-                                </select>
-                                <input type="number" id="finalCost_${r.id}" placeholder="Итоговая стоимость" style="width:120px; padding:6px;" value="${r.finalCost || ""}">
-                                <textarea id="comment_${r.id}" placeholder="Комментарий" style="width:120px; padding:6px;" rows="1">${r.comment || ""}</textarea>
-                                <button class="update-repair" data-id="${r.id}" style="padding:6px 12px;">Обновить</button>
-                                <button class="complete-repair" data-id="${r.id}" style="background:var(--green); padding:6px 12px;">✅ Выдать</button>
-                                <button class="delete-repair" data-id="${r.id}" style="background:var(--red); padding:6px 12px;">🗑</button>
-                            </div>
-                        </div>`;
-            });
-            container.innerHTML = html;
-            
-            document.querySelectorAll(".update-repair").forEach(btn => {
-                btn.onclick = () => {
-                    let id = parseInt(btn.getAttribute("data-id"));
-                    let repair = repairs.find(r => r.id === id);
-                    if (repair) {
-                        let newStatus = document.querySelector(`.status-select[data-id="${id}"]`).value;
-                        let finalCost = parseFloat(document.getElementById(`finalCost_${id}`).value);
-                        let comment = document.getElementById(`comment_${id}`).value;
-                        repair.status = newStatus;
-                        if (finalCost && !isNaN(finalCost)) repair.finalCost = finalCost;
-                        if (comment) repair.comment = comment;
-                        saveRepairs();
-                        renderRepairs();
-                        updateStats();
-                        showSyncStatus(`✅ Статус обновлён`);
-                    }
-                };
-            });
-            document.querySelectorAll(".complete-repair").forEach(btn => {
-                btn.onclick = () => {
-                    let id = parseInt(btn.getAttribute("data-id"));
-                    let repair = repairs.find(r => r.id === id);
-                    if (repair && confirm(`Выдать ремонт клиенту ${repair.client}?`)) {
-                        if (!repair.finalCost) {
-                            let cost = prompt("Введите итоговую стоимость:", repair.estimatedCost);
-                            if (cost && !isNaN(cost)) repair.finalCost = parseFloat(cost);
-                            else { alert("Укажите стоимость!"); return; }
-                        }
-                        repair.status = "given";
-                        repair.closeDate = new Date().toLocaleString();
-                        completedRepairs.unshift(repair);
-                        repairs = repairs.filter(r => r.id !== id);
-                        saveRepairs();
-                        saveCompleted();
-                        renderRepairs();
-                        renderCompleted();
-                        updateStats();
-                        showSyncStatus(`✅ Ремонт завершён`);
-                    }
-                };
-            });
-            document.querySelectorAll(".delete-repair").forEach(btn => {
-                btn.onclick = () => {
-                    let id = parseInt(btn.getAttribute("data-id"));
-                    let repair = repairs.find(r => r.id === id);
-                    if (repair && confirm(`Удалить ремонт?`)) {
-                        repairs = repairs.filter(r => r.id !== id);
-                        saveRepairs();
-                        renderRepairs();
-                        updateStats();
-                        showSyncStatus(`🗑 Ремонт удалён`);
-                    }
-                };
-            });
-        }
-        
-        function renderCompleted() {
-            const container = document.getElementById("completedRepairsList");
-            if (!container) return;
-            if (completedRepairs.length === 0) {
-                container.innerHTML = "<div style='padding:40px;text-align:center;color:var(--gray-500);'>Нет завершённых ремонтов</div>";
-                return;
-            }
-            let html = "";
-            completedRepairs.slice(0, 50).forEach(r => {
-                html += `<div class="repair-item">
-                            <div><strong>${r.client}</strong> | ${r.categoryName} ${r.brandName} ${r.modelName}</div>
-                            <div style="font-size:12px;">📅 Принят: ${r.date} | Выдан: ${r.closeDate}</div>
-                            <div style="font-size:12px;">💰 Итого: ${r.finalCost} ₽</div>
-                            <div style="font-size:12px;">🔧 ${r.faultType}</div>
-                        </div>`;
-            });
-            container.innerHTML = html;
-        }
-        
-        function updateStats() {
-            let inRepair = repairs.filter(r => r.status !== "given").length;
-            let ready = repairs.filter(r => r.status === "ready").length;
-            let revenue = completedRepairs.reduce((sum, r) => sum + (r.finalCost || 0), 0);
-            document.getElementById("statInRepair").innerText = inRepair;
-            document.getElementById("statReady").innerText = ready;
-            document.getElementById("statRevenue").innerHTML = revenue.toLocaleString() + " ₽";
-        }
-        
-        function exportExcel() {
-            let data = [["ID","Дата","Клиент","Телефон","Категория","Бренд","Модель","Поломка","Срочность","Предоплата","Итог","Статус","Оператор","Комментарий"]];
-            [...repairs, ...completedRepairs].forEach(r => {
-                data.push([r.id, r.date, r.client, r.phone || "", r.categoryName, r.brandName, r.modelName, r.faultType, r.urgency, r.prepayment, r.finalCost || "", r.status === "given" ? "Выдан" : "В работе", r.operator, r.comment || ""]);
-            });
-            let ws = XLSX.utils.aoa_to_sheet(data);
-            let wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Ремонты");
-            XLSX.writeFile(wb, `A4print_service_repairs_${new Date().toISOString().slice(0,10)}.xlsx`);
-            showSyncStatus("📎 Excel скачан");
-        }
-        
-        function clearCompleted() {
-            if (confirm("Очистить все завершённые ремонты?")) {
-                completedRepairs = [];
-                saveCompleted();
-                renderCompleted();
-                updateStats();
-                showSyncStatus("🗑 Очищено");
-            }
-        }
-        
-        function renderAdminPanel() {
-            let catDiv = document.getElementById("adminCategoriesList");
-            catDiv.innerHTML = "";
-            categories.forEach(c => {
-                catDiv.innerHTML += `<div style="display:flex; justify-content:space-between; margin-bottom:8px;"><span>${c.name}</span><button class="delete-category" data-id="${c.id}" style="background:var(--red); padding:4px 12px;">🗑</button></div>`;
-            });
-            let brandsDiv = document.getElementById("adminBrandsList");
-            brandsDiv.innerHTML = "";
-            brands.forEach(b => {
-                let cat = categories.find(c => c.id === b.categoryId);
-                brandsDiv.innerHTML += `<div style="display:flex; justify-content:space-between; margin-bottom:8px;"><span>${cat?.name || "?"} — ${b.name}</span><button class="delete-brand" data-id="${b.id}" style="background:var(--red); padding:4px 12px;">🗑</button></div>`;
-            });
-            let catSelect = document.getElementById("selectCategoryForBrand");
-            catSelect.innerHTML = "";
-            categories.forEach(c => { let opt = document.createElement("option"); opt.value = c.id; opt.textContent = c.name; catSelect.appendChild(opt); });
-            let brandSelect = document.getElementById("selectBrandForModel");
-            brandSelect.innerHTML = "";
-            brands.forEach(b => { let opt = document.createElement("option"); opt.value = b.id; opt.textContent = b.name; brandSelect.appendChild(opt); });
-            
-            let pricesDiv = document.getElementById("adminPricesList");
-            pricesDiv.innerHTML = "";
-            repairPrices.forEach(p => {
-                pricesDiv.innerHTML += `<div style="display:flex; justify-content:space-between; margin-bottom:8px;">
-                                            <span>${p.name}</span>
-                                            <span><input type="number" id="price_${p.id}" value="${p.price}" style="width:100px; padding:4px;"> ₽
-                                            <button class="update-price" data-id="${p.id}" style="background:var(--blue); padding:4px 12px;">💾</button>
-                                            <button class="delete-price" data-id="${p.id}" style="background:var(--red); padding:4px 12px;">🗑</button></span>
-                                        </div>`;
-            });
-            document.querySelectorAll(".update-price").forEach(btn => {
-                btn.onclick = () => {
-                    let id = parseInt(btn.getAttribute("data-id"));
-                    let newPrice = parseInt(document.getElementById(`price_${id}`).value);
-                    let price = repairPrices.find(p => p.id === id);
-                    if (price && newPrice > 0) { price.price = newPrice; savePrices(); renderPricesAccordion(); renderAdminPanel(); showSyncStatus(`✅ Цена обновлена`); }
-                };
-            });
-            document.querySelectorAll(".delete-price").forEach(btn => {
-                btn.onclick = () => {
-                    let id = parseInt(btn.getAttribute("data-id"));
-                    if (repairPrices.length <= 1) { alert("Нельзя удалить последнюю позицию"); return; }
-                    repairPrices = repairPrices.filter(p => p.id !== id);
-                    savePrices();
-                    renderPricesAccordion();
-                    renderAdminPanel();
-                    showSyncStatus(`🗑 Цена удалена`);
-                };
-            });
-        }
-        
-        function showSyncStatus(msg) {
-            let d = document.getElementById("syncStatus");
-            if (d) { d.textContent = msg; setTimeout(() => { if (d.textContent === msg) d.textContent = "💾 Готово"; }, 2000); }
-        }
-        
-        function toggleTheme() { document.body.classList.toggle("dark"); localStorage.setItem("service_theme", document.body.classList.contains("dark") ? "dark" : "light"); }
-        
-        function login() {
-            let selectedLogin = document.getElementById("loginSelect").value;
-            let password = document.getElementById("loginPassword").value;
-            if (!selectedLogin) { document.getElementById("loginError").innerText = "Выберите оператора"; return false; }
-            let u = operators[selectedLogin];
-            if (u && u.password === password) {
-                currentUser = { ...u, username: selectedLogin };
-                localStorage.setItem("service_current_user", JSON.stringify(currentUser));
-                document.getElementById("loginOverlay").style.display = "none";
-                document.getElementById("mainContent").style.display = "block";
-                document.getElementById("currentOperatorName").innerHTML = `${currentUser.name} ${currentUser.role === "admin" ? "👑" : "👤"}`;
-                document.getElementById("burgerOperatorName").innerText = `${currentUser.name} ${currentUser.role === "admin" ? "👑" : "👤"}`;
-                loadData();
-                return true;
-            }
-            document.getElementById("loginError").innerText = "Неверный пароль";
+        <h3>🔄 Google Sheets синхронизация</h3>
+        <input type="text" id="googleWebAppUrl" style="width:100%;" placeholder="https://script.google.com/macros/s/.../exec">
+        <button id="saveGoogleUrlBtn" class="btn-primary" style="margin-top:12px;">💾 Сохранить URL</button>
+        <button id="manualSyncBtn" class="btn-pink" style="margin-top:12px;">📤 Ручная синхронизация</button>
+    </div>
+</div>
+
+<script>
+    // ========== ОПЕРАТОРЫ ==========
+    let operators = { 
+        "pavel": { password: "pavel123", name: "Павел", role: "admin" }, 
+        "ksenia": { password: "ksenia123", name: "Ксения", role: "operator" }, 
+        "natalia": { password: "natalia123", name: "Наталья", role: "operator" } 
+    };
+    
+    // ========== ДАННЫЕ ==========
+    let categories = [
+        { id: 1, name: "📱 Телефон" }, { id: 2, name: "📟 Планшет" }, { id: 3, name: "💻 Ноутбук" },
+        { id: 4, name: "🖥️ ПК" }, { id: 5, name: "🔄 Робот-пылесос" }, { id: 6, name: "🧺 Стиральная машина" },
+        { id: 7, name: "🍲 СВЧ-печь" }, { id: 8, name: "🧊 Холодильник" }, { id: 9, name: "☕ Кофемашина" },
+        { id: 10, name: "📺 Телевизор" }, { id: 11, name: "🎧 Наушники/Колонки" }, { id: 12, name: "🖨️ МФУ/Принтер" }
+    ];
+    
+    let brands = [
+        { id: 1, categoryId: 1, name: "Apple" }, { id: 2, categoryId: 1, name: "Samsung" }, { id: 3, categoryId: 1, name: "Xiaomi" },
+        { id: 4, categoryId: 1, name: "OPPO" }, { id: 5, categoryId: 1, name: "vivo" }, { id: 6, categoryId: 1, name: "Google" },
+        { id: 20, categoryId: 2, name: "Apple" }, { id: 21, categoryId: 2, name: "Samsung" }, { id: 22, categoryId: 2, name: "Lenovo" },
+        { id: 30, categoryId: 3, name: "Apple" }, { id: 31, categoryId: 3, name: "Lenovo" }, { id: 32, categoryId: 3, name: "HP" },
+        { id: 33, categoryId: 3, name: "Asus" }, { id: 34, categoryId: 3, name: "Acer" }, { id: 35, categoryId: 3, name: "Dell" }
+    ];
+    
+    let models = [
+        { id: 1, brandId: 1, name: "iPhone 16 Pro Max" }, { id: 2, brandId: 1, name: "iPhone 16 Pro" }, { id: 3, brandId: 1, name: "iPhone 16" },
+        { id: 4, brandId: 1, name: "iPhone 15 Pro Max" }, { id: 5, brandId: 1, name: "iPhone 15" }, { id: 6, brandId: 2, name: "Galaxy S24 Ultra" },
+        { id: 7, brandId: 2, name: "Galaxy S24" }, { id: 8, brandId: 3, name: "Xiaomi 14" }, { id: 9, brandId: 3, name: "Redmi Note 13" },
+        { id: 10, brandId: 20, name: "iPad Pro" }, { id: 11, brandId: 21, name: "Galaxy Tab S9" }, { id: 12, brandId: 30, name: "MacBook Pro" },
+        { id: 13, brandId: 31, name: "ThinkPad" }, { id: 14, brandId: 32, name: "Pavilion" }, { id: 15, brandId: 33, name: "ROG" }
+    ];
+    
+    let repairPrices = [
+        { id: 1, name: "🔧 Замена экрана", price: 3500 },
+        { id: 2, name: "🔋 Замена аккумулятора", price: 1800 },
+        { id: 3, name: "🔌 Замена разъёма", price: 1200 },
+        { id: 4, name: "💻 Ремонт материнской платы", price: 4500 },
+        { id: 5, name: "🧹 Чистка/профилактика", price: 800 },
+        { id: 6, name: "📲 Перепрошивка", price: 1500 },
+        { id: 7, name: "🔊 Замена динамика/микрофона", price: 1300 },
+        { id: 8, name: "🔘 Замена кнопок", price: 900 },
+        { id: 9, name: "⚡ Ремонт блока питания", price: 2000 },
+        { id: 10, name: "🩺 Диагностика", price: 500 }
+    ];
+    
+    let repairs = [];
+    let completedRepairs = [];
+    let currentUser = null;
+    let GOOGLE_WEBAPP_URL = localStorage.getItem("service_google_url") || "";
+    
+    let selectedCategoryId = null;
+    let selectedBrandId = null;
+    let selectedModelId = null;
+    
+    const CATEGORIES_KEY = "service_categories", BRANDS_KEY = "service_brands", MODELS_KEY = "service_models", 
+          REPAIRS_KEY = "service_repairs", COMPLETED_KEY = "service_completed", PRICES_KEY = "service_prices";
+    
+    function saveCategories() { localStorage.setItem(CATEGORIES_KEY, JSON.stringify(categories)); }
+    function saveBrands() { localStorage.setItem(BRANDS_KEY, JSON.stringify(brands)); }
+    function saveModels() { localStorage.setItem(MODELS_KEY, JSON.stringify(models)); }
+    function saveRepairs() { localStorage.setItem(REPAIRS_KEY, JSON.stringify(repairs)); }
+    function saveCompleted() { localStorage.setItem(COMPLETED_KEY, JSON.stringify(completedRepairs)); }
+    function savePrices() { localStorage.setItem(PRICES_KEY, JSON.stringify(repairPrices)); }
+    
+    function showSyncStatus(msg) {
+        let d = document.getElementById("syncStatus");
+        if (d) { d.textContent = msg; setTimeout(() => { if (d.textContent === msg) d.textContent = "💾 Готово"; }, 3000); }
+    }
+    
+    // ========== GOOGLE SHEETS СИНХРОНИЗАЦИЯ ==========
+    async function syncToGoogle(isSilent = false) {
+        if (!GOOGLE_WEBAPP_URL) {
+            if (!isSilent) alert('Сначала настройте URL Google Sheets в админ-панели');
             return false;
         }
-        
-        function logout() { currentUser = null; localStorage.removeItem("service_current_user"); location.reload(); }
-        
-        function initBurger() {
-            let btn = document.getElementById("burgerBtn"), menu = document.getElementById("burgerMenu");
-            if (btn && menu) {
-                btn.onclick = (e) => { e.stopPropagation(); menu.classList.toggle("show"); };
-                document.addEventListener("click", (e) => { if (!menu.contains(e.target) && !btn.contains(e.target)) menu.classList.remove("show"); });
-            }
-            document.getElementById("burgerThemeToggle").onclick = () => { toggleTheme(); if (menu) menu.classList.remove("show"); };
-            document.getElementById("burgerAdminBtn").onclick = () => { if (currentUser?.role === "admin") { renderAdminPanel(); document.getElementById("adminModal").style.display = "flex"; } else alert("Доступно только администратору"); if (menu) menu.classList.remove("show"); };
-            document.getElementById("burgerLogoutBtn").onclick = () => { logout(); if (menu) menu.classList.remove("show"); };
+        if (!isSilent) showSyncStatus('🔄 Синхронизация...');
+        try {
+            const allRepairs = [...repairs, ...completedRepairs];
+            const payload = {
+                type: 'service',
+                data: allRepairs,
+                timestamp: new Date().toISOString(),
+                operator: currentUser?.name,
+                totalRepairs: allRepairs.length,
+                activeRepairs: repairs.length,
+                completedRepairs: completedRepairs.length,
+                totalRevenue: completedRepairs.reduce((sum, r) => sum + (r.finalCost || 0), 0)
+            };
+            await fetch(GOOGLE_WEBAPP_URL, { 
+                method: 'POST', 
+                mode: 'no-cors', 
+                headers: { 'Content-Type': 'application/json' }, 
+                body: JSON.stringify(payload) 
+            });
+            showSyncStatus('✅ Данные синхронизированы');
+            if (!isSilent) alert('Данные отправлены в Google Sheets');
+            return true;
+        } catch(e) {
+            console.error('Sync error:', e);
+            showSyncStatus('❌ Ошибка синхронизации');
+            if (!isSilent) alert('Ошибка: ' + e.message);
+            return false;
         }
+    }
+    
+    async function autoSyncAfterChange() {
+        if (GOOGLE_WEBAPP_URL) {
+            showSyncStatus('🔄 Автосинхронизация...');
+            try {
+                const allRepairs = [...repairs, ...completedRepairs];
+                const payload = {
+                    type: 'service',
+                    data: allRepairs,
+                    timestamp: new Date().toISOString(),
+                    operator: currentUser?.name,
+                    action: 'update'
+                };
+                await fetch(GOOGLE_WEBAPP_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                showSyncStatus('✅ Синхронизировано');
+            } catch(e) { console.error('Auto sync error:', e); showSyncStatus('⚠️ Синхр. позже'); }
+        }
+    }
+    
+    // ========== ОСНОВНЫЕ ФУНКЦИИ ==========
+    function loadData() {
+        let c = localStorage.getItem(CATEGORIES_KEY); if (c) categories = JSON.parse(c);
+        let b = localStorage.getItem(BRANDS_KEY); if (b) brands = JSON.parse(b);
+        let m = localStorage.getItem(MODELS_KEY); if (m) models = JSON.parse(m);
+        let r = localStorage.getItem(REPAIRS_KEY); if (r) repairs = JSON.parse(r);
+        let comp = localStorage.getItem(COMPLETED_KEY); if (comp) completedRepairs = JSON.parse(comp);
+        let p = localStorage.getItem(PRICES_KEY); if (p) repairPrices = JSON.parse(p);
+        let url = localStorage.getItem("service_google_url"); if (url) GOOGLE_WEBAPP_URL = url;
+        if (document.getElementById("googleWebAppUrl")) document.getElementById("googleWebAppUrl").value = GOOGLE_WEBAPP_URL;
+        renderCategories();
+        renderRepairs();
+        renderCompleted();
+        updateStats();
+        renderPricesPanel();
         
-        document.addEventListener("DOMContentLoaded", () => {
-            let saved = localStorage.getItem("service_current_user");
-            let theme = localStorage.getItem("service_theme");
-            if (theme === "dark") document.body.classList.add("dark");
-            if (saved) {
-                try {
-                    currentUser = JSON.parse(saved);
-                    if (operators[currentUser.username]) {
-                        document.getElementById("loginOverlay").style.display = "none";
-                        document.getElementById("mainContent").style.display = "block";
-                        document.getElementById("currentOperatorName").innerHTML = `${currentUser.name} ${currentUser.role === "admin" ? "👑" : "👤"}`;
-                        document.getElementById("burgerOperatorName").innerText = `${currentUser.name} ${currentUser.role === "admin" ? "👑" : "👤"}`;
-                        loadData();
-                        initBurger();
-                    } else logout();
-                } catch(e) { logout(); }
-            } else { initBurger(); }
-            
-            document.getElementById("themeToggleBtn").onclick = toggleTheme;
-            document.getElementById("loginBtn").onclick = login;
-            document.getElementById("logoutBtn").onclick = logout;
-            document.getElementById("addRepairBtn").onclick = addRepair;
-            document.getElementById("exportExcelBtn").onclick = exportExcel;
-            document.getElementById("clearCompletedBtn").onclick = clearCompleted;
-            document.getElementById("quickAddBtn").onclick = quickAddBrandModel;
-            
-            let admModal = document.getElementById("adminModal");
-            document.getElementById("adminPanelBtn").onclick = () => { renderAdminPanel(); admModal.style.display = "flex"; };
-            document.getElementById("closeAdminModal").onclick = () => admModal.style.display = "none";
-            document.getElementById("addCategoryBtn").onclick = () => {
-                let name = document.getElementById("newCategoryName").value.trim();
-                if (name) { categories.push({ id: Date.now(), name: name }); saveCategories(); renderAdminPanel(); renderCategories(); showSyncStatus(`✅ Категория "${name}" добавлена`); }
-                else alert("Введите название");
-            };
-            document.getElementById("addBrandBtn").onclick = () => {
-                let categoryId = parseInt(document.getElementById("selectCategoryForBrand").value);
-                let name = document.getElementById("newBrandName").value.trim();
-                if (name && categoryId) { brands.push({ id: Date.now(), categoryId: categoryId, name: name }); saveBrands(); renderAdminPanel(); showSyncStatus(`✅ Бренд "${name}" добавлен`); }
-                else alert("Выберите категорию и введите бренд");
-            };
-            document.getElementById("addModelBtn").onclick = () => {
-                let brandId = parseInt(document.getElementById("selectBrandForModel").value);
-                let name = document.getElementById("newModelName").value.trim();
-                if (name && brandId) { models.push({ id: Date.now(), brandId: brandId, name: name }); saveModels(); renderAdminPanel(); showSyncStatus(`✅ Модель "${name}" добавлена`); }
-                else alert("Выберите бренд и введите модель");
-            };
-            document.getElementById("addPriceBtn").onclick = () => {
-                let name = document.getElementById("newPriceName").value.trim();
-                let price = parseInt(document.getElementById("newPriceValue").value);
-                if (name && price > 0) { repairPrices.push({ id: Date.now(), name: name, price: price }); savePrices(); renderPricesAccordion(); renderAdminPanel(); showSyncStatus(`✅ Цена добавлена`); }
-                else alert("Введите название и цену");
-            };
-            window.onclick = (e) => { if (e.target === admModal) admModal.style.display = "none"; };
+        let quickPanel = document.getElementById("quickAddPanel");
+        if (quickPanel) quickPanel.style.display = currentUser?.role === "admin" ? "block" : "none";
+    }
+    
+    function renderPricesPanel() {
+        const container = document.getElementById("repair-prices-container");
+        if (!container) return;
+        // Группировка цен
+        let html = '<div class="quick-add-title">💰 Примерные цены</div>';
+        repairPrices.forEach(p => {
+            html += `<div class="price-item" data-price="${p.price}" data-name="${p.name}">
+                        <span class="price-name">${p.name}</span>
+                        <span class="price-value">${p.price.toLocaleString()} ₽</span>
+                    </div>`;
         });
-    </script>
+        container.innerHTML = html;
+        document.querySelectorAll(".price-item").forEach(item => {
+            item.onclick = () => {
+                let price = parseInt(item.getAttribute("data-price"));
+                document.getElementById("estimatedCost").value = price;
+                showSyncStatus(`💰 Установлена цена: ${price} ₽`);
+            };
+        });
+    }
+    
+    function renderCategories() {
+        const grid = document.getElementById("categoriesGrid");
+        if (!grid) return;
+        grid.innerHTML = "";
+        categories.forEach(c => {
+            let card = document.createElement("div");
+            card.className = "category-card" + (selectedCategoryId === c.id ? " active" : "");
+            card.innerText = c.name;
+            card.onclick = () => { selectCategory(c.id); };
+            grid.appendChild(card);
+        });
+    }
+    
+    function selectCategory(categoryId) {
+        selectedCategoryId = categoryId;
+        selectedBrandId = null;
+        selectedModelId = null;
+        renderCategories();
+        const categoryBrands = brands.filter(b => b.categoryId === categoryId);
+        renderBrands(categoryBrands);
+        document.getElementById("brandsSection").style.display = "block";
+        document.getElementById("modelsSection").style.display = "none";
+    }
+    
+    function renderBrands(brandsToShow) {
+        const grid = document.getElementById("brandsGrid");
+        if (!grid) return;
+        if (brandsToShow.length === 0) {
+            grid.innerHTML = "<div style='padding:20px;text-align:center;color:var(--gray-500);'>Нет брендов</div>";
+            return;
+        }
+        grid.innerHTML = "";
+        brandsToShow.forEach(b => {
+            let card = document.createElement("div");
+            card.className = "brand-card" + (selectedBrandId === b.id ? " active" : "");
+            card.innerText = b.name;
+            card.onclick = () => { selectBrand(b.id); };
+            grid.appendChild(card);
+        });
+    }
+    
+    function selectBrand(brandId) {
+        selectedBrandId = brandId;
+        selectedModelId = null;
+        renderBrands(brands.filter(b => b.categoryId === selectedCategoryId));
+        const brandModels = models.filter(m => m.brandId === brandId);
+        renderModels(brandModels);
+        document.getElementById("modelsSection").style.display = "block";
+    }
+    
+    function renderModels(modelsToShow) {
+        const container = document.getElementById("modelsList");
+        if (!container) return;
+        if (modelsToShow.length === 0) {
+            container.innerHTML = "<div style='padding:20px;text-align:center;color:var(--gray-500);'>Нет моделей</div>";
+            return;
+        }
+        container.innerHTML = "";
+        modelsToShow.forEach(m => {
+            let item = document.createElement("div");
+            item.className = "model-item" + (selectedModelId === m.id ? " selected" : "");
+            item.innerHTML = `<span>${m.name}</span>`;
+            item.onclick = () => { selectedModelId = m.id; renderModels(modelsToShow); };
+            container.appendChild(item);
+        });
+    }
+    
+    function quickAddBrandModel() {
+        let newBrand = document.getElementById("quickBrandName").value.trim();
+        let newModel = document.getElementById("quickModelName").value.trim();
+        if (!selectedCategoryId) { alert("Сначала выберите категорию"); return; }
+        if (!newBrand && !newModel) { alert("Введите бренд или модель"); return; }
+        if (newBrand) {
+            let existing = brands.find(b => b.categoryId === selectedCategoryId && b.name.toLowerCase() === newBrand.toLowerCase());
+            if (!existing) {
+                brands.push({ id: Date.now(), categoryId: selectedCategoryId, name: newBrand });
+                saveBrands();
+                showSyncStatus(`✅ Бренд "${newBrand}" добавлен`);
+                renderBrands(brands.filter(b => b.categoryId === selectedCategoryId));
+            } else { showSyncStatus(`⚠️ Бренд уже существует`); }
+        }
+        if (newModel && selectedBrandId) {
+            let existing = models.find(m => m.brandId === selectedBrandId && m.name.toLowerCase() === newModel.toLowerCase());
+            if (!existing) {
+                models.push({ id: Date.now(), brandId: selectedBrandId, name: newModel });
+                saveModels();
+                showSyncStatus(`✅ Модель "${newModel}" добавлена`);
+                renderModels(models.filter(m => m.brandId === selectedBrandId));
+            } else { showSyncStatus(`⚠️ Модель уже существует`); }
+        } else if (newModel && !selectedBrandId) { alert("Сначала выберите бренд"); }
+        document.getElementById("quickBrandName").value = "";
+        document.getElementById("quickModelName").value = "";
+    }
+    
+    function addRepair() {
+        let client = document.getElementById("clientName").value.trim();
+        let phone = document.getElementById("clientPhone").value.trim();
+        if (!client && !phone) { alert("Укажите имя или телефон клиента"); return; }
+        if (!selectedCategoryId) { alert("Выберите тип устройства"); return; }
+        if (!selectedBrandId) { alert("Выберите бренд"); return; }
+        if (!selectedModelId) { alert("Выберите модель"); return; }
+        
+        let category = categories.find(c => c.id === selectedCategoryId);
+        let brand = brands.find(b => b.id === selectedBrandId);
+        let model = models.find(m => m.id === selectedModelId);
+        let faultType = document.getElementById("faultType").value;
+        let urgency = document.getElementById("urgency").value;
+        let faultDesc = document.getElementById("faultDesc").value;
+        let accessories = document.getElementById("accessories").value;
+        let prepayment = parseFloat(document.getElementById("prepayment").value) || 0;
+        let estimatedCost = parseFloat(document.getElementById("estimatedCost").value) || 0;
+        
+        let newRepair = {
+            id: Date.now(),
+            date: new Date().toLocaleString(),
+            client: client || "Клиент",
+            phone: phone,
+            categoryId: selectedCategoryId,
+            categoryName: category.name,
+            brandId: selectedBrandId,
+            brandName: brand.name,
+            modelId: selectedModelId,
+            modelName: model.name,
+            faultType: faultType,
+            urgency: urgency,
+            faultDesc: faultDesc,
+            accessories: accessories,
+            prepayment: prepayment,
+            estimatedCost: estimatedCost,
+            finalCost: null,
+            status: "new",
+            comment: "",
+            operator: currentUser.name
+        };
+        repairs.push(newRepair);
+        saveRepairs();
+        renderRepairs();
+        updateStats();
+        
+        document.getElementById("clientName").value = "";
+        document.getElementById("clientPhone").value = "";
+        document.getElementById("faultDesc").value = "";
+        document.getElementById("accessories").value = "";
+        document.getElementById("prepayment").value = "0";
+        document.getElementById("estimatedCost").value = "0";
+        selectedCategoryId = null;
+        selectedBrandId = null;
+        selectedModelId = null;
+        renderCategories();
+        document.getElementById("brandsSection").style.display = "none";
+        document.getElementById("modelsSection").style.display = "none";
+        
+        alert(`✅ Ремонт №${newRepair.id} принят!\n${category.name} ${brand.name} ${model.name}\nКлиент: ${client || phone}`);
+        autoSyncAfterChange();
+    }
+    
+    function getStatusBadge(status) {
+        const classes = { 'new': 'status-new', 'diagnostic': 'status-diagnostic', 'repair': 'status-repair', 'ready': 'status-ready', 'given': 'status-given' };
+        const names = { 'new': 'Назначен', 'diagnostic': 'Диагностика', 'repair': 'Ремонт', 'ready': 'Готов', 'given': 'Выдан' };
+        return `<span class="status-badge ${classes[status]}">${names[status]}</span>`;
+    }
+    
+    function renderRepairs() {
+        const container = document.getElementById("repairsList");
+        if (!container) return;
+        let searchTerm = document.getElementById("searchRepairs")?.value.toLowerCase() || "";
+        let filtered = repairs.filter(r => 
+            r.client.toLowerCase().includes(searchTerm) || 
+            r.modelName.toLowerCase().includes(searchTerm) ||
+            r.phone.includes(searchTerm));
+        if (filtered.length === 0) {
+            container.innerHTML = "<div style='padding:40px;text-align:center;color:var(--gray-500);'>Нет активных ремонтов</div>";
+            return;
+        }
+        let html = "";
+        filtered.forEach(r => {
+            let urgencyIcon = r.urgency === "Срочно" ? "⚠️ " : (r.urgency === "VIP" ? "⭐ " : "");
+            html += `<div class="repair-item" data-id="${r.id}">
+                        <div style="display:flex; justify-content:space-between; flex-wrap:wrap;">
+                            <span><strong>${urgencyIcon}${escapeHtml(r.client)}</strong> | ${r.categoryName} ${r.brandName} ${r.modelName}</span>
+                            <span>${getStatusBadge(r.status)}</span>
+                        </div>
+                        <div style="font-size:12px; margin-top:6px;">📞 ${r.phone || "—"} | 🔧 ${r.faultType}</div>
+                        <div style="font-size:12px;">💰 Предоплата: ${r.prepayment} ₽ | Стоимость: ${r.estimatedCost} ₽</div>
+                        ${r.comment ? `<div style="font-size:12px;">📝 ${escapeHtml(r.comment)}</div>` : ""}
+                        <div class="repair-actions">
+                            <select class="status-select" data-id="${r.id}" style="width:auto; padding:6px;">
+                                <option value="new" ${r.status === "new" ? "selected" : ""}>Назначен</option>
+                                <option value="diagnostic" ${r.status === "diagnostic" ? "selected" : ""}>Диагностика</option>
+                                <option value="repair" ${r.status === "repair" ? "selected" : ""}>Ремонт</option>
+                                <option value="ready" ${r.status === "ready" ? "selected" : ""}>Готов</option>
+                                <option value="given" ${r.status === "given" ? "selected" : ""}>Выдан</option>
+                            </select>
+                            <input type="number" id="finalCost_${r.id}" placeholder="Итоговая стоимость" style="width:110px; padding:6px;" value="${r.finalCost || ""}">
+                            <textarea id="comment_${r.id}" placeholder="Комментарий" style="width:110px; padding:6px;" rows="1">${r.comment || ""}</textarea>
+                            <button class="update-repair" data-id="${r.id}" style="padding:6px 12px;">Обновить</button>
+                            <button class="complete-repair" data-id="${r.id}" style="background:var(--green); padding:6px 12px;">✅ Выдать</button>
+                            <button class="delete-repair" data-id="${r.id}" style="background:var(--red); padding:6px 12px;">🗑</button>
+                        </div>
+                    </div>`;
+        });
+        container.innerHTML = html;
+        
+        document.querySelectorAll(".update-repair").forEach(btn => {
+            btn.onclick = async () => {
+                let id = parseInt(btn.getAttribute("data-id"));
+                let repair = repairs.find(r => r.id === id);
+                if (repair) {
+                    let newStatus = document.querySelector(`.status-select[data-id="${id}"]`).value;
+                    let finalCost = parseFloat(document.getElementById(`finalCost_${id}`).value);
+                    let comment = document.getElementById(`comment_${id}`).value;
+                    repair.status = newStatus;
+                    if (finalCost && !isNaN(finalCost)) repair.finalCost = finalCost;
+                    if (comment) repair.comment = comment;
+                    saveRepairs();
+                    renderRepairs();
+                    updateStats();
+                    showSyncStatus(`✅ Статус обновлён`);
+                    await autoSyncAfterChange();
+                }
+            };
+        });
+        document.querySelectorAll(".complete-repair").forEach(btn => {
+            btn.onclick = async () => {
+                let id = parseInt(btn.getAttribute("data-id"));
+                let repair = repairs.find(r => r.id === id);
+                if (repair && confirm(`Выдать ремонт клиенту ${repair.client}?`)) {
+                    if (!repair.finalCost) {
+                        let cost = prompt("Введите итоговую стоимость:", repair.estimatedCost);
+                        if (cost && !isNaN(cost)) repair.finalCost = parseFloat(cost);
+                        else { alert("Укажите стоимость!"); return; }
+                    }
+                    repair.status = "given";
+                    repair.closeDate = new Date().toLocaleString();
+                    completedRepairs.unshift(repair);
+                    repairs = repairs.filter(r => r.id !== id);
+                    saveRepairs();
+                    saveCompleted();
+                    renderRepairs();
+                    renderCompleted();
+                    updateStats();
+                    showSyncStatus(`✅ Ремонт завершён`);
+                    await autoSyncAfterChange();
+                }
+            };
+        });
+        document.querySelectorAll(".delete-repair").forEach(btn => {
+            btn.onclick = async () => {
+                let id = parseInt(btn.getAttribute("data-id"));
+                let repair = repairs.find(r => r.id === id);
+                if (repair && confirm(`Удалить ремонт?`)) {
+                    repairs = repairs.filter(r => r.id !== id);
+                    saveRepairs();
+                    renderRepairs();
+                    updateStats();
+                    showSyncStatus(`🗑 Ремонт удалён`);
+                    await autoSyncAfterChange();
+                }
+            };
+        });
+    }
+    
+    function renderCompleted() {
+        const container = document.getElementById("completedRepairsList");
+        if (!container) return;
+        if (completedRepairs.length === 0) {
+            container.innerHTML = "<div style='padding:40px;text-align:center;color:var(--gray-500);'>Нет завершённых ремонтов</div>";
+            return;
+        }
+        let html = "";
+        completedRepairs.slice(0, 100).forEach(r => {
+            html += `<div class="repair-item">
+                        <div><strong>${escapeHtml(r.client)}</strong> | ${r.categoryName} ${r.brandName} ${r.modelName}</div>
+                        <div style="font-size:12px;">📅 Принят: ${r.date} | Выдан: ${r.closeDate || "—"}</div>
+                        <div style="font-size:12px;">💰 Итого: ${r.finalCost} ₽ | Предоплата: ${r.prepayment} ₽</div>
+                        <div style="font-size:12px;">🔧 ${r.faultType}</div>
+                    </div>`;
+        });
+        container.innerHTML = html;
+    }
+    
+    function updateStats() {
+        let inRepair = repairs.filter(r => r.status !== "given").length;
+        let ready = repairs.filter(r => r.status === "ready").length;
+        let revenue = completedRepairs.reduce((sum, r) => sum + (r.finalCost || 0), 0);
+        document.getElementById("statInRepair").innerText = inRepair;
+        document.getElementById("statReady").innerText = ready;
+        document.getElementById("statRevenue").innerHTML = revenue.toLocaleString() + " ₽";
+    }
+    
+    function printBlank() {
+        let client = document.getElementById("clientName").value.trim() || "___________";
+        let phone = document.getElementById("clientPhone").value.trim() || "___________";
+        let category = selectedCategoryId ? categories.find(c => c.id === selectedCategoryId)?.name || "—" : "—";
+        let brand = selectedBrandId ? brands.find(b => b.id === selectedBrandId)?.name || "—" : "—";
+        let model = selectedModelId ? models.find(m => m.id === selectedModelId)?.name || "—" : "—";
+        let faultType = document.getElementById("faultType").value;
+        let faultDesc = document.getElementById("faultDesc").value || "—";
+        let accessories = document.getElementById("accessories").value || "—";
+        let prepayment = document.getElementById("prepayment").value || "0";
+        let estimatedCost = document.getElementById("estimatedCost").value || "0";
+        
+        let printHtml = `
+            <div class="print-blank">
+                <div class="print-header">
+                    <div class="print-title">А4-СЕРВИС</div>
+                    <div class="print-sub">Сервисный центр | Ремонт техники</div>
+                    <div class="print-sub">г. Москва, ул. Примерная, д. 123 | Тел: +7 (999) 123-45-67</div>
+                </div>
+                <div class="print-line"></div>
+                <div style="text-align:center; margin: 10px 0;"><strong>БЛАНК ЗАКАЗА №${Date.now().toString().slice(-8)}</strong></div>
+                <div class="print-row"><div class="print-label">Дата приёма:</div><div class="print-value">${new Date().toLocaleString()}</div></div>
+                <div class="print-row"><div class="print-label">Клиент:</div><div class="print-value">${escapeHtml(client)}</div></div>
+                <div class="print-row"><div class="print-label">Телефон:</div><div class="print-value">${escapeHtml(phone)}</div></div>
+                <div class="print-row"><div class="print-label">Устройство:</div><div class="print-value">${category} ${brand} ${model}</div></div>
+                <div class="print-row"><div class="print-label">Тип поломки:</div><div class="print-value">${faultType}</div></div>
+                <div class="print-row"><div class="print-label">Описание:</div><div class="print-value">${escapeHtml(faultDesc)}</div></div>
+                <div class="print-row"><div class="print-label">Комплектация:</div><div class="print-value">${escapeHtml(accessories)}</div></div>
+                <div class="print-row"><div class="print-label">Предоплата:</div><div class="print-value">${parseInt(prepayment).toLocaleString()} ₽</div></div>
+                <div class="print-row"><div class="print-label">Ориентир. стоимость:</div><div class="print-value">${parseInt(estimatedCost).toLocaleString()} ₽</div></div>
+                <div class="print-row"><div class="print-label">Срочность:</div><div class="print-value">${document.getElementById("urgency").value}</div></div>
+                <div class="print-line"></div>
+                <div class="print-row"><div class="print-label">Оператор:</div><div class="print-value">${currentUser?.name || "___________"}</div></div>
+                <div class="print-row"><div class="print-label">Подпись клиента:</div><div class="print-value">_____________________</div></div>
+                <div class="print-row"><div class="print-label">Подпись мастера:</div><div class="print-value">_____________________</div></div>
+                <div class="print-line"></div>
+                <div style="font-size:10px; text-align:center; margin-top:20px;">Бланк является договором оферты. Условия ремонта согласованы.</div>
+            </div>
+        `;
+        let printWindow = window.open('', '_blank');
+        printWindow.document.write(`
+            <html><head><title>Бланк заказа А4-Сервис</title>
+            <style>${document.querySelector('style').innerHTML}</style>
+            </head><body style="padding:20px;">${printHtml}</body></html>
+        `);
+        printWindow.document.close();
+        printWindow.print();
+    }
+    
+    function exportExcel() {
+        let data = [["ID","Дата","Клиент","Телефон","Категория","Бренд","Модель","Поломка","Описание","Срочность","Предоплата","Итог","Статус","Оператор","Дата выдачи","Комментарий"]];
+        [...repairs, ...completedRepairs].forEach(r => {
+            data.push([r.id, r.date, r.client, r.phone || "", r.categoryName, r.brandName, r.modelName, r.faultType, r.faultDesc || "", r.urgency, r.prepayment, r.finalCost || r.estimatedCost, r.status === "given" ? "Выдан" : "В работе", r.operator, r.closeDate || "", r.comment || ""]);
+        });
+        let ws = XLSX.utils.aoa_to_sheet(data);
+        let wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Ремонты");
+        XLSX.writeFile(wb, `A4service_repairs_${new Date().toISOString().slice(0,10)}.xlsx`);
+        showSyncStatus("📎 Excel скачан");
+    }
+    
+    function clearCompleted() {
+        if (confirm("Очистить все завершённые ремонты?")) {
+            completedRepairs = [];
+            saveCompleted();
+            renderCompleted();
+            updateStats();
+            showSyncStatus("🗑 Очищено");
+            autoSyncAfterChange();
+        }
+    }
+    
+    function renderAdminPanel() {
+        let catDiv = document.getElementById("adminCategoriesList");
+        catDiv.innerHTML = "";
+        categories.forEach(c => {
+            catDiv.innerHTML += `<div style="display:flex; justify-content:space-between; margin-bottom:8px;"><span>${c.name}</span><button class="delete-category" data-id="${c.id}" style="background:var(--red); padding:4px 12px;">🗑</button></div>`;
+        });
+        document.querySelectorAll(".delete-category").forEach(btn => {
+            btn.onclick = () => {
+                let id = parseInt(btn.getAttribute("data-id"));
+                if (categories.length <= 1) { alert("Нельзя удалить последнюю категорию"); return; }
+                categories = categories.filter(c => c.id !== id);
+                saveCategories();
+                renderAdminPanel();
+                renderCategories();
+                showSyncStatus(`✅ Категория удалена`);
+            };
+        });
+        
+        let brandsDiv = document.getElementById("adminBrandsList");
+        brandsDiv.innerHTML = "";
+        brands.forEach(b => {
+            let cat = categories.find(c => c.id === b.categoryId);
+            brandsDiv.innerHTML += `<div style="display:flex; justify-content:space-between; margin-bottom:8px;"><span>${cat?.name || "?"} — ${b.name}</span><button class="delete-brand" data-id="${b.id}" style="background:var(--red); padding:4px 12px;">🗑</button></div>`;
+        });
+        document.querySelectorAll(".delete-brand").forEach(btn => {
+            btn.onclick = () => {
+                let id = parseInt(btn.getAttribute("data-id"));
+                brands = brands.filter(b => b.id !== id);
+                saveBrands();
+                renderAdminPanel();
+                showSyncStatus(`✅ Бренд удалён`);
+            };
+        });
+        
+        let catSelect = document.getElementById("selectCategoryForBrand");
+        catSelect.innerHTML = "";
+        categories.forEach(c => { let opt = document.createElement("option"); opt.value = c.id; opt.textContent = c.name; catSelect.appendChild(opt); });
+        
+        let brandSelect = document.getElementById("selectBrandForModel");
+        brandSelect.innerHTML = "";
+        brands.forEach(b => { let opt = document.createElement("option"); opt.value = b.id; opt.textContent = b.name; brandSelect.appendChild(opt); });
+        
+        let modelsDiv = document.getElementById("adminModelsList");
+        modelsDiv.innerHTML = "";
+        models.forEach(m => {
+            let brand = brands.find(b => b.id === m.brandId);
+            modelsDiv.innerHTML += `<div style="display:flex; justify-content:space-between; margin-bottom:8px;"><span>${brand?.name || "?"} — ${m.name}</span><button class="delete-model" data-id="${m.id}" style="background:var(--red); padding:4px 12px;">🗑</button></div>`;
+        });
+        document.querySelectorAll(".delete-model").forEach(btn => {
+            btn.onclick = () => {
+                let id = parseInt(btn.getAttribute("data-id"));
+                models = models.filter(m => m.id !== id);
+                saveModels();
+                renderAdminPanel();
+                showSyncStatus(`✅ Модель удалена`);
+            };
+        });
+        
+        let pricesDiv = document.getElementById("adminPricesList");
+        pricesDiv.innerHTML = "";
+        repairPrices.forEach(p => {
+            pricesDiv.innerHTML += `<div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+                                        <span>${p.name}</span>
+                                        <span><input type="number" id="price_${p.id}" value="${p.price}" style="width:100px; padding:4px;"> ₽
+                                        <button class="update-price" data-id="${p.id}" style="background:var(--blue); padding:4px 12px;">💾</button>
+                                        <button class="delete-price" data-id="${p.id}" style="background:var(--red); padding:4px 12px;">🗑</button></span>
+                                    </div>`;
+        });
+        document.querySelectorAll(".update-price").forEach(btn => {
+            btn.onclick = () => {
+                let id = parseInt(btn.getAttribute("data-id"));
+                let newPrice = parseInt(document.getElementById(`price_${id}`).value);
+                let price = repairPrices.find(p => p.id === id);
+                if (price && newPrice > 0) { price.price = newPrice; savePrices(); renderPricesPanel(); renderAdminPanel(); showSyncStatus(`✅ Цена обновлена`); }
+            };
+        });
+        document.querySelectorAll(".delete-price").forEach(btn => {
+            btn.onclick = () => {
+                let id = parseInt(btn.getAttribute("data-id"));
+                if (repairPrices.length <= 1) { alert("Нельзя удалить последнюю позицию"); return; }
+                repairPrices = repairPrices.filter(p => p.id !== id);
+                savePrices();
+                renderPricesPanel();
+                renderAdminPanel();
+                showSyncStatus(`🗑 Цена удалена`);
+            };
+        });
+    }
+    
+    function toggleTheme() { document.body.classList.toggle("dark"); localStorage.setItem("service_theme", document.body.classList.contains("dark") ? "dark" : "light"); }
+    
+    function login() {
+        let selectedLogin = document.getElementById("loginSelect").value;
+        let password = document.getElementById("loginPassword").value;
+        if (!selectedLogin) { document.getElementById("loginError").innerText = "Выберите оператора"; return false; }
+        let u = operators[selectedLogin];
+        if (u && u.password === password) {
+            currentUser = { ...u, username: selectedLogin };
+            localStorage.setItem("service_current_user", JSON.stringify(currentUser));
+            document.getElementById("loginOverlay").style.display = "none";
+            document.getElementById("mainContent").style.display = "block";
+            document.getElementById("currentOperatorName").innerHTML = `${currentUser.name} ${currentUser.role === "admin" ? "👑" : "👤"}`;
+            document.getElementById("burgerOperatorName").innerText = `${currentUser.name} ${currentUser.role === "admin" ? "👑" : "👤"}`;
+            loadData();
+            return true;
+        }
+        document.getElementById("loginError").innerText = "Неверный пароль";
+        return false;
+    }
+    
+    function logout() { currentUser = null; localStorage.removeItem("service_current_user"); location.reload(); }
+    function escapeHtml(str) { return str ? String(str).replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m])) : ""; }
+    
+    function initBurger() {
+        let btn = document.getElementById("burgerBtn"), menu = document.getElementById("burgerMenu");
+        if (btn && menu) {
+            btn.onclick = (e) => { e.stopPropagation(); menu.classList.toggle("show"); };
+            document.addEventListener("click", (e) => { if (!menu.contains(e.target) && !btn.contains(e.target)) menu.classList.remove("show"); });
+        }
+        document.getElementById("burgerThemeToggle").onclick = () => { toggleTheme(); if (menu) menu.classList.remove("show"); };
+        document.getElementById("burgerAdminBtn").onclick = () => { if (currentUser?.role === "admin") { renderAdminPanel(); document.getElementById("adminModal").style.display = "flex"; } else alert("Доступно только администратору"); if (menu) menu.classList.remove("show"); };
+        document.getElementById("burgerSyncBtn").onclick = () => { syncToGoogle(); if (menu) menu.classList.remove("show"); };
+        document.getElementById("burgerLogoutBtn").onclick = () => { logout(); if (menu) menu.classList.remove("show"); };
+    }
+    
+    // ========== ИНИЦИАЛИЗАЦИЯ ==========
+    document.addEventListener("DOMContentLoaded", () => {
+        let saved = localStorage.getItem("service_current_user");
+        let theme = localStorage.getItem("service_theme");
+        if (theme === "dark") document.body.classList.add("dark");
+        if (saved) {
+            try {
+                currentUser = JSON.parse(saved);
+                if (operators[currentUser.username]) {
+                    document.getElementById("loginOverlay").style.display = "none";
+                    document.getElementById("mainContent").style.display = "block";
+                    document.getElementById("currentOperatorName").innerHTML = `${currentUser.name} ${currentUser.role === "admin" ? "👑" : "👤"}`;
+                    document.getElementById("burgerOperatorName").innerText = `${currentUser.name} ${currentUser.role === "admin" ? "👑" : "👤"}`;
+                    loadData();
+                    initBurger();
+                } else logout();
+            } catch(e) { logout(); }
+        } else { initBurger(); }
+        
+        document.getElementById("themeToggleBtn").onclick = toggleTheme;
+        document.getElementById("loginBtn").onclick = login;
+        document.getElementById("logoutBtn").onclick = logout;
+        document.getElementById("addRepairBtn").onclick = addRepair;
+        document.getElementById("printBlankBtn").onclick = printBlank;
+        document.getElementById("exportExcelBtn").onclick = exportExcel;
+        document.getElementById("clearCompletedBtn").onclick = clearCompleted;
+        document.getElementById("quickAddBtn").onclick = quickAddBrandModel;
+        document.getElementById("syncGoogleBtn").onclick = () => syncToGoogle(false);
+        
+        let admModal = document.getElementById("adminModal");
+        document.getElementById("adminPanelBtn").onclick = () => { renderAdminPanel(); admModal.style.display = "flex"; };
+        document.getElementById("closeAdminModal").onclick = () => admModal.style.display = "none";
+        document.getElementById("addCategoryBtn").onclick = () => {
+            let name = document.getElementById("newCategoryName").value.trim();
+            if (name) { categories.push({ id: Date.now(), name: name }); saveCategories(); renderAdminPanel(); renderCategories(); showSyncStatus(`✅ Категория "${name}" добавлена`); }
+            else alert("Введите название");
+        };
+        document.getElementById("addBrandBtn").onclick = () => {
+            let categoryId = parseInt(document.getElementById("selectCategoryForBrand").value);
+            let name = document.getElementById("newBrandName").value.trim();
+            if (name && categoryId) { brands.push({ id: Date.now(), categoryId: categoryId, name: name }); saveBrands(); renderAdminPanel(); showSyncStatus(`✅ Бренд "${name}" добавлен`); }
+            else alert("Выберите категорию и введите бренд");
+        };
+        document.getElementById("addModelBtn").onclick = () => {
+            let brandId = parseInt(document.getElementById("selectBrandForModel").value);
+            let name = document.getElementById("newModelName").value.trim();
+            if (name && brandId) { models.push({ id: Date.now(), brandId: brandId, name: name }); saveModels(); renderAdminPanel(); showSyncStatus(`✅ Модель "${name}" добавлена`); }
+            else alert("Выберите бренд и введите модель");
+        };
+        document.getElementById("addPriceBtn").onclick = () => {
+            let name = document.getElementById("newPriceName").value.trim();
+            let price = parseInt(document.getElementById("newPriceValue").value);
+            if (name && price > 0) { repairPrices.push({ id: Date.now(), name: name, price: price }); savePrices(); renderPricesPanel(); renderAdminPanel(); showSyncStatus(`✅ Цена добавлена`); }
+            else alert("Введите название и цену");
+        };
+        document.getElementById("saveGoogleUrlBtn").onclick = () => {
+            let url = document.getElementById("googleWebAppUrl").value.trim();
+            if (url) { GOOGLE_WEBAPP_URL = url; localStorage.setItem("service_google_url", url); alert("Сохранено"); }
+        };
+        document.getElementById("manualSyncBtn").onclick = () => syncToGoogle(false);
+        
+        let searchInput = document.getElementById("searchRepairs");
+        if (searchInput) { searchInput.oninput = () => { renderRepairs(); }; }
+        
+        window.onclick = (e) => { if (e.target === admModal) admModal.style.display = "none"; };
+    });
+</script>
 </body>
 </html>
