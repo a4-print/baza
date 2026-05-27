@@ -327,6 +327,11 @@
     function saveCashData() { localStorage.setItem("a4print_cash_data", JSON.stringify(cashData)); }
     
     // ========== СИНХРОНИЗАЦИЯ С GOOGLE ==========
+    function showSyncStatus(msg){ 
+        let d=document.getElementById("syncStatus"); 
+        if(d){ d.textContent=msg; setTimeout(()=>{ if(d.textContent===msg) d.textContent="💾 Готово"; },3000); } 
+    }
+    
     async function syncToGoogle(isSilent = false) {
         if (!GOOGLE_WEBAPP_URL) {
             if (!isSilent) alert('Сначала настройте URL веб-приложения Google Sheets в админ-панели');
@@ -358,7 +363,7 @@
         }
     }
     
-    // ========== ОТПРАВКА ОТЧЁТА СМЕНЫ В GOOGLE ==========
+    // ОТПРАВКА ОТЧЁТА СМЕНЫ В GOOGLE (СОЗДАНИЕ НОВОГО ЛИСТА)
     async function sendShiftToGoogle(shiftData) {
         if (!GOOGLE_WEBAPP_URL) {
             console.log("URL Google Sheets не настроен");
@@ -366,35 +371,22 @@
             return false;
         }
         
-        const payload = {
-            type: 'shift_close',
-            sheetName: shiftData.date,
-            date: shiftData.date,
-            reportTime: shiftData.reportTime,
-            operator: shiftData.operator,
-            totalRevenue: shiftData.totalRevenue,
-            totalProfit: shiftData.totalProfit,
-            totalOrders: shiftData.totalOrders,
-            cashTotal: shiftData.cashTotal,
-            cardTotal: shiftData.cardTotal,
-            cashCount: shiftData.cashCount,
-            cardCount: shiftData.cardCount,
-            averageCheck: shiftData.averageCheck,
-            comment: shiftData.comment || "",
-            orders: shiftData.orders
-        };
+        showSyncStatus('📤 Отправка отчёта в Google...');
         
         try {
             await fetch(GOOGLE_WEBAPP_URL, {
                 method: 'POST',
                 mode: 'no-cors',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
+                body: JSON.stringify(shiftData)
             });
-            console.log("Отчёт отправлен в Google Sheets, лист:", shiftData.date);
+            showSyncStatus('✅ Отчёт отправлен');
+            console.log("Отчёт отправлен в Google Sheets, лист:", shiftData.sheetName);
             return true;
         } catch(e) {
             console.error("Ошибка отправки:", e);
+            showSyncStatus('❌ Ошибка отправки');
+            alert('Ошибка отправки отчёта: ' + e.message);
             return false;
         }
     }
@@ -547,6 +539,7 @@
         document.getElementById("shiftProfit").innerHTML = f.profit.toLocaleString() + " ₽"; 
     }
     
+    // ========== УПРАВЛЕНИЕ СМЕНОЙ (ГЛАВНАЯ ФУНКЦИЯ) ==========
     function toggleShiftWithComment() { 
         if (!shiftOpen || shiftClose) { 
             // ОТКРЫТИЕ СМЕНЫ
@@ -581,10 +574,12 @@
             }); 
             saveAllShifts(); 
             
-            // === ОТПРАВКА В GOOGLE SHEETS (НОВЫЙ ЛИСТ) ===
+            // === ОТПРАВКА В GOOGLE SHEETS (СОЗДАНИЕ НОВОГО ЛИСТА) ===
             const dateStr = new Date(shiftOpen).toLocaleDateString('ru-RU');
             
             const shiftData = {
+                type: 'shift_close',           // ВАЖНО: тип должен быть shift_close
+                sheetName: dateStr,            // Имя листа = дата
                 date: dateStr,
                 reportTime: new Date().toLocaleString(),
                 operator: currentUser.name,
@@ -608,7 +603,7 @@
                 }))
             };
             
-            // ВЫЗЫВАЕМ ФУНКЦИЮ ОТПРАВКИ
+            // Отправляем в Google
             sendShiftToGoogle(shiftData);
             
             updateShiftUI(); 
@@ -891,11 +886,6 @@
         }
     }
     
-    function showSyncStatus(msg){ 
-        let d=document.getElementById("syncStatus"); 
-        if(d){ d.textContent=msg; setTimeout(()=>{ if(d.textContent===msg) d.textContent="💾 Готово"; },2000); } 
-    }
-    
     // ========== ОТЧЁТЫ ==========
     function showReportModal() { document.getElementById("reportModal").style.display = "flex"; }
     function exportToExcel(orders, title) {
@@ -1007,7 +997,7 @@
         let m=parseInt(document.getElementById("salaryMonth").value); 
         let y=parseInt(document.getElementById("salaryYear").value); 
         let sm=calculateSalaryForMonth(m,y); 
-        let html=`<table style="width:100%"><tr><th>Оператор</th><th>Смен</th><th>Итого</th></tr>`; 
+        let html=`<table style="width:100%"><tr><th>Оператор</th><th>Смен</th><th>Итого</th></table>`; 
         let total=0; 
         for(let [key,data] of sm){ html+=`<tr><td>${data.name}</td><td>${data.count}</td><td>${data.total.toLocaleString()} ₽</td></tr>`; total+=data.total; } 
         html+=`<tr style="background:var(--blue);color:white;"><td><strong>ИТОГО:</strong></td><td></td><td><strong>${total.toLocaleString()} ₽</strong></td></tr></table>`; 
