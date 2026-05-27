@@ -358,26 +358,29 @@
         }
     }
     
-    // Отправка отчёта смены в Google Sheets
-    async function sendShiftReportToGoogle(shiftData) {
+    // ========== ОТПРАВКА ОТЧЁТА СМЕНЫ В GOOGLE ==========
+    async function sendShiftToGoogle(shiftData) {
         if (!GOOGLE_WEBAPP_URL) {
             console.log("URL Google Sheets не настроен");
+            alert('Сначала настройте URL Google Sheets в админ-панели');
             return false;
         }
         
-        const reportData = {
-            type: 'shift_report',
+        const payload = {
+            type: 'shift_close',
+            sheetName: shiftData.date,
             date: shiftData.date,
             reportTime: shiftData.reportTime,
             operator: shiftData.operator,
-            revenue: shiftData.revenue,
-            cashRevenue: shiftData.cashRevenue,
-            cardRevenue: shiftData.cardRevenue,
+            totalRevenue: shiftData.totalRevenue,
+            totalProfit: shiftData.totalProfit,
+            totalOrders: shiftData.totalOrders,
+            cashTotal: shiftData.cashTotal,
+            cardTotal: shiftData.cardTotal,
             cashCount: shiftData.cashCount,
             cardCount: shiftData.cardCount,
-            orderCount: shiftData.orderCount,
-            profit: shiftData.profit,
             averageCheck: shiftData.averageCheck,
+            comment: shiftData.comment || "",
             orders: shiftData.orders
         };
         
@@ -386,12 +389,12 @@
                 method: 'POST',
                 mode: 'no-cors',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(reportData)
+                body: JSON.stringify(payload)
             });
-            console.log("Отчёт смены отправлен в Google Sheets");
+            console.log("Отчёт отправлен в Google Sheets, лист:", shiftData.date);
             return true;
         } catch(e) {
-            console.error("Ошибка отправки отчёта:", e);
+            console.error("Ошибка отправки:", e);
             return false;
         }
     }
@@ -546,22 +549,25 @@
     
     function toggleShiftWithComment() { 
         if (!shiftOpen || shiftClose) { 
+            // ОТКРЫТИЕ СМЕНЫ
             shiftOpen = new Date().toLocaleString(); 
             shiftClose = null; 
-            shiftOpenComment = ""; 
-            shiftCloseComment = ""; 
             saveShift(); 
             updateShiftUI(); 
             updateShiftFinanceDisplay(); 
             alert("✅ Смена открыта"); 
         } else { 
+            // ЗАКРЫТИЕ СМЕНЫ
             if (!shiftOpen) { alert("Нет открытой смены"); return; } 
-            let finance = getShiftFinance();
-            const shiftOrders = allOrders.filter(o => o.operator === currentUser.name && o.date >= shiftOpen && (!shiftClose || o.date <= shiftClose));
+            
+            const finance = getShiftFinance();
+            const shiftOrders = allOrders.filter(o => o.operator === currentUser.name && 
+                o.date >= shiftOpen && (!shiftClose || o.date <= shiftClose));
             
             shiftClose = new Date().toLocaleString(); 
             saveShift(); 
             
+            // Сохраняем в локальную историю
             allShifts.push({
                 login: currentUser.username, 
                 name: currentUser.name, 
@@ -575,35 +581,40 @@
             }); 
             saveAllShifts(); 
             
-            // Отправка отчёта в Google Sheets
-            const shiftReportData = {
-                date: new Date(shiftOpen).toLocaleDateString('ru-RU'),
+            // === ОТПРАВКА В GOOGLE SHEETS (НОВЫЙ ЛИСТ) ===
+            const dateStr = new Date(shiftOpen).toLocaleDateString('ru-RU');
+            
+            const shiftData = {
+                date: dateStr,
                 reportTime: new Date().toLocaleString(),
                 operator: currentUser.name,
-                revenue: finance.revenue,
-                cashRevenue: finance.cash,
-                cardRevenue: finance.card,
+                totalRevenue: finance.revenue,
+                totalProfit: finance.profit,
+                totalOrders: shiftOrders.length,
+                cashTotal: finance.cash,
+                cardTotal: finance.card,
                 cashCount: shiftOrders.filter(o => o.paymentMethod === "cash").length,
                 cardCount: shiftOrders.filter(o => o.paymentMethod === "card").length,
-                orderCount: shiftOrders.length,
-                profit: finance.profit,
                 averageCheck: shiftOrders.length > 0 ? finance.revenue / shiftOrders.length : 0,
+                comment: shiftCloseComment,
                 orders: shiftOrders.map(o => ({
                     id: o.id,
                     time: o.date && o.date.includes(", ") ? o.date.split(", ")[1] : "",
+                    client: o.client,
                     items: o.items,
-                    finalTotal: o.finalTotal,
-                    paymentMethod: o.paymentMethod,
-                    operator: o.operator,
-                    comment: o.comment || ""
+                    total: o.finalTotal,
+                    payment: o.paymentMethod,
+                    operator: o.operator
                 }))
             };
             
-            sendShiftReportToGoogle(shiftReportData);
+            // ВЫЗЫВАЕМ ФУНКЦИЮ ОТПРАВКИ
+            sendShiftToGoogle(shiftData);
             
             updateShiftUI(); 
             updateShiftFinanceDisplay(); 
-            alert(`✅ Смена закрыта\n💰 Выручка: ${finance.revenue} ₽\n💵 Наличные: ${finance.cash} ₽\n💳 Карта: ${finance.card} ₽\n📊 Отчёт сохранён в Google Sheets`); 
+            
+            alert(`✅ Смена закрыта!\n\n📅 ${dateStr}\n💰 Выручка: ${finance.revenue} ₽\n💵 Наличные: ${finance.cash} ₽\n💳 Карта: ${finance.card} ₽\n📊 Чистая прибыль: ${finance.profit} ₽\n\n📄 Отчёт создан в Google Sheets на листе "${dateStr}"`); 
         } 
     }
     
@@ -996,7 +1007,7 @@
         let m=parseInt(document.getElementById("salaryMonth").value); 
         let y=parseInt(document.getElementById("salaryYear").value); 
         let sm=calculateSalaryForMonth(m,y); 
-        let html=`<table style="width:100%"><table><th>Оператор</th><th>Смен</th><th>Итого</th></tr>`; 
+        let html=`<table style="width:100%"><tr><th>Оператор</th><th>Смен</th><th>Итого</th></tr>`; 
         let total=0; 
         for(let [key,data] of sm){ html+=`<tr><td>${data.name}</td><td>${data.count}</td><td>${data.total.toLocaleString()} ₽</td></tr>`; total+=data.total; } 
         html+=`<tr style="background:var(--blue);color:white;"><td><strong>ИТОГО:</strong></td><td></td><td><strong>${total.toLocaleString()} ₽</strong></td></tr></table>`; 
