@@ -821,51 +821,299 @@
         }
     }
     
-    let models = [
-        // Apple iPhone
+        let models = [
+        // ========== APPLE iPhone ==========
         { id: 1, brandId: 1, name: "iPhone 16 Pro Max" }, { id: 2, brandId: 1, name: "iPhone 16 Pro" },
         { id: 3, brandId: 1, name: "iPhone 16 Plus" }, { id: 4, brandId: 1, name: "iPhone 16" },
         { id: 5, brandId: 1, name: "iPhone 15 Pro Max" }, { id: 6, brandId: 1, name: "iPhone 15 Pro" },
         { id: 7, brandId: 1, name: "iPhone 15 Plus" }, { id: 8, brandId: 1, name: "iPhone 15" },
         { id: 9, brandId: 1, name: "iPhone 14 Pro Max" }, { id: 10, brandId: 1, name: "iPhone 14 Pro" },
-        { id: 11, brandId: 1, name: "iPhone 14" }, { id: 12, brandId: 1, name: "iPhone 13 Pro Max" },
-        { id: 13, brandId: 1, name: "iPhone 13" }, { id: 14, brandId: 1, name: "iPhone SE" },
-        // Samsung Galaxy
+        { id: 11, brandId: 1, name: "iPhone 14 Plus" }, { id: 12, brandId: 1, name: "iPhone 14" },
+        { id: 13, brandId: 1, name: "iPhone 13 Pro Max" }, { id: 14, brandId: 1, name: "iPhone 13 Pro" },
+        { id: 15, brandId: 1, name: "iPhone 13" }, { id: 16, brandId: 1, name: "iPhone 13 mini" },
+        { id: 17, brandId: 1, name: "iPhone 12 Pro Max" }, { id: 18, brandId: 1, name: "iPhone 12 Pro" },
+        { id: 19, brandId: 1, name: "iPhone 12" }, { id: 20, brandId: 1, name: "iPhone 12 mini" },
+        { id: 21, brandId: 1, name: "iPhone SE (2022)" }, { id: 22, brandId: 1, name: "iPhone SE (2020)" },
+        { id: 23, brandId: 1, name: "iPhone 11 Pro Max" }, { id: 24, brandId: 1, name: "iPhone 11 Pro" },
+        { id: 25, brandId: 1, name: "iPhone 11" }, { id: 26, brandId: 1, name: "iPhone XR" },
+        { id: 27, brandId: 1, name: "iPhone XS Max" }, { id: 28, brandId: 1, name: "iPhone XS" },
+        { id: 29, brandId: 1, name: "iPhone X" },
+        
+        // ========== SAMSUNG Galaxy ==========
         { id: 30, brandId: 2, name: "Galaxy S24 Ultra" }, { id: 31, brandId: 2, name: "Galaxy S24+" },
         { id: 32, brandId: 2, name: "Galaxy S24" }, { id: 33, brandId: 2, name: "Galaxy S23 Ultra" },
-        { id: 34, brandId: 2, name: "Galaxy Z Fold 5" }, { id: 35, brandId: 2, name: "Galaxy Z Flip 5" },
-        { id: 36, brandId: 2, name: "Galaxy A55" }, { id: 37, brandId: 2, name: "Galaxy A35" },
-        // Xiaomi
+        { id: 34, brandId: 2, name: "Galaxy S23+" }, { id: 35, brandId: 2, name: "Galaxy S23" },
+        { id: 36, brandId: 2, name: "Galaxy S22 Ultra" }, { id: 37, brandId: 2, name: "Galaxy S22+" },
+        { id: 38, brandId: 2, name: "Galaxy S22" }, { id: 39, brandId: 2, name: "Galaxy Z Fold 5" },
+        { id: 40, brandId: 2, name: "Galaxy Z Fold 4" }, { id: 41, brandId: 2, name: "Galaxy Z Flip 5" },
+        { id: 42, brandId: 2, name: "Galaxy Z Flip 4" }, { id: 43, brandId: 2, name: "Galaxy A55" },
+        { id: 44, brandId: 2, name: "Galaxy A54" }, { id: 45, brandId: 2, name: "Galaxy A35" },
+        { id: 46, brandId: 2, name: "Galaxy A34" }, { id: 47, brandId: 2, name: "Galaxy A15" },
+        { id: 48, brandId: 2, name: "Galaxy A14" }, { id: 49, brandId: 2, name: "Galaxy A05s" },
+        { id: 50, brandId: 2, name: "Galaxy A05" }, { id: 51, brandId: 2, name: "Galaxy M54" },
+        { id: 52, brandId: 2, name: "Galaxy M34" }, { id: 53, brandId: 2, name: "Galaxy F54" },
+        
+        // ========== XIAOMI / Redmi / POCO ==========
         { id: 60, brandId: 3, name: "Xiaomi 14 Ultra" }, { id: 61, brandId: 3, name: "Xiaomi 14" },
-        { id: 62, brandId: 3, name: "Xiaomi 13T Pro" }, { id: 63, brandId: 3, name: "Redmi Note 13 Pro+" },
-        { id: 64, brandId: 3, name: "Redmi Note 13 Pro" }, { id: 65, brandId: 3, name: "POCO F6" },
-        // Google Pixel
-        { id: 90, brandId: 6, name: "Pixel 9 Pro XL" }, { id: 91, brandId: 6, name: "Pixel 9 Pro" },
-        { id: 92, brandId: 6, name: "Pixel 9" }, { id: 93, brandId: 6, name: "Pixel 8 Pro" },
-        // iPad
-        { id: 200, brandId: 20, name: "iPad Pro 13 (M4)" }, { id: 201, brandId: 20, name: "iPad Pro 11 (M4)" },
-        { id: 202, brandId: 20, name: "iPad Air 13" }, { id: 203, brandId: 20, name: "iPad Air 11" },
-        { id: 204, brandId: 20, name: "iPad 10" }, { id: 205, brandId: 20, name: "iPad mini 7" },
+        { id: 62, brandId: 3, name: "Xiaomi 14 Pro" }, { id: 63, brandId: 3, name: "Xiaomi 13T Pro" },
+        { id: 64, brandId: 3, name: "Xiaomi 13T" }, { id: 65, brandId: 3, name: "Xiaomi 13 Pro" },
+        { id: 66, brandId: 3, name: "Xiaomi 13" }, { id: 67, brandId: 3, name: "Xiaomi 12T Pro" },
+        { id: 68, brandId: 3, name: "Xiaomi 12T" }, { id: 69, brandId: 3, name: "Redmi Note 13 Pro+" },
+        { id: 70, brandId: 3, name: "Redmi Note 13 Pro" }, { id: 71, brandId: 3, name: "Redmi Note 13" },
+        { id: 72, brandId: 3, name: "Redmi Note 12 Pro+" }, { id: 73, brandId: 3, name: "Redmi Note 12 Pro" },
+        { id: 74, brandId: 3, name: "Redmi Note 12" }, { id: 75, brandId: 3, name: "Redmi 13C" },
+        { id: 76, brandId: 3, name: "Redmi 12C" }, { id: 77, brandId: 3, name: "POCO F6" },
+        { id: 78, brandId: 3, name: "POCO F5" }, { id: 79, brandId: 3, name: "POCO X6 Pro" },
+        { id: 80, brandId: 3, name: "POCO X6" }, { id: 81, brandId: 3, name: "POCO M6 Pro" },
+        { id: 82, brandId: 3, name: "POCO M6" }, { id: 83, brandId: 3, name: "Xiaomi Mix Fold 3" },
+        { id: 84, brandId: 3, name: "Xiaomi Mix Fold 2" },
+        
+        // ========== OPPO ==========
+        { id: 90, brandId: 4, name: "Find X7 Ultra" }, { id: 91, brandId: 4, name: "Find X7" },
+        { id: 92, brandId: 4, name: "Find X6 Pro" }, { id: 93, brandId: 4, name: "Find X6" },
+        { id: 94, brandId: 4, name: "Find N3 Flip" }, { id: 95, brandId: 4, name: "Reno 11 Pro" },
+        { id: 96, brandId: 4, name: "Reno 11" }, { id: 97, brandId: 4, name: "Reno 10 Pro+" },
+        { id: 98, brandId: 4, name: "Reno 10 Pro" }, { id: 99, brandId: 4, name: "Reno 10" },
+        { id: 100, brandId: 4, name: "A78" }, { id: 101, brandId: 4, name: "A58" },
+        { id: 102, brandId: 4, name: "A38" }, { id: 103, brandId: 4, name: "A18" },
+        
+        // ========== vivo ==========
+        { id: 110, brandId: 5, name: "X100 Pro" }, { id: 111, brandId: 5, name: "X100" },
+        { id: 112, brandId: 5, name: "X90 Pro" }, { id: 113, brandId: 5, name: "X90" },
+        { id: 114, brandId: 5, name: "V30 Pro" }, { id: 115, brandId: 5, name: "V30" },
+        { id: 116, brandId: 5, name: "V29 Pro" }, { id: 117, brandId: 5, name: "V29" },
+        { id: 118, brandId: 5, name: "Y100" }, { id: 119, brandId: 5, name: "Y78" },
+        { id: 120, brandId: 5, name: "Y36" }, { id: 121, brandId: 5, name: "Y28" },
+        { id: 122, brandId: 5, name: "iQOO 12" }, { id: 123, brandId: 5, name: "iQOO Neo 9 Pro" },
+        
+        // ========== Google Pixel ==========
+        { id: 130, brandId: 6, name: "Pixel 9 Pro XL" }, { id: 131, brandId: 6, name: "Pixel 9 Pro" },
+        { id: 132, brandId: 6, name: "Pixel 9" }, { id: 133, brandId: 6, name: "Pixel 8 Pro" },
+        { id: 134, brandId: 6, name: "Pixel 8" }, { id: 135, brandId: 6, name: "Pixel 8a" },
+        { id: 136, brandId: 6, name: "Pixel 7 Pro" }, { id: 137, brandId: 6, name: "Pixel 7" },
+        { id: 138, brandId: 6, name: "Pixel 7a" }, { id: 139, brandId: 6, name: "Pixel 6 Pro" },
+        { id: 140, brandId: 6, name: "Pixel 6" }, { id: 141, brandId: 6, name: "Pixel Fold" },
+        
+        // ========== OnePlus ==========
+        { id: 150, brandId: 7, name: "OnePlus 12" }, { id: 151, brandId: 7, name: "OnePlus 12R" },
+        { id: 152, brandId: 7, name: "OnePlus 11" }, { id: 153, brandId: 7, name: "OnePlus 11R" },
+        { id: 154, brandId: 7, name: "OnePlus 10 Pro" }, { id: 155, brandId: 7, name: "OnePlus 10R" },
+        { id: 156, brandId: 7, name: "OnePlus Nord 4" }, { id: 157, brandId: 7, name: "OnePlus Nord 3" },
+        { id: 158, brandId: 7, name: "OnePlus Nord CE 3 Lite" }, { id: 159, brandId: 7, name: "OnePlus Open" },
+        
+        // ========== Huawei ==========
+        { id: 170, brandId: 8, name: "Pura 70 Ultra" }, { id: 171, brandId: 8, name: "Pura 70 Pro" },
+        { id: 172, brandId: 8, name: "Pura 70" }, { id: 173, brandId: 8, name: "P60 Pro" },
+        { id: 174, brandId: 8, name: "P60" }, { id: 175, brandId: 8, name: "Mate 60 Pro" },
+        { id: 176, brandId: 8, name: "Mate 60" }, { id: 177, brandId: 8, name: "Mate 50 Pro" },
+        { id: 178, brandId: 8, name: "Nova 12 Ultra" }, { id: 179, brandId: 8, name: "Nova 12 Pro" },
+        { id: 180, brandId: 8, name: "Nova 12" }, { id: 181, brandId: 8, name: "Nova 11" },
+        
+        // ========== Honor ==========
+        { id: 190, brandId: 9, name: "Magic 6 Pro" }, { id: 191, brandId: 9, name: "Magic 6" },
+        { id: 192, brandId: 9, name: "Magic 5 Pro" }, { id: 193, brandId: 9, name: "Magic 5" },
+        { id: 194, brandId: 9, name: "Magic V2" }, { id: 195, brandId: 9, name: "Magic VS" },
+        { id: 196, brandId: 9, name: "90 GT" }, { id: 197, brandId: 9, name: "90" },
+        { id: 198, brandId: 9, name: "80 GT" }, { id: 199, brandId: 9, name: "80" },
+        { id: 200, brandId: 9, name: "X9b" }, { id: 201, brandId: 9, name: "X8b" },
+        
+        // ========== Realme ==========
+        { id: 210, brandId: 10, name: "GT 5 Pro" }, { id: 211, brandId: 10, name: "GT 5" },
+        { id: 212, brandId: 10, name: "GT Neo 6" }, { id: 213, brandId: 10, name: "GT Neo 5" },
+        { id: 214, brandId: 10, name: "12 Pro+" }, { id: 215, brandId: 10, name: "12 Pro" },
+        { id: 216, brandId: 10, name: "12" }, { id: 217, brandId: 10, name: "11 Pro+" },
+        { id: 218, brandId: 10, name: "11 Pro" }, { id: 219, brandId: 10, name: "11" },
+        { id: 220, brandId: 10, name: "C67" }, { id: 221, brandId: 10, name: "C55" },
+        
+        // ========== Nothing ==========
+        { id: 230, brandId: 11, name: "Phone (2)" }, { id: 231, brandId: 11, name: "Phone (2a)" },
+        { id: 232, brandId: 11, name: "Phone (1)" }, { id: 233, brandId: 11, name: "Phone (2a) Plus" },
+        
+        // ========== Sony ==========
+        { id: 240, brandId: 12, name: "Xperia 1 VI" }, { id: 241, brandId: 12, name: "Xperia 5 V" },
+        { id: 242, brandId: 12, name: "Xperia 10 VI" }, { id: 243, brandId: 12, name: "Xperia 1 V" },
+        { id: 244, brandId: 12, name: "Xperia 5 IV" }, { id: 245, brandId: 12, name: "Xperia 10 V" },
+        
+        // ========== Motorola ==========
+        { id: 250, brandId: 13, name: "Edge 50 Ultra" }, { id: 251, brandId: 13, name: "Edge 50 Pro" },
+        { id: 252, brandId: 13, name: "Edge 50 Fusion" }, { id: 253, brandId: 13, name: "Edge 40 Pro" },
+        { id: 254, brandId: 13, name: "Edge 40" }, { id: 255, brandId: 13, name: "G84" },
+        { id: 256, brandId: 13, name: "G54" }, { id: 257, brandId: 13, name: "G34" },
+        { id: 258, brandId: 13, name: "Razr 50 Ultra" }, { id: 259, brandId: 13, name: "Razr 40 Ultra" },
+        
+        // ========== Nokia ==========
+        { id: 270, brandId: 14, name: "G60" }, { id: 271, brandId: 14, name: "G42" },
+        { id: 272, brandId: 14, name: "C22" }, { id: 273, brandId: 14, name: "C12" },
+        { id: 274, brandId: 14, name: "X30" }, { id: 275, brandId: 14, name: "X20" },
+        
+        // ========== ПЛАНШЕТЫ ==========
+        // Apple iPad
+        { id: 400, brandId: 20, name: "iPad Pro 13 (M4)" }, { id: 401, brandId: 20, name: "iPad Pro 11 (M4)" },
+        { id: 402, brandId: 20, name: "iPad Air 13" }, { id: 403, brandId: 20, name: "iPad Air 11" },
+        { id: 404, brandId: 20, name: "iPad 10" }, { id: 405, brandId: 20, name: "iPad 9" },
+        { id: 406, brandId: 20, name: "iPad mini 7" }, { id: 407, brandId: 20, name: "iPad mini 6" },
+        { id: 408, brandId: 20, name: "iPad Pro 12.9 (M2)" }, { id: 409, brandId: 20, name: "iPad Pro 11 (M2)" },
+        
         // Samsung Tablets
-        { id: 210, brandId: 21, name: "Galaxy Tab S9 Ultra" }, { id: 211, brandId: 21, name: "Galaxy Tab S9+" },
-        { id: 212, brandId: 21, name: "Galaxy Tab S9" }, { id: 213, brandId: 21, name: "Galaxy Tab A9+" },
-        // MacBook
-        { id: 300, brandId: 30, name: "MacBook Pro 16 (M3)" }, { id: 301, brandId: 30, name: "MacBook Pro 14 (M3)" },
-        { id: 302, brandId: 30, name: "MacBook Air 15 (M3)" }, { id: 303, brandId: 30, name: "MacBook Air 13 (M3)" },
+        { id: 420, brandId: 21, name: "Galaxy Tab S9 Ultra" }, { id: 421, brandId: 21, name: "Galaxy Tab S9+" },
+        { id: 422, brandId: 21, name: "Galaxy Tab S9" }, { id: 423, brandId: 21, name: "Galaxy Tab S8 Ultra" },
+        { id: 424, brandId: 21, name: "Galaxy Tab S8+" }, { id: 425, brandId: 21, name: "Galaxy Tab S8" },
+        { id: 426, brandId: 21, name: "Galaxy Tab A9+" }, { id: 427, brandId: 21, name: "Galaxy Tab A9" },
+        { id: 428, brandId: 21, name: "Galaxy Tab A8" }, { id: 429, brandId: 21, name: "Galaxy Tab S6 Lite" },
+        { id: 430, brandId: 21, name: "Galaxy Tab Active 5" },
+        
+        // Lenovo Tablets
+        { id: 440, brandId: 22, name: "Lenovo Tab P12" }, { id: 441, brandId: 22, name: "Lenovo Tab P11" },
+        { id: 442, brandId: 22, name: "Lenovo Tab M11" }, { id: 443, brandId: 22, name: "Lenovo Tab M10" },
+        { id: 444, brandId: 22, name: "Lenovo Yoga Tab 13" }, { id: 445, brandId: 22, name: "Lenovo Legion Tab" },
+        
+        // Huawei Tablets
+        { id: 450, brandId: 23, name: "MatePad Pro 13.2" }, { id: 451, brandId: 23, name: "MatePad Pro 11" },
+        { id: 452, brandId: 23, name: "MatePad Air" }, { id: 453, brandId: 23, name: "MatePad 11.5" },
+        { id: 454, brandId: 23, name: "MatePad T10" },
+        
+        // Xiaomi Tablets
+        { id: 460, brandId: 24, name: "Xiaomi Pad 6S Pro" }, { id: 461, brandId: 24, name: "Xiaomi Pad 6 Pro" },
+        { id: 462, brandId: 24, name: "Xiaomi Pad 6" }, { id: 463, brandId: 24, name: "Redmi Pad Pro" },
+        { id: 464, brandId: 24, name: "Redmi Pad SE" },
+        
+        // Honor Tablets
+        { id: 470, brandId: 25, name: "Honor Pad 9" }, { id: 471, brandId: 25, name: "Honor Pad 8" },
+        { id: 472, brandId: 25, name: "Honor Pad X9" }, { id: 473, brandId: 25, name: "Honor MagicPad 13" },
+        
+        // ========== НОУТБУКИ ==========
+        // Apple MacBook
+        { id: 500, brandId: 30, name: "MacBook Pro 16 (M3 Max)" }, { id: 501, brandId: 30, name: "MacBook Pro 16 (M3 Pro)" },
+        { id: 502, brandId: 30, name: "MacBook Pro 16 (M3)" }, { id: 503, brandId: 30, name: "MacBook Pro 14 (M3)" },
+        { id: 504, brandId: 30, name: "MacBook Air 15 (M3)" }, { id: 505, brandId: 30, name: "MacBook Air 13 (M3)" },
+        { id: 506, brandId: 30, name: "MacBook Pro 16 (M2 Max)" }, { id: 507, brandId: 30, name: "MacBook Air 13 (M2)" },
+        { id: 508, brandId: 30, name: "MacBook Pro 13 (M2)" }, { id: 509, brandId: 30, name: "MacBook Air 13 (M1)" },
+        
         // Lenovo
-        { id: 310, brandId: 31, name: "ThinkPad X1 Carbon" }, { id: 311, brandId: 31, name: "ThinkPad T14" },
-        { id: 312, brandId: 31, name: "Legion 9i" }, { id: 313, brandId: 31, name: "Yoga 9i" },
+        { id: 520, brandId: 31, name: "ThinkPad X1 Carbon Gen 12" }, { id: 521, brandId: 31, name: "ThinkPad X1 Carbon Gen 11" },
+        { id: 522, brandId: 31, name: "ThinkPad T14 Gen 4" }, { id: 523, brandId: 31, name: "ThinkPad T14s" },
+        { id: 524, brandId: 31, name: "ThinkPad P16" }, { id: 525, brandId: 31, name: "Legion 9i" },
+        { id: 526, brandId: 31, name: "Legion 7i" }, { id: 527, brandId: 31, name: "Legion 5 Pro" },
+        { id: 528, brandId: 31, name: "Yoga 9i" }, { id: 529, brandId: 31, name: "Yoga 7i" },
+        { id: 530, brandId: 31, name: "IdeaPad Slim 5" }, { id: 531, brandId: 31, name: "IdeaPad 3" },
+        { id: 532, brandId: 31, name: "LOQ 15" }, { id: 533, brandId: 31, name: "ThinkBook 16" },
+        
         // HP
-        { id: 320, brandId: 32, name: "Spectre x360" }, { id: 321, brandId: 32, name: "Envy 16" },
-        { id: 322, brandId: 32, name: "Pavilion Plus" }, { id: 323, brandId: 32, name: "Victus 16" },
+        { id: 540, brandId: 32, name: "Spectre x360 14" }, { id: 541, brandId: 32, name: "Spectre x360 16" },
+        { id: 542, brandId: 32, name: "Envy 16" }, { id: 543, brandId: 32, name: "Envy x360 15" },
+        { id: 544, brandId: 32, name: "Pavilion Plus 14" }, { id: 545, brandId: 32, name: "Pavilion 15" },
+        { id: 546, brandId: 32, name: "Victus 16" }, { id: 547, brandId: 32, name: "Victus 15" },
+        { id: 548, brandId: 32, name: "Omen Transcend 14" }, { id: 549, brandId: 32, name: "Omen 17" },
+        { id: 550, brandId: 32, name: "EliteBook 1040 G10" }, { id: 551, brandId: 32, name: "EliteBook 840 G10" },
+        { id: 552, brandId: 32, name: "Dragonfly G4" }, { id: 553, brandId: 32, name: "ZBook Firefly" },
+        
         // Asus
-        { id: 330, brandId: 33, name: "ROG Zephyrus G14" }, { id: 331, brandId: 33, name: "ROG Strix G16" },
-        { id: 332, brandId: 33, name: "Zenbook 14 OLED" }, { id: 333, brandId: 33, name: "Vivobook 15" },
-        // Игровые консоли
-        { id: 500, brandId: 130, name: "PlayStation 5" }, { id: 501, brandId: 130, name: "PlayStation 5 Slim" },
-        { id: 502, brandId: 131, name: "Xbox Series X" }, { id: 503, brandId: 131, name: "Xbox Series S" },
-        { id: 504, brandId: 132, name: "Nintendo Switch OLED" }, { id: 505, brandId: 132, name: "Nintendo Switch" },
-        { id: 506, brandId: 133, name: "Steam Deck OLED" }
+        { id: 560, brandId: 33, name: "ROG Zephyrus G14" }, { id: 561, brandId: 33, name: "ROG Zephyrus G16" },
+        { id: 562, brandId: 33, name: "ROG Strix G16" }, { id: 563, brandId: 33, name: "ROG Strix G18" },
+        { id: 564, brandId: 33, name: "ROG Flow Z13" }, { id: 565, brandId: 33, name: "ROG Flow X16" },
+        { id: 566, brandId: 33, name: "Zenbook 14 OLED" }, { id: 567, brandId: 33, name: "Zenbook S 13" },
+        { id: 568, brandId: 33, name: "Zenbook Pro 16X" }, { id: 569, brandId: 33, name: "Vivobook 15" },
+        { id: 570, brandId: 33, name: "Vivobook 16" }, { id: 571, brandId: 33, name: "Vivobook S 15" },
+        { id: 572, brandId: 33, name: "TUF Gaming F15" }, { id: 573, brandId: 33, name: "TUF Gaming A16" },
+        { id: 574, brandId: 33, name: "ProArt Studiobook 16" }, { id: 575, brandId: 33, name: "ExpertBook B9" },
+        
+        // Acer
+        { id: 580, brandId: 34, name: "Predator Helios 16" }, { id: 581, brandId: 34, name: "Predator Helios Neo 16" },
+        { id: 582, brandId: 34, name: "Predator Triton 14" }, { id: 583, brandId: 34, name: "Nitro 17" },
+        { id: 584, brandId: 34, name: "Nitro 16" }, { id: 585, brandId: 34, name: "Nitro 5" },
+        { id: 586, brandId: 34, name: "Swift Go 14" }, { id: 587, brandId: 34, name: "Swift Go 16" },
+        { id: 588, brandId: 34, name: "Swift X 14" }, { id: 589, brandId: 34, name: "Aspire 5" },
+        { id: 590, brandId: 34, name: "Aspire 3" }, { id: 591, brandId: 34, name: "Aspire Vero" },
+        
+        // Dell
+        { id: 600, brandId: 35, name: "XPS 15" }, { id: 601, brandId: 35, name: "XPS 14" },
+        { id: 602, brandId: 35, name: "XPS 13 Plus" }, { id: 603, brandId: 35, name: "XPS 13" },
+        { id: 604, brandId: 35, name: "Alienware m18" }, { id: 605, brandId: 35, name: "Alienware m16" },
+        { id: 606, brandId: 35, name: "Alienware x16" }, { id: 607, brandId: 35, name: "Inspiron 16 Plus" },
+        { id: 608, brandId: 35, name: "Inspiron 15" }, { id: 609, brandId: 35, name: "Inspiron 14" },
+        { id: 610, brandId: 35, name: "Latitude 9440" }, { id: 611, brandId: 35, name: "Latitude 7440" },
+        { id: 612, brandId: 35, name: "Precision 5680" }, { id: 613, brandId: 35, name: "Precision 3480" },
+        
+        // MSI
+        { id: 620, brandId: 36, name: "Titan GT77 HX" }, { id: 621, brandId: 36, name: "Raider GE78 HX" },
+        { id: 622, brandId: 36, name: "Stealth 18" }, { id: 623, brandId: 36, name: "Stealth 16" },
+        { id: 624, brandId: 36, name: "Vector GP78 HX" }, { id: 625, brandId: 36, name: "Katana 17" },
+        { id: 626, brandId: 36, name: "Cyborg 15" }, { id: 627, brandId: 36, name: "Prestige 16" },
+        { id: 628, brandId: 36, name: "Summit E16" }, { id: 629, brandId: 36, name: "Modern 15" },
+        
+        // Huawei MateBook
+        { id: 640, brandId: 37, name: "MateBook X Pro" }, { id: 641, brandId: 37, name: "MateBook 16s" },
+        { id: 642, brandId: 37, name: "MateBook 14s" }, { id: 643, brandId: 37, name: "MateBook D16" },
+        { id: 644, brandId: 37, name: "MateBook D15" }, { id: 645, brandId: 37, name: "MateBook E Go" },
+        
+        // ========== РОБОТЫ-ПЫЛЕСОСЫ ==========
+        { id: 700, brandId: 50, name: "Xiaomi Robot Vacuum S20" }, { id: 701, brandId: 50, name: "Xiaomi Robot Vacuum X10+" },
+        { id: 702, brandId: 50, name: "Xiaomi Robot Vacuum S10" }, { id: 703, brandId: 50, name: "Xiaomi Robot Vacuum M30" },
+        { id: 710, brandId: 51, name: "Roborock S8 MaxV Ultra" }, { id: 711, brandId: 51, name: "Roborock S8 Pro Ultra" },
+        { id: 712, brandId: 51, name: "Roborock Q Revo" }, { id: 713, brandId: 51, name: "Roborock Q5 Pro" },
+        { id: 720, brandId: 52, name: "iRobot Roomba Combo j9+" }, { id: 721, brandId: 52, name: "iRobot Roomba j7+" },
+        { id: 722, brandId: 52, name: "iRobot Roomba i5" }, { id: 723, brandId: 52, name: "iRobot Braava Jet m6" },
+        { id: 730, brandId: 53, name: "Dreame L20 Ultra" }, { id: 731, brandId: 53, name: "Dreame L10s Ultra" },
+        { id: 732, brandId: 53, name: "Dreame D10s Plus" }, { id: 733, brandId: 53, name: "Dreame Z10 Pro" },
+        
+        // ========== СТИРАЛЬНЫЕ МАШИНЫ ==========
+        { id: 800, brandId: 60, name: "LG AI DD" }, { id: 801, brandId: 60, name: "LG ThinQ" },
+        { id: 802, brandId: 60, name: "LG Studio" }, { id: 810, brandId: 61, name: "Samsung Bespoke" },
+        { id: 811, brandId: 61, name: "Samsung Eco Bubble" }, { id: 812, brandId: 61, name: "Samsung AddWash" },
+        { id: 820, brandId: 62, name: "Bosch Serie 8" }, { id: 821, brandId: 62, name: "Bosch Serie 6" },
+        { id: 822, brandId: 62, name: "Bosch Serie 4" }, { id: 830, brandId: 63, name: "Indesit Innex" },
+        { id: 831, brandId: 63, name: "Indesit Eco" },
+        
+        // ========== ХОЛОДИЛЬНИКИ ==========
+        { id: 900, brandId: 80, name: "LG InstaView" }, { id: 901, brandId: 80, name: "LG Smart" },
+        { id: 902, brandId: 80, name: "LG DoorCooling" }, { id: 910, brandId: 81, name: "Samsung Bespoke" },
+        { id: 911, brandId: 81, name: "Samsung Family Hub" }, { id: 920, brandId: 82, name: "Bosch Serie 8" },
+        { id: 921, brandId: 82, name: "Bosch VitaFresh" }, { id: 930, brandId: 83, name: "Haier Smart" },
+        { id: 931, brandId: 83, name: "Haier Total No Frost" }, { id: 940, brandId: 84, name: "Atlant XM" },
+        { id: 941, brandId: 84, name: "Atlant M" },
+        
+        // ========== ТЕЛЕВИЗОРЫ ==========
+        { id: 1000, brandId: 100, name: "LG OLED evo C4" }, { id: 1001, brandId: 100, name: "LG OLED evo G4" },
+        { id: 1002, brandId: 100, name: "LG QNED 90" }, { id: 1003, brandId: 100, name: "LG NanoCell" },
+        { id: 1010, brandId: 101, name: "Samsung Neo QLED 8K" }, { id: 1011, brandId: 101, name: "Samsung OLED S95D" },
+        { id: 1012, brandId: 101, name: "Samsung QLED 4K" }, { id: 1013, brandId: 101, name: "Samsung Crystal UHD" },
+        { id: 1020, brandId: 102, name: "Sony BRAVIA XR A95L" }, { id: 1021, brandId: 102, name: "Sony BRAVIA X90L" },
+        { id: 1022, brandId: 102, name: "Sony BRAVIA X80L" }, { id: 1030, brandId: 103, name: "TCL QLED" },
+        { id: 1031, brandId: 103, name: "TCL Mini-LED" }, { id: 1032, brandId: 103, name: "TCL C735" },
+        
+        // ========== ИГРОВЫЕ КОНСОЛИ ==========
+        { id: 1100, brandId: 130, name: "PlayStation 5" }, { id: 1101, brandId: 130, name: "PlayStation 5 Slim" },
+        { id: 1102, brandId: 130, name: "PlayStation 5 Pro" }, { id: 1103, brandId: 130, name: "PlayStation 4 Pro" },
+        { id: 1104, brandId: 130, name: "PlayStation 4 Slim" }, { id: 1110, brandId: 131, name: "Xbox Series X" },
+        { id: 1111, brandId: 131, name: "Xbox Series S" }, { id: 1112, brandId: 131, name: "Xbox One X" },
+        { id: 1120, brandId: 132, name: "Nintendo Switch OLED" }, { id: 1121, brandId: 132, name: "Nintendo Switch" },
+        { id: 1122, brandId: 132, name: "Nintendo Switch Lite" }, { id: 1130, brandId: 133, name: "Steam Deck OLED" },
+        { id: 1131, brandId: 133, name: "Steam Deck LCD" },
+        
+        // ========== ДЛЯ ОСТАЛЬНЫХ КАТЕГОРИЙ (общие модели) ==========
+        // СВЧ-печи
+        { id: 1200, brandId: 70, name: "Samsung MS" }, { id: 1201, brandId: 70, name: "Samsung MG" },
+        { id: 1210, brandId: 71, name: "LG MH" }, { id: 1211, brandId: 71, name: "LG MS" },
+        
+        // Кофемашины
+        { id: 1300, brandId: 90, name: "De'Longhi Magnifica" }, { id: 1301, brandId: 90, name: "De'Longhi Dinamica" },
+        { id: 1302, brandId: 90, name: "De'Longhi Dedica" }, { id: 1310, brandId: 90, name: "Philips LatteGo" },
+        { id: 1311, brandId: 90, name: "Philips 2200 Series" }, { id: 1320, brandId: 90, name: "Saeco PicoBaristo" },
+        { id: 1321, brandId: 90, name: "Saeco Incanto" },
+        
+        // Наушники/Колонки
+        { id: 1400, brandId: 110, name: "AirPods Pro 2" }, { id: 1401, brandId: 110, name: "AirPods 3" },
+        { id: 1402, brandId: 110, name: "AirPods Max" }, { id: 1410, brandId: 111, name: "Sony WH-1000XM5" },
+        { id: 1411, brandId: 111, name: "Sony WF-1000XM5" }, { id: 1420, brandId: 112, name: "JBL Charge 5" },
+        { id: 1421, brandId: 112, name: "JBL Flip 6" }, { id: 1422, brandId: 112, name: "JBL Tune 770NC" },
+        
+        // МФУ/Принтеры
+        { id: 1500, brandId: 120, name: "HP LaserJet Pro" }, { id: 1501, brandId: 120, name: "HP Smart Tank" },
+        { id: 1502, brandId: 120, name: "HP OfficeJet Pro" }, { id: 1510, brandId: 121, name: "Canon PIXMA" },
+        { id: 1511, brandId: 121, name: "Canon i-SENSYS" }, { id: 1520, brandId: 122, name: "Epson EcoTank" },
+        { id: 1521, brandId: 122, name: "Epson WorkForce" }, { id: 1530, brandId: 123, name: "Brother DCP" },
+        { id: 1531, brandId: 123, name: "Brother HL" }, { id: 1540, brandId: 124, name: "Xerox B210" },
+        { id: 1541, brandId: 124, name: "Xerox WorkCentre" }
     ];
     
     let repairPrices = [
