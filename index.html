@@ -574,7 +574,6 @@
             }); 
             saveAllShifts(); 
             
-            // === ИСПРАВЛЕНИЕ ОШИБКИ INVALID DATE ===
             const today = new Date();
             const dateStr = today.toLocaleDateString('ru-RU');
             
@@ -593,6 +592,7 @@
                 cardCount: shiftOrders.filter(o => o.paymentMethod === "card").length,
                 averageCheck: shiftOrders.length > 0 ? finance.revenue / shiftOrders.length : 0,
                 comment: shiftCloseComment,
+                cashBalance: cashData.cashBalance,
                 orders: shiftOrders.map(o => ({
                     id: o.id,
                     time: o.date && o.date.includes(", ") ? o.date.split(", ")[1] : "",
@@ -601,7 +601,7 @@
                     total: o.finalTotal,
                     payment: o.paymentMethod,
                     operator: o.operator,
-                    expense: o.orderExpense || 0   // ← ДОБАВЛЕНО: расход по заказу
+                    expense: o.orderExpense || 0
                 }))
             };
             
@@ -611,7 +611,7 @@
             updateShiftUI(); 
             updateShiftFinanceDisplay(); 
             
-            alert(`✅ Смена закрыта!\n\n📅 ${dateStr}\n💰 Выручка: ${finance.revenue} ₽\n💵 Наличные: ${finance.cash} ₽\n💳 Карта: ${finance.card} ₽\n📊 Чистая прибыль: ${finance.profit} ₽\n\n📄 Отчёт создан в Google Sheets на листе "${dateStr}"`); 
+            alert(`✅ Смена закрыта!\n\n📅 ${dateStr}\n💰 Выручка: ${finance.revenue} ₽\n💵 Наличные: ${finance.cash} ₽\n💳 Карта: ${finance.card} ₽\n📊 Чистая прибыль: ${finance.profit} ₽\n💵 Остаток наличных в кассе: ${cashData.cashBalance} ₽\n\n📄 Отчёт создан в Google Sheets на листе "${dateStr}"`); 
         } 
     }
     
