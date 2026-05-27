@@ -93,7 +93,6 @@
         @media (min-width: 851px) { .burger-menu { display: none !important; } }
         .withdrawal-item { background: var(--gray-100); border-radius: 8px; padding: 8px; margin-bottom: 8px; font-size: 12px; }
         .report-buttons { display: flex; flex-direction: column; gap: 8px; margin-top: 16px; }
-        .report-buttons button { margin: 0; }
         .instruction-content { display: none; }
         .instruction-content.active { display: block; }
         .stats-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--gray-200); }
@@ -327,7 +326,7 @@
     function saveAllShifts() { localStorage.setItem("a4print_shifts_list", JSON.stringify(allShifts)); }
     function saveCashData() { localStorage.setItem("a4print_cash_data", JSON.stringify(cashData)); }
     
-    // ========== АВТОМАТИЧЕСКАЯ СИНХРОНИЗАЦИЯ С GOOGLE ==========
+    // ========== СИНХРОНИЗАЦИЯ С GOOGLE ==========
     async function syncToGoogle(isSilent = false) {
         if (!GOOGLE_WEBAPP_URL) {
             if (!isSilent) alert('Сначала настройте URL веб-приложения Google Sheets в админ-панели');
@@ -335,7 +334,6 @@
         }
         if (!isSilent) showSyncStatus('🔄 Синхронизация...');
         try {
-            // Сохраняем все заказы (включая сегодняшние) и полные данные
             const payload = {
                 type: 'orders',
                 data: allOrders,
@@ -360,7 +358,45 @@
         }
     }
     
-    // Функция для автосинхронизации после заказа
+    // Отправка отчёта смены в Google Sheets
+    async function sendShiftReportToGoogle(shiftData) {
+        if (!GOOGLE_WEBAPP_URL) {
+            console.log("URL Google Sheets не настроен");
+            return false;
+        }
+        
+        const reportData = {
+            type: 'shift_report',
+            date: shiftData.date,
+            reportTime: shiftData.reportTime,
+            operator: shiftData.operator,
+            revenue: shiftData.revenue,
+            cashRevenue: shiftData.cashRevenue,
+            cardRevenue: shiftData.cardRevenue,
+            cashCount: shiftData.cashCount,
+            cardCount: shiftData.cardCount,
+            orderCount: shiftData.orderCount,
+            profit: shiftData.profit,
+            averageCheck: shiftData.averageCheck,
+            orders: shiftData.orders
+        };
+        
+        try {
+            await fetch(GOOGLE_WEBAPP_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(reportData)
+            });
+            console.log("Отчёт смены отправлен в Google Sheets");
+            return true;
+        } catch(e) {
+            console.error("Ошибка отправки отчёта:", e);
+            return false;
+        }
+    }
+    
+    // Автосинхронизация после заказа
     async function autoSyncAfterOrder() {
         if (GOOGLE_WEBAPP_URL) {
             showSyncStatus('🔄 Автосинхронизация...');
@@ -520,14 +556,54 @@
             alert("✅ Смена открыта"); 
         } else { 
             if (!shiftOpen) { alert("Нет открытой смены"); return; } 
-            let finance = getShiftFinance(); 
+            let finance = getShiftFinance();
+            const shiftOrders = allOrders.filter(o => o.operator === currentUser.name && o.date >= shiftOpen && (!shiftClose || o.date <= shiftClose));
+            
             shiftClose = new Date().toLocaleString(); 
             saveShift(); 
-            allShifts.push({login:currentUser.username, name:currentUser.name, role:currentUser.role, open:shiftOpen, close:shiftClose}); 
+            
+            allShifts.push({
+                login: currentUser.username, 
+                name: currentUser.name, 
+                role: currentUser.role, 
+                open: shiftOpen, 
+                close: shiftClose,
+                revenue: finance.revenue,
+                cash: finance.cash,
+                card: finance.card,
+                profit: finance.profit
+            }); 
             saveAllShifts(); 
+            
+            // Отправка отчёта в Google Sheets
+            const shiftReportData = {
+                date: new Date(shiftOpen).toLocaleDateString('ru-RU'),
+                reportTime: new Date().toLocaleString(),
+                operator: currentUser.name,
+                revenue: finance.revenue,
+                cashRevenue: finance.cash,
+                cardRevenue: finance.card,
+                cashCount: shiftOrders.filter(o => o.paymentMethod === "cash").length,
+                cardCount: shiftOrders.filter(o => o.paymentMethod === "card").length,
+                orderCount: shiftOrders.length,
+                profit: finance.profit,
+                averageCheck: shiftOrders.length > 0 ? finance.revenue / shiftOrders.length : 0,
+                orders: shiftOrders.map(o => ({
+                    id: o.id,
+                    time: o.date && o.date.includes(", ") ? o.date.split(", ")[1] : "",
+                    items: o.items,
+                    finalTotal: o.finalTotal,
+                    paymentMethod: o.paymentMethod,
+                    operator: o.operator,
+                    comment: o.comment || ""
+                }))
+            };
+            
+            sendShiftReportToGoogle(shiftReportData);
+            
             updateShiftUI(); 
             updateShiftFinanceDisplay(); 
-            alert(`✅ Смена закрыта\n💰 Выручка: ${finance.revenue} ₽\n💵 Наличные: ${finance.cash} ₽\n💳 Карта: ${finance.card} ₽`); 
+            alert(`✅ Смена закрыта\n💰 Выручка: ${finance.revenue} ₽\n💵 Наличные: ${finance.cash} ₽\n💳 Карта: ${finance.card} ₽\n📊 Отчёт сохранён в Google Sheets`); 
         } 
     }
     
@@ -686,11 +762,9 @@
         renderCart(); renderHistory(); updateShiftFinanceDisplay(); 
         alert(`✅ Заказ №${order.id} на ${order.finalTotal} ₽\n💸 Расход: ${totals.orderExpense} ₽\n📊 Прибыль: ${totals.profit} ₽`); 
         
-        // АВТОМАТИЧЕСКАЯ СИНХРОНИЗАЦИЯ ПОСЛЕ КАЖДОГО ЗАКАЗА
         await autoSyncAfterOrder();
     }
     
-    // ========== ИСТОРИЯ ЗАКАЗОВ ==========
     function renderHistory(){ 
         let my = currentUser.role==="admin"?allOrders:allOrders.filter(o=>o.operator===currentUser.name); 
         let cont=document.getElementById("historyList"); 
@@ -792,7 +866,6 @@
         document.getElementById("editOrderModal").style.display = "none";
         showSyncStatus("✅ Заказ обновлён");
         
-        // Автосинхронизация после редактирования
         await autoSyncAfterOrder();
     }
     
@@ -803,12 +876,16 @@
             renderHistory();
             updateShiftFinanceDisplay();
             showSyncStatus("🗑 Заказ удалён");
-            // Автосинхронизация после удаления
             await autoSyncAfterOrder();
         }
     }
     
-    // ========== ОТЧЁТЫ (остались без изменений) ==========
+    function showSyncStatus(msg){ 
+        let d=document.getElementById("syncStatus"); 
+        if(d){ d.textContent=msg; setTimeout(()=>{ if(d.textContent===msg) d.textContent="💾 Готово"; },2000); } 
+    }
+    
+    // ========== ОТЧЁТЫ ==========
     function showReportModal() { document.getElementById("reportModal").style.display = "flex"; }
     function exportToExcel(orders, title) {
         if (!orders || orders.length === 0) { alert('Нет данных для экспорта'); return; }
@@ -877,6 +954,13 @@
         element.remove();
     }
     
+    function calculateSalaryForShift(shift) { 
+        if (!shift.open || !shift.close) return 0; 
+        const hours = Math.min((new Date(shift.close) - new Date(shift.open)) / (1000*3600), 8); 
+        const rate = shift.role === "admin" ? 2500 : 2000; 
+        return Math.round((rate / 8) * (hours < 0 ? 0 : hours)); 
+    }
+    
     // ========== АДМИН-ФУНКЦИИ ==========
     function getOperatorsStats(){ 
         let stats={}; 
@@ -893,12 +977,6 @@
         let html=`<div class="stats-row stats-header"><span>Оператор</span><span>Заказов</span><span>Выручка</span><span>Прибыль</span></div>`; 
         for(let [login,st] of Object.entries(stats)){ html+=`<div class="stats-row"><span><strong>${escapeHtml(st.name)}</strong></span><span>${st.orders}</span><span>${st.revenue.toLocaleString()}</span><span style="color:var(--green);">${st.profit.toLocaleString()}</span></div>`; } 
         document.getElementById("operatorsStatsContent").innerHTML=html; 
-    }
-    function calculateSalaryForShift(shift) { 
-        if (!shift.open || !shift.close) return 0; 
-        const hours = Math.min((new Date(shift.close) - new Date(shift.open)) / (1000*3600), 8); 
-        const rate = shift.role === "admin" ? 2500 : 2000; 
-        return Math.round((rate / 8) * (hours < 0 ? 0 : hours)); 
     }
     function calculateSalaryForMonth(month,year){ 
         let sm=new Map(); 
@@ -918,7 +996,7 @@
         let m=parseInt(document.getElementById("salaryMonth").value); 
         let y=parseInt(document.getElementById("salaryYear").value); 
         let sm=calculateSalaryForMonth(m,y); 
-        let html=`<table style="width:100%"><tr><th>Оператор</th><th>Смен</th><th>Итого</th></tr>`; 
+        let html=`<table style="width:100%"><table><th>Оператор</th><th>Смен</th><th>Итого</th></tr>`; 
         let total=0; 
         for(let [key,data] of sm){ html+=`<tr><td>${data.name}</td><td>${data.count}</td><td>${data.total.toLocaleString()} ₽</td></tr>`; total+=data.total; } 
         html+=`<tr style="background:var(--blue);color:white;"><td><strong>ИТОГО:</strong></td><td></td><td><strong>${total.toLocaleString()} ₽</strong></td></tr></table>`; 
@@ -949,10 +1027,6 @@
         document.querySelectorAll(".deleteGoods").forEach(btn=>btn.onclick=()=>{ let id=parseInt(btn.getAttribute("data-id")); if(confirm("Удалить товар?")){ goods=goods.filter(x=>x.id!==id); saveGoods(); renderGoods(); renderAdmin(); } }); 
     }
     
-    function showSyncStatus(msg){ 
-        let d=document.getElementById("syncStatus"); 
-        if(d){ d.textContent=msg; setTimeout(()=>{ if(d.textContent===msg) d.textContent="💾 Готово"; },2000); } 
-    }
     function toggleTheme(){ document.body.classList.toggle("dark"); localStorage.setItem("a4print_theme",document.body.classList.contains("dark")?"dark":"light"); }
     function login(){ 
         let sel=document.getElementById("loginSelect").value; 
