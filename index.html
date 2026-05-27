@@ -574,12 +574,16 @@
             }); 
             saveAllShifts(); 
             
-            // === ОТПРАВКА В GOOGLE SHEETS (СОЗДАНИЕ НОВОГО ЛИСТА) ===
-            const dateStr = new Date(shiftOpen).toLocaleDateString('ru-RU');
+            // === ИСПРАВЛЕНИЕ ОШИБКИ INVALID DATE ===
+            // Используем текущую дату (самый надёжный способ)
+            const today = new Date();
+            const dateStr = today.toLocaleDateString('ru-RU');
+            // Альтернативный вариант (если нужно из shiftOpen):
+            // const dateStr = shiftOpen.split(',')[0].trim();
             
             const shiftData = {
-                type: 'shift_close',           // ВАЖНО: тип должен быть shift_close
-                sheetName: dateStr,            // Имя листа = дата
+                type: 'shift_close',
+                sheetName: dateStr,
                 date: dateStr,
                 reportTime: new Date().toLocaleString(),
                 operator: currentUser.name,
@@ -997,7 +1001,7 @@
         let m=parseInt(document.getElementById("salaryMonth").value); 
         let y=parseInt(document.getElementById("salaryYear").value); 
         let sm=calculateSalaryForMonth(m,y); 
-        let html=`<table style="width:100%"><tr><th>Оператор</th><th>Смен</th><th>Итого</th></table>`; 
+        let html=`<table style="width:100%"><tr><th>Оператор</th><th>Смен</th><th>Итого</th></tr>`; 
         let total=0; 
         for(let [key,data] of sm){ html+=`<tr><td>${data.name}</td><td>${data.count}</td><td>${data.total.toLocaleString()} ₽</td></tr>`; total+=data.total; } 
         html+=`<tr style="background:var(--blue);color:white;"><td><strong>ИТОГО:</strong></td><td></td><td><strong>${total.toLocaleString()} ₽</strong></td></tr></table>`; 
