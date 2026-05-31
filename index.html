@@ -322,10 +322,68 @@
     function saveServices() { localStorage.setItem("a4print_services", JSON.stringify(services)); }
     function saveGoods() { localStorage.setItem("a4print_goods", JSON.stringify(goods)); }
     function saveOrders() { localStorage.setItem("a4print_orders", JSON.stringify(allOrders)); }
-    function saveShift() { localStorage.setItem("a4print_shift", JSON.stringify({ open: shiftOpen, close: shiftClose, openComment: shiftOpenComment, closeComment: shiftCloseComment, operator: currentUser?.name })); }
+    function saveShift() { 
+        localStorage.setItem("a4print_shift", JSON.stringify({ 
+            open: shiftOpen, 
+            close: shiftClose, 
+            openComment: shiftOpenComment || "", 
+            closeComment: shiftCloseComment || "",
+            operator: currentUser?.name,
+            operatorLogin: currentUser?.username
+        })); 
+    }
     function loadAllShifts() { let s = localStorage.getItem("a4print_shifts_list"); if (s) allShifts = JSON.parse(s); else allShifts = []; }
     function saveAllShifts() { localStorage.setItem("a4print_shifts_list", JSON.stringify(allShifts)); }
     function saveCashData() { localStorage.setItem("a4print_cash_data", JSON.stringify(cashData)); }
+    
+    // ========== ФУНКЦИЯ ВОССТАНОВЛЕНИЯ ДАННЫХ ==========
+    function validateAndRepairData() {
+        let repaired = false;
+        
+        if (allOrders && allOrders.length > 0) {
+            let needSave = false;
+            allOrders.forEach(order => {
+                if (order.profit === undefined) {
+                    order.profit = (order.finalTotal || 0) - (order.orderExpense || 0);
+                    needSave = true;
+                }
+                if (order.orderExpense === undefined) {
+                    order.orderExpense = 0;
+                    needSave = true;
+                }
+                if (order.paymentMethod === undefined) {
+                    order.paymentMethod = "cash";
+                    needSave = true;
+                }
+            });
+            if (needSave) {
+                saveOrders();
+                repaired = true;
+            }
+        }
+        
+        if (allShifts && allShifts.length > 0) {
+            let needSaveShifts = false;
+            allShifts.forEach(shift => {
+                if (shift.openComment === undefined) shift.openComment = "";
+                if (shift.closeComment === undefined) shift.closeComment = "";
+                if (shift.workHours === undefined) shift.workHours = 0;
+                if (shift.revenue === undefined) shift.revenue = 0;
+                if (shift.profit === undefined) shift.profit = 0;
+            });
+            if (needSaveShifts) {
+                saveAllShifts();
+                repaired = true;
+            }
+        }
+        
+        if (repaired) {
+            console.log("Данные восстановлены и исправлены");
+            showSyncStatus("🔧 Данные восстановлены");
+        }
+        
+        return repaired;
+    }
     
     // ========== СИНХРОНИЗАЦИЯ С GOOGLE ==========
     function showSyncStatus(msg){ 
@@ -349,7 +407,6 @@
             };
             await fetch(GOOGLE_WEBAPP_URL, { 
                 method: 'POST', 
-                mode: 'no-cors', 
                 headers: { 'Content-Type': 'application/json' }, 
                 body: JSON.stringify(payload) 
             });
@@ -364,35 +421,40 @@
         }
     }
     
-    // ОТПРАВКА ОТЧЁТА СМЕНЫ В GOOGLE (СОЗДАНИЕ НОВОГО ЛИСТА)
     async function sendShiftToGoogle(shiftData) {
         if (!GOOGLE_WEBAPP_URL) {
             console.log("URL Google Sheets не настроен");
-            alert('Сначала настройте URL Google Sheets в админ-панели');
             return false;
         }
         
         showSyncStatus('📤 Отправка отчёта в Google...');
         
         try {
-            await fetch(GOOGLE_WEBAPP_URL, {
+            const response = await fetch(GOOGLE_WEBAPP_URL, {
                 method: 'POST',
-                mode: 'no-cors',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                    'Content-Type': 'application/json'
+                },
                 body: JSON.stringify(shiftData)
             });
-            showSyncStatus('✅ Отчёт отправлен');
-            console.log("Отчёт отправлен в Google Sheets, лист:", shiftData.sheetName);
-            return true;
+            
+            if (response.ok) {
+                showSyncStatus('✅ Отчёт отправлен');
+                console.log("Отчёт отправлен в Google Sheets, лист:", shiftData.sheetName);
+                return true;
+            } else {
+                const errorText = await response.text();
+                console.error("Ошибка HTTP:", response.status, errorText);
+                showSyncStatus('⚠️ Ошибка отправки');
+                return false;
+            }
         } catch(e) {
             console.error("Ошибка отправки:", e);
-            showSyncStatus('❌ Ошибка отправки');
-            alert('Ошибка отправки отчёта: ' + e.message);
+            showSyncStatus('❌ Ошибка сети');
             return false;
         }
     }
     
-    // Автосинхронизация после заказа
     async function autoSyncAfterOrder() {
         if (GOOGLE_WEBAPP_URL) {
             showSyncStatus('🔄 Автосинхронизация...');
@@ -407,7 +469,6 @@
                 };
                 await fetch(GOOGLE_WEBAPP_URL, { 
                     method: 'POST', 
-                    mode: 'no-cors', 
                     headers: { 'Content-Type': 'application/json' }, 
                     body: JSON.stringify(payload) 
                 });
@@ -491,6 +552,9 @@
         let ord = localStorage.getItem("a4print_orders"); if (ord) allOrders = JSON.parse(ord);
         loadAllShifts();
         loadCashData();
+        
+        validateAndRepairData();
+        
         renderServices(); renderGoods(); renderCart(); renderHistory(); loadShift();
         updateShiftFinanceDisplay();
         document.getElementById("currentOperatorName").innerHTML = `${currentUser.name} ${currentUser.role === "admin" ? "👑" : "👤"}`;
@@ -502,12 +566,22 @@
         let s = localStorage.getItem("a4print_shift"); 
         if (s) { 
             let d = JSON.parse(s); 
-            if (d.operator === currentUser?.name) { 
+            if (d.operatorLogin === currentUser?.username) { 
                 shiftOpen = d.open; 
                 shiftClose = d.close; 
                 shiftOpenComment = d.openComment || ""; 
                 shiftCloseComment = d.closeComment || ""; 
-            } 
+            } else if (!d.operatorLogin && d.operator === currentUser?.name) {
+                shiftOpen = d.open; 
+                shiftClose = d.close; 
+                shiftOpenComment = d.openComment || ""; 
+                shiftCloseComment = d.closeComment || "";
+            } else {
+                shiftOpen = null;
+                shiftClose = null;
+                shiftOpenComment = "";
+                shiftCloseComment = "";
+            }
         } 
         updateShiftUI(); 
         updateShiftFinanceDisplay(); 
@@ -526,9 +600,40 @@
     
     function getShiftFinance() { 
         if (!shiftOpen) return { revenue:0, cash:0, card:0, profit:0 }; 
-        const shiftOrders = allOrders.filter(o => o.operator === currentUser.name && o.date >= shiftOpen && (!shiftClose || o.date <= shiftClose)); 
-        let revenue=0,cash=0,card=0,profit=0; 
-        shiftOrders.forEach(o => { revenue+=o.finalTotal; profit+=o.profit||0; o.paymentMethod==="cash"? cash+=o.finalTotal: card+=o.finalTotal; }); 
+        
+        const shiftOrders = allOrders.filter(o => {
+            if (o.operator !== currentUser.name) return false;
+            if (!o.date) return false;
+            
+            try {
+                const orderDate = new Date(o.date);
+                const openDate = new Date(shiftOpen);
+                
+                if (shiftClose) {
+                    const closeDate = new Date(shiftClose);
+                    return orderDate >= openDate && orderDate <= closeDate;
+                } else {
+                    return orderDate >= openDate;
+                }
+            } catch(e) {
+                if (shiftClose) {
+                    return o.date >= shiftOpen && o.date <= shiftClose;
+                } else {
+                    return o.date >= shiftOpen;
+                }
+            }
+        }); 
+        
+        let revenue=0, cash=0, card=0, profit=0; 
+        shiftOrders.forEach(o => { 
+            revenue += o.finalTotal; 
+            profit += (o.profit || 0); 
+            if (o.paymentMethod === "cash") {
+                cash += o.finalTotal;
+            } else if (o.paymentMethod === "card") {
+                card += o.finalTotal;
+            }
+        }); 
         return { revenue, cash, card, profit }; 
     }
     
@@ -540,12 +645,13 @@
         document.getElementById("shiftProfit").innerHTML = f.profit.toLocaleString() + " ₽"; 
     }
     
-    // ========== УПРАВЛЕНИЕ СМЕНОЙ (ГЛАВНАЯ ФУНКЦИЯ) ==========
+    // УПРАВЛЕНИЕ СМЕНОЙ (ГЛАВНАЯ ФУНКЦИЯ) - ИСПРАВЛЕННАЯ
     function toggleShiftWithComment() { 
         if (!shiftOpen || shiftClose) { 
             // ОТКРЫТИЕ СМЕНЫ
             shiftOpen = new Date().toLocaleString(); 
-            shiftClose = null; 
+            shiftClose = null;
+            shiftOpenComment = prompt("Комментарий к открытию смены (необязательно):") || "";
             saveShift(); 
             updateShiftUI(); 
             updateShiftFinanceDisplay(); 
@@ -554,15 +660,26 @@
             // ЗАКРЫТИЕ СМЕНЫ
             if (!shiftOpen) { alert("Нет открытой смены"); return; } 
             
+            shiftCloseComment = prompt("Комментарий к закрытию смены (необязательно):") || "";
+            
             const finance = getShiftFinance();
             const shiftOrders = allOrders.filter(o => o.operator === currentUser.name && 
                 o.date >= shiftOpen && (!shiftClose || o.date <= shiftClose));
             
+            // Получаем текущее время для закрытия
             shiftClose = new Date().toLocaleString(); 
-            saveShift(); 
+            
+            // Рассчитываем часы работы смены
+            let workHours = 0;
+            try {
+                const openDate = new Date(shiftOpen);
+                const closeDate = new Date(shiftClose);
+                workHours = Math.round((closeDate - openDate) / (1000 * 60 * 30)) / 2;
+            } catch(e) {}
             
             // Сохраняем в локальную историю
             allShifts.push({
+                id: Date.now(),
                 login: currentUser.username, 
                 name: currentUser.name, 
                 role: currentUser.role, 
@@ -571,19 +688,27 @@
                 revenue: finance.revenue,
                 cash: finance.cash,
                 card: finance.card,
-                profit: finance.profit
+                profit: finance.profit,
+                workHours: workHours,
+                openComment: shiftOpenComment,
+                closeComment: shiftCloseComment
             }); 
             saveAllShifts(); 
+            saveShift(); 
             
             const today = new Date();
-            const dateStr = today.toLocaleDateString('ru-RU');
+            const dateStr = today.toLocaleDateString('ru-RU').replace(/\//g, '-');
+            const timeStr = today.toLocaleTimeString('ru-RU', {hour:'2-digit', minute:'2-digit'});
             
+            // Формируем данные для отправки
             const shiftData = {
                 type: 'shift_close',
                 sheetName: dateStr,
                 date: dateStr,
                 reportTime: new Date().toLocaleString(),
                 operator: currentUser.name,
+                operatorLogin: currentUser.username,
+                workHours: workHours,
                 totalRevenue: finance.revenue,
                 totalProfit: finance.profit,
                 totalOrders: shiftOrders.length,
@@ -592,27 +717,32 @@
                 cashCount: shiftOrders.filter(o => o.paymentMethod === "cash").length,
                 cardCount: shiftOrders.filter(o => o.paymentMethod === "card").length,
                 averageCheck: shiftOrders.length > 0 ? finance.revenue / shiftOrders.length : 0,
-                comment: shiftCloseComment,
+                openComment: shiftOpenComment,
+                closeComment: shiftCloseComment,
                 cashBalance: cashData.cashBalance,
                 orders: shiftOrders.map(o => ({
                     id: o.id,
                     time: o.date && o.date.includes(", ") ? o.date.split(", ")[1] : "",
                     client: o.client,
-                    items: o.items,
+                    phone: o.phone || "",
+                    items: o.items.map(it => `${it.name} x${it.qty} = ${it.price * it.qty}₽`).join(", "),
+                    itemsCount: o.items.length,
                     total: o.finalTotal,
-                    payment: o.paymentMethod,
+                    payment: o.paymentMethod === "cash" ? "Наличные" : "Карта",
                     operator: o.operator,
-                    expense: o.orderExpense || 0
+                    expense: o.orderExpense || 0,
+                    profit: o.profit || 0
                 }))
             };
             
-            // Отправляем в Google
-            sendShiftToGoogle(shiftData);
+            // Отправляем в Google (асинхронно)
+            sendShiftToGoogle(shiftData).catch(e => console.error("Ошибка отправки в Google:", e));
             
             updateShiftUI(); 
             updateShiftFinanceDisplay(); 
             
-            alert(`✅ Смена закрыта!\n\n📅 ${dateStr}\n💰 Выручка: ${finance.revenue} ₽\n💵 Наличные: ${finance.cash} ₽\n💳 Карта: ${finance.card} ₽\n📊 Чистая прибыль: ${finance.profit} ₽\n💵 Остаток наличных в кассе: ${cashData.cashBalance} ₽\n\n📄 Отчёт создан в Google Sheets на листе "${dateStr}"`); 
+            // Показываем подробный отчёт
+            alert(`✅ Смена закрыта!\n\n📅 ${dateStr} ${timeStr}\n👤 Оператор: ${currentUser.name}\n⏱️ Время работы: ${workHours} ч.\n\n📊 ИТОГИ СМЕНЫ:\n💰 Выручка: ${finance.revenue.toLocaleString()} ₽\n💵 Наличные: ${finance.cash.toLocaleString()} ₽\n💳 Карта: ${finance.card.toLocaleString()} ₽\n📈 Чистая прибыль: ${finance.profit.toLocaleString()} ₽\n📦 Количество заказов: ${shiftOrders.length}\n\n💵 Остаток наличных в кассе: ${cashData.cashBalance.toLocaleString()} ₽\n\n📄 Отчёт отправлен в Google Sheets на лист "${dateStr}"`); 
         } 
     }
     
@@ -918,15 +1048,10 @@
     }
     function reportShiftsExcel() {
         if (allShifts.length === 0) { alert('Нет смен'); return; }
-        let data = [['№', 'Оператор', 'Роль', 'Открытие', 'Закрытие', 'Часы', 'Начислено']];
+        let data = [['№', 'Оператор', 'Роль', 'Открытие', 'Закрытие', 'Часы', 'Выручка', 'Наличные', 'Карта', 'Прибыль', 'Комментарий']];
         allShifts.forEach((s, i) => {
-            let hours = 0;
-            if (s.open && s.close) {
-                hours = Math.min((new Date(s.close) - new Date(s.open)) / (1000*3600), 8);
-                hours = Math.round(hours * 10) / 10;
-            }
-            let salary = calculateSalaryForShift(s);
-            data.push([i+1, s.name, s.role === 'admin' ? 'Админ' : 'Оператор', s.open, s.close || '—', hours, `${salary} ₽`]);
+            let hours = s.workHours || 0;
+            data.push([i+1, s.name, s.role === 'admin' ? 'Админ' : 'Оператор', s.open, s.close || '—', hours, s.revenue || 0, s.cash || 0, s.card || 0, s.profit || 0, s.closeComment || '']);
         });
         let ws = XLSX.utils.aoa_to_sheet(data);
         let wb = XLSX.utils.book_new();
@@ -1002,8 +1127,8 @@
         let sm=calculateSalaryForMonth(m,y); 
         let html=`<table style="width:100%"><tr><th>Оператор</th><th>Смен</th><th>Итого</th></tr>`; 
         let total=0; 
-        for(let [key,data] of sm){ html+=`<tr><td>${data.name}</td><td>${data.count}</td><td>${data.total.toLocaleString()} ₽</td></table>`; total+=data.total; } 
-        html+=`<tr style="background:var(--blue);color:white;"><td><strong>ИТОГО:</strong></td><td></td><td><strong>${total.toLocaleString()} ₽</strong></td></tr></td>`; 
+        for(let [key,data] of sm){ html+=`<tr><td>${data.name}</td><td>${data.count}</td><td>${data.total.toLocaleString()} ₽</td></tr>`; total+=data.total; } 
+        html+=`<tr style="background:var(--blue);color:white;"><td><strong>ИТОГО:</strong></td><td></td><td><strong>${total.toLocaleString()} ₽</strong></td></tr></table>`; 
         document.getElementById("salaryReportContent").innerHTML=html; 
     }
     function renderShiftsHistory(){ 
@@ -1012,7 +1137,8 @@
         if(allShifts.length===0){ cont.innerHTML="<div style='padding:20px;text-align:center;'>Нет завершённых смен</div>"; return; } 
         let html=""; 
         [...allShifts].reverse().slice(0,50).forEach(s=>{ 
-            html+=`<div style="background:var(--gray-50);border-radius:10px;padding:12px;margin-bottom:10px;"><div><strong>${escapeHtml(s.name)}</strong> (${s.role==="admin"?"Админ":"Оператор"})</div><div>🟢 ${s.open}</div><div>🔴 ${s.close||"—"}</div><div>💰 Начислено: ${calculateSalaryForShift(s)} ₽</div></div>`; 
+            let hours = s.workHours || 0;
+            html+=`<div style="background:var(--gray-50);border-radius:10px;padding:12px;margin-bottom:10px;"><div><strong>${escapeHtml(s.name)}</strong> (${s.role==="admin"?"Админ":"Оператор"})</div><div>🟢 ${s.open}</div><div>🔴 ${s.close||"—"}</div><div>⏱️ Часы: ${hours} ч.</div><div>💰 Выручка: ${(s.revenue || 0).toLocaleString()} ₽</div><div>📈 Прибыль: ${(s.profit || 0).toLocaleString()} ₽</div><div>💵 Начислено: ${calculateSalaryForShift(s)} ₽</div></div>`; 
         }); 
         cont.innerHTML=html; 
     }
