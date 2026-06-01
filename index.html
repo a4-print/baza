@@ -251,7 +251,17 @@
         <div id="admin-shifts" class="instruction-content"><h3>История смен</h3><div id="shiftsHistoryList" style="max-height:400px; overflow-y:auto;"></div><button id="exportShiftsAdminBtn" class="btn-purple" style="margin-top:16px;">📊 Экспорт всех смен в Excel</button></div>
         <div id="admin-services" class="instruction-content"><h3>Управление услугами</h3><div id="adminServicesList"></div><div style="display:flex; gap:12px; margin-top:16px;"><input type="text" id="newServiceName" placeholder="Название"><input type="number" id="newServicePrice" placeholder="Цена"><button id="addServiceBtn" class="btn-primary">Добавить</button></div></div>
         <div id="admin-goods" class="instruction-content"><h3>Товары (склад)</h3><div id="adminGoodsList"></div><div style="display:flex; gap:12px; margin-top:16px;"><input type="text" id="adminNewGoodsName" placeholder="Название"><input type="number" id="adminNewGoodsPrice" placeholder="Цена"><input type="number" id="adminNewGoodsStock" placeholder="Кол-во"><button id="adminAddGoodsBtn" class="btn-primary">Добавить</button></div></div>
-        <div id="admin-google" class="instruction-content"><h3>🔄 Настройка Google Sheets синхронизации</h3><div><input type="text" id="googleWebAppUrl" style="width:100%;" placeholder="https://script.google.com/macros/s/.../exec"><button id="saveGoogleUrlBtn" class="btn-primary" style="margin-top:16px;">💾 Сохранить</button><button id="testGoogleConnectionBtn" class="btn-purple" style="margin-top:16px;">🔌 Тест подключения</button><button id="manualSyncBtn" class="btn-pink" style="margin-top:16px;">📤 Ручная синхронизация</button></div><div id="googleStatus" style="margin-top:16px; padding:12px; border-radius:8px; background:var(--gray-100);"></div></div>
+        <div id="admin-google" class="instruction-content"><h3>🔄 Настройка Google Sheets синхронизации</h3>
+            <div><input type="text" id="googleWebAppUrl" style="width:100%;" placeholder="https://script.google.com/macros/s/.../exec"><button id="saveGoogleUrlBtn" class="btn-primary" style="margin-top:16px;">💾 Сохранить</button><button id="testGoogleConnectionBtn" class="btn-purple" style="margin-top:16px;">🔌 Тест подключения</button><button id="manualSyncBtn" class="btn-pink" style="margin-top:16px;">📤 Ручная синхронизация</button></div>
+            <div id="googleStatus" style="margin-top:16px; padding:12px; border-radius:8px; background:var(--gray-100);"></div>
+            <div style="margin-top:16px; padding:12px; background:#fef3c7; border-radius:8px;">
+                <strong>📌 Инструкция:</strong><br>
+                1. Скопируйте URL из Google Apps Script<br>
+                2. Вставьте выше и нажмите "Сохранить"<br>
+                3. Нажмите "Тест подключения"<br>
+                4. Если не работает - используйте экспорт Excel
+            </div>
+        </div>
     </div>
 </div>
 
@@ -409,10 +419,98 @@
         return fixed;
     }
     
-    // ========== СИНХРОНИЗАЦИЯ С GOOGLE ==========
+    // ========== ОТПРАВКА В GOOGLE (ОБХОД CORS) ==========
     function showSyncStatus(msg){ 
         let d=document.getElementById("syncStatus"); 
         if(d){ d.textContent=msg; setTimeout(()=>{ if(d.textContent===msg) d.textContent="💾 Готово"; },3000); } 
+    }
+    
+    // Отправка через form (обход CORS)
+    function sendToGoogleViaForm(data) {
+        return new Promise((resolve, reject) => {
+            if (!GOOGLE_WEBAPP_URL) {
+                reject(new Error("URL не настроен"));
+                return;
+            }
+            
+            // Создаём невидимую форму
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = GOOGLE_WEBAPP_URL;
+            form.target = 'google_frame';
+            form.style.display = 'none';
+            
+            // Добавляем данные как параметры формы
+            const hiddenField = document.createElement('input');
+            hiddenField.type = 'hidden';
+            hiddenField.name = 'data';
+            hiddenField.value = JSON.stringify(data);
+            form.appendChild(hiddenField);
+            
+            // Создаём iframe для приёма ответа
+            let iframe = document.getElementById('google_frame');
+            if (!iframe) {
+                iframe = document.createElement('iframe');
+                iframe.id = 'google_frame';
+                iframe.name = 'google_frame';
+                iframe.style.display = 'none';
+                document.body.appendChild(iframe);
+            }
+            
+            // Таймаут
+            const timeout = setTimeout(() => {
+                document.body.removeChild(form);
+                reject(new Error("Таймаут отправки"));
+            }, 10000);
+            
+            // Обработка загрузки iframe
+            iframe.onload = () => {
+                clearTimeout(timeout);
+                document.body.removeChild(form);
+                resolve(true);
+            };
+            
+            document.body.appendChild(form);
+            form.submit();
+        });
+    }
+    
+    async function sendShiftToGoogle(shiftData) {
+        if (!GOOGLE_WEBAPP_URL) {
+            console.log("URL Google Sheets не настроен");
+            showSyncStatus('⚠️ URL не настроен');
+            // Сохраняем локально
+            const localReports = JSON.parse(localStorage.getItem("a4print_local_reports") || "[]");
+            localReports.push({
+                ...shiftData,
+                savedLocally: true,
+                savedAt: new Date().toLocaleString()
+            });
+            localStorage.setItem("a4print_local_reports", JSON.stringify(localReports));
+            return false;
+        }
+        
+        showSyncStatus('📤 Отправка отчёта в Google...');
+        
+        try {
+            await sendToGoogleViaForm(shiftData);
+            showSyncStatus('✅ Отчёт отправлен');
+            console.log("Отчёт отправлен в Google Sheets, лист:", shiftData.sheetName);
+            return true;
+        } catch(e) {
+            console.error("Ошибка отправки:", e);
+            showSyncStatus('❌ Ошибка: ' + e.message);
+            // Сохраняем локально при ошибке
+            const localReports = JSON.parse(localStorage.getItem("a4print_local_reports") || "[]");
+            localReports.push({
+                ...shiftData,
+                failedToSend: true,
+                error: e.message,
+                savedAt: new Date().toLocaleString()
+            });
+            localStorage.setItem("a4print_local_reports", JSON.stringify(localReports));
+            return false;
+        }
     }
     
     async function syncToGoogle(isSilent = false) {
@@ -421,6 +519,7 @@
             return false;
         }
         if (!isSilent) showSyncStatus('🔄 Синхронизация...');
+        
         try {
             const payload = {
                 type: 'orders',
@@ -429,11 +528,8 @@
                 operator: currentUser?.name,
                 totalOrders: allOrders.length
             };
-            await fetch(GOOGLE_WEBAPP_URL, { 
-                method: 'POST', 
-                headers: { 'Content-Type': 'application/json' }, 
-                body: JSON.stringify(payload) 
-            });
+            
+            await sendToGoogleViaForm(payload);
             showSyncStatus('✅ Данные синхронизированы');
             if (!isSilent) alert('Данные отправлены в Google Sheets');
             return true;
@@ -441,40 +537,6 @@
             console.error('Sync error:', e);
             showSyncStatus('❌ Ошибка синхронизации');
             if (!isSilent) alert('Ошибка: ' + e.message);
-            return false;
-        }
-    }
-    
-    async function sendShiftToGoogle(shiftData) {
-        if (!GOOGLE_WEBAPP_URL) {
-            console.log("URL Google Sheets не настроен");
-            return false;
-        }
-        
-        showSyncStatus('📤 Отправка отчёта в Google...');
-        
-        try {
-            const response = await fetch(GOOGLE_WEBAPP_URL, {
-                method: 'POST',
-                headers: { 
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(shiftData)
-            });
-            
-            if (response.ok) {
-                showSyncStatus('✅ Отчёт отправлен');
-                console.log("Отчёт отправлен в Google Sheets, лист:", shiftData.sheetName);
-                return true;
-            } else {
-                const errorText = await response.text();
-                console.error("Ошибка HTTP:", response.status, errorText);
-                showSyncStatus('⚠️ Ошибка отправки');
-                return false;
-            }
-        } catch(e) {
-            console.error("Ошибка отправки:", e);
-            showSyncStatus('❌ Ошибка сети');
             return false;
         }
     }
@@ -491,16 +553,39 @@
                     totalOrders: allOrders.length,
                     action: 'new_order'
                 };
-                await fetch(GOOGLE_WEBAPP_URL, { 
-                    method: 'POST', 
-                    headers: { 'Content-Type': 'application/json' }, 
-                    body: JSON.stringify(payload) 
-                });
+                await sendToGoogleViaForm(payload);
                 showSyncStatus('✅ Синхронизировано');
             } catch(e) {
                 console.error('Auto sync error:', e);
                 showSyncStatus('⚠️ Синхр. позже');
             }
+        }
+    }
+    
+    // Тест подключения к Google
+    async function testGoogleConnection() {
+        if (!GOOGLE_WEBAPP_URL) {
+            alert("URL не настроен. Сначала сохраните URL в настройках.");
+            return;
+        }
+        
+        showSyncStatus('🔌 Тест подключения...');
+        
+        try {
+            const testData = {
+                type: 'test',
+                message: 'Тестовое сообщение от A4-Принт',
+                time: new Date().toLocaleString(),
+                operator: currentUser?.name
+            };
+            
+            await sendToGoogleViaForm(testData);
+            showSyncStatus('✅ Подключение работает');
+            alert('✅ Подключение к Google Sheets работает!\n\nДанные успешно отправлены.');
+        } catch(e) {
+            console.error('Test error:', e);
+            showSyncStatus('❌ Ошибка подключения');
+            alert('❌ Ошибка подключения: ' + e.message + '\n\nПроверьте URL и настройки Google Apps Script');
         }
     }
     
@@ -626,17 +711,8 @@
     function getShiftFinance() { 
         if (!shiftOpen) return { revenue:0, cash:0, card:0, profit:0 }; 
         
-        console.log("=== ОТЛАДКА СМЕНЫ ===");
-        console.log("shiftOpen:", shiftOpen);
-        console.log("shiftClose:", shiftClose);
-        console.log("Всего заказов:", allOrders.length);
-        console.log("Текущий оператор:", currentUser.name);
-        
         let openTimestamp = new Date(shiftOpen).getTime();
         let closeTimestamp = shiftClose ? new Date(shiftClose).getTime() : null;
-        
-        console.log("openTimestamp:", openTimestamp);
-        console.log("closeTimestamp:", closeTimestamp);
         
         const shiftOrders = allOrders.filter(o => {
             if (o.operator !== currentUser.name) return false;
@@ -645,27 +721,17 @@
             let orderTimestamp;
             try {
                 orderTimestamp = new Date(o.date).getTime();
-                console.log(`Заказ ${o.id}: дата="${o.date}", timestamp=${orderTimestamp}`);
             } catch(e) {
-                console.log(`Ошибка парсинга даты заказа ${o.id}:`, o.date);
                 return false;
             }
             
-            if (isNaN(orderTimestamp)) {
-                console.log(`Невалидная дата заказа ${o.id}:`, o.date);
-                return false;
-            }
+            if (isNaN(orderTimestamp)) return false;
             
             if (closeTimestamp) {
                 return orderTimestamp >= openTimestamp && orderTimestamp <= closeTimestamp;
             } else {
                 return orderTimestamp >= openTimestamp;
             }
-        });
-        
-        console.log("Найдено заказов в смене:", shiftOrders.length);
-        shiftOrders.forEach(o => {
-            console.log(`  - Заказ ${o.id}: ${o.finalTotal}₽, дата=${o.date}`);
         });
         
         let revenue=0, cash=0, card=0, profit=0; 
@@ -678,8 +744,6 @@
                 card += o.finalTotal;
             }
         }); 
-        
-        console.log(`ИТОГО: revenue=${revenue}, cash=${cash}, card=${card}, profit=${profit}`);
         
         return { revenue, cash, card, profit }; 
     }
@@ -781,7 +845,7 @@
             updateShiftUI(); 
             updateShiftFinanceDisplay(); 
             
-            alert(`✅ Смена закрыта!\n\n📅 ${dateStr} ${timeStr}\n👤 Оператор: ${currentUser.name}\n⏱️ Время работы: ${workHours} ч.\n\n📊 ИТОГИ СМЕНЫ:\n💰 Выручка: ${finance.revenue.toLocaleString()} ₽\n💵 Наличные: ${finance.cash.toLocaleString()} ₽\n💳 Карта: ${finance.card.toLocaleString()} ₽\n📈 Чистая прибыль: ${finance.profit.toLocaleString()} ₽\n📦 Количество заказов: ${shiftOrders.length}\n\n💵 Остаток наличных в кассе: ${cashData.cashBalance.toLocaleString()} ₽\n\n📄 Отчёт отправлен в Google Sheets на лист "${dateStr}"`); 
+            alert(`✅ Смена закрыта!\n\n📅 ${dateStr} ${timeStr}\n👤 Оператор: ${currentUser.name}\n⏱️ Время работы: ${workHours} ч.\n\n📊 ИТОГИ СМЕНЫ:\n💰 Выручка: ${finance.revenue.toLocaleString()} ₽\n💵 Наличные: ${finance.cash.toLocaleString()} ₽\n💳 Карта: ${finance.card.toLocaleString()} ₽\n📈 Чистая прибыль: ${finance.profit.toLocaleString()} ₽\n📦 Количество заказов: ${shiftOrders.length}\n\n💵 Остаток наличных в кассе: ${cashData.cashBalance.toLocaleString()} ₽`); 
         } 
     }
     
@@ -1315,7 +1379,7 @@
         document.getElementById("addServiceBtn").onclick=()=>{ let n=document.getElementById("newServiceName").value.trim(); let p=parseInt(document.getElementById("newServicePrice").value); if(n&&p>0){ services.push({id:Date.now(),name:n,price:p}); saveServices(); renderServices(); renderAdmin(); }else alert("Введите название и цену"); };
         document.getElementById("adminAddGoodsBtn").onclick=()=>{ let n=document.getElementById("adminNewGoodsName").value.trim(); let p=parseFloat(document.getElementById("adminNewGoodsPrice").value); let s=parseInt(document.getElementById("adminNewGoodsStock").value); if(n&&p>0&&!isNaN(s)){ goods.push({id:Date.now(),name:n,price:p,stock:s,unit:"шт"}); saveGoods(); renderGoods(); renderAdmin(); showSyncStatus("✅ Товар добавлен"); document.getElementById("adminNewGoodsName").value=""; document.getElementById("adminNewGoodsPrice").value=""; document.getElementById("adminNewGoodsStock").value=""; }else alert("Заполните все поля"); };
         document.getElementById("saveGoogleUrlBtn").onclick=()=>{ let url=document.getElementById("googleWebAppUrl").value.trim(); if(url){ GOOGLE_WEBAPP_URL=url; localStorage.setItem("google_webapp_url",url); alert("Сохранено"); } };
-        document.getElementById("testGoogleConnectionBtn").onclick=()=>alert("Тест подключения");
+        document.getElementById("testGoogleConnectionBtn").onclick=testGoogleConnection;
         document.getElementById("manualSyncBtn").onclick=()=>syncToGoogle(false);
         document.getElementById("orderExpense").onchange=updateCartTotals;
         document.getElementById("orderExpense").oninput=updateCartTotals;
