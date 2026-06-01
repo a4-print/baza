@@ -385,6 +385,30 @@
         return repaired;
     }
     
+    // ФУНКЦИЯ ДЛЯ ИСПРАВЛЕНИЯ ДАТ В СТАРЫХ ЗАКАЗАХ
+    function fixOldOrdersDates() {
+        let fixed = 0;
+        allOrders.forEach(order => {
+            if (order.date && !isNaN(new Date(order.date).getTime())) {
+                // уже нормальная дата
+            } else if (order.date) {
+                try {
+                    const newDate = new Date(order.date);
+                    if (!isNaN(newDate.getTime())) {
+                        order.date = newDate.toLocaleString('ru-RU', { year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit', second:'2-digit' });
+                        fixed++;
+                    }
+                } catch(e) {}
+            }
+        });
+        if (fixed > 0) {
+            saveOrders();
+            console.log(`Исправлено дат у ${fixed} заказов`);
+            showSyncStatus(`🔧 Исправлено ${fixed} дат`);
+        }
+        return fixed;
+    }
+    
     // ========== СИНХРОНИЗАЦИЯ С GOOGLE ==========
     function showSyncStatus(msg){ 
         let d=document.getElementById("syncStatus"); 
@@ -554,6 +578,7 @@
         loadCashData();
         
         validateAndRepairData();
+        fixOldOrdersDates();
         
         renderServices(); renderGoods(); renderCart(); renderHistory(); loadShift();
         updateShiftFinanceDisplay();
@@ -601,28 +626,47 @@
     function getShiftFinance() { 
         if (!shiftOpen) return { revenue:0, cash:0, card:0, profit:0 }; 
         
+        console.log("=== ОТЛАДКА СМЕНЫ ===");
+        console.log("shiftOpen:", shiftOpen);
+        console.log("shiftClose:", shiftClose);
+        console.log("Всего заказов:", allOrders.length);
+        console.log("Текущий оператор:", currentUser.name);
+        
+        let openTimestamp = new Date(shiftOpen).getTime();
+        let closeTimestamp = shiftClose ? new Date(shiftClose).getTime() : null;
+        
+        console.log("openTimestamp:", openTimestamp);
+        console.log("closeTimestamp:", closeTimestamp);
+        
         const shiftOrders = allOrders.filter(o => {
             if (o.operator !== currentUser.name) return false;
             if (!o.date) return false;
             
+            let orderTimestamp;
             try {
-                const orderDate = new Date(o.date);
-                const openDate = new Date(shiftOpen);
-                
-                if (shiftClose) {
-                    const closeDate = new Date(shiftClose);
-                    return orderDate >= openDate && orderDate <= closeDate;
-                } else {
-                    return orderDate >= openDate;
-                }
+                orderTimestamp = new Date(o.date).getTime();
+                console.log(`Заказ ${o.id}: дата="${o.date}", timestamp=${orderTimestamp}`);
             } catch(e) {
-                if (shiftClose) {
-                    return o.date >= shiftOpen && o.date <= shiftClose;
-                } else {
-                    return o.date >= shiftOpen;
-                }
+                console.log(`Ошибка парсинга даты заказа ${o.id}:`, o.date);
+                return false;
             }
-        }); 
+            
+            if (isNaN(orderTimestamp)) {
+                console.log(`Невалидная дата заказа ${o.id}:`, o.date);
+                return false;
+            }
+            
+            if (closeTimestamp) {
+                return orderTimestamp >= openTimestamp && orderTimestamp <= closeTimestamp;
+            } else {
+                return orderTimestamp >= openTimestamp;
+            }
+        });
+        
+        console.log("Найдено заказов в смене:", shiftOrders.length);
+        shiftOrders.forEach(o => {
+            console.log(`  - Заказ ${o.id}: ${o.finalTotal}₽, дата=${o.date}`);
+        });
         
         let revenue=0, cash=0, card=0, profit=0; 
         shiftOrders.forEach(o => { 
@@ -634,6 +678,9 @@
                 card += o.finalTotal;
             }
         }); 
+        
+        console.log(`ИТОГО: revenue=${revenue}, cash=${cash}, card=${card}, profit=${profit}`);
+        
         return { revenue, cash, card, profit }; 
     }
     
@@ -645,10 +692,8 @@
         document.getElementById("shiftProfit").innerHTML = f.profit.toLocaleString() + " ₽"; 
     }
     
-    // УПРАВЛЕНИЕ СМЕНОЙ (ГЛАВНАЯ ФУНКЦИЯ) - ИСПРАВЛЕННАЯ
     function toggleShiftWithComment() { 
         if (!shiftOpen || shiftClose) { 
-            // ОТКРЫТИЕ СМЕНЫ
             shiftOpen = new Date().toLocaleString(); 
             shiftClose = null;
             shiftOpenComment = prompt("Комментарий к открытию смены (необязательно):") || "";
@@ -657,19 +702,17 @@
             updateShiftFinanceDisplay(); 
             alert("✅ Смена открыта"); 
         } else { 
-            // ЗАКРЫТИЕ СМЕНЫ
             if (!shiftOpen) { alert("Нет открытой смены"); return; } 
             
             shiftCloseComment = prompt("Комментарий к закрытию смены (необязательно):") || "";
             
             const finance = getShiftFinance();
             const shiftOrders = allOrders.filter(o => o.operator === currentUser.name && 
-                o.date >= shiftOpen && (!shiftClose || o.date <= shiftClose));
+                o.date && new Date(o.date).getTime() >= new Date(shiftOpen).getTime() && 
+                (!shiftClose || new Date(o.date).getTime() <= new Date(shiftClose).getTime()));
             
-            // Получаем текущее время для закрытия
             shiftClose = new Date().toLocaleString(); 
             
-            // Рассчитываем часы работы смены
             let workHours = 0;
             try {
                 const openDate = new Date(shiftOpen);
@@ -677,7 +720,6 @@
                 workHours = Math.round((closeDate - openDate) / (1000 * 60 * 30)) / 2;
             } catch(e) {}
             
-            // Сохраняем в локальную историю
             allShifts.push({
                 id: Date.now(),
                 login: currentUser.username, 
@@ -700,7 +742,6 @@
             const dateStr = today.toLocaleDateString('ru-RU').replace(/\//g, '-');
             const timeStr = today.toLocaleTimeString('ru-RU', {hour:'2-digit', minute:'2-digit'});
             
-            // Формируем данные для отправки
             const shiftData = {
                 type: 'shift_close',
                 sheetName: dateStr,
@@ -735,13 +776,11 @@
                 }))
             };
             
-            // Отправляем в Google (асинхронно)
             sendShiftToGoogle(shiftData).catch(e => console.error("Ошибка отправки в Google:", e));
             
             updateShiftUI(); 
             updateShiftFinanceDisplay(); 
             
-            // Показываем подробный отчёт
             alert(`✅ Смена закрыта!\n\n📅 ${dateStr} ${timeStr}\n👤 Оператор: ${currentUser.name}\n⏱️ Время работы: ${workHours} ч.\n\n📊 ИТОГИ СМЕНЫ:\n💰 Выручка: ${finance.revenue.toLocaleString()} ₽\n💵 Наличные: ${finance.cash.toLocaleString()} ₽\n💳 Карта: ${finance.card.toLocaleString()} ₽\n📈 Чистая прибыль: ${finance.profit.toLocaleString()} ₽\n📦 Количество заказов: ${shiftOrders.length}\n\n💵 Остаток наличных в кассе: ${cashData.cashBalance.toLocaleString()} ₽\n\n📄 Отчёт отправлен в Google Sheets на лист "${dateStr}"`); 
         } 
     }
@@ -890,7 +929,28 @@
         let comment=document.getElementById("orderComment").value; 
         let payment=document.querySelector('input[name="payment"]:checked').value; 
         const totals=getCartTotals(); 
-        let order={id:Date.now(),client,phone,items:cart.map(i=>({type:i.type,name:i.name,price:i.price,qty:i.qty})),subtotal:totals.subtotal,discount:totals.discount,discountPercent:discountPct,finalTotal:totals.finalTotal,orderExpense:totals.orderExpense,profit:totals.profit,paymentMethod:payment,comment,date:new Date().toLocaleString(),operator:currentUser.name,shiftOpen:shiftOpen}; 
+        
+        const now = new Date();
+        const formattedDate = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')}`;
+        
+        let order={
+            id:Date.now(),
+            client,
+            phone,
+            items:cart.map(i=>({type:i.type,name:i.name,price:i.price,qty:i.qty})),
+            subtotal:totals.subtotal,
+            discount:totals.discount,
+            discountPercent:discountPct,
+            discountAmount:discountAmt,
+            finalTotal:totals.finalTotal,
+            orderExpense:totals.orderExpense,
+            profit:totals.profit,
+            paymentMethod:payment,
+            comment,
+            date: formattedDate,
+            operator:currentUser.name,
+            shiftOpen:shiftOpen
+        }; 
         allOrders.push(order); 
         saveOrders(); 
         processOrderPayment(payment, totals.finalTotal); 
